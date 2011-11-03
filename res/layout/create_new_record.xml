@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@color/background"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="20dip"  
+	android:orientation="vertical">
+    <LinearLayout android:orientation="vertical" 
+		android:layout_height="wrap_content" 
+		android:layout_width="fill_parent" 
+		android:layout_gravity="center">
+		<TextView android:text="@string/account_text" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"/>
+        <Spinner android:id="@+id/account_spinner" 
+        	android:layout_width="match_parent" 
+        	android:layout_height="wrap_content"/>
+        <TextView android:text="@string/amount_text" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"/>
+		<EditText android:id="@+id/amount_edit_text"
+			android:layout_width="match_parent" 
+			android:layout_height="wrap_content" 
+			android:text="0.0"
+			android:digits="0123456789."
+			android:gravity="right"/>
+		<TextView android:text="@string/date_text" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"/>
+        <Button android:id="@+id/edit_date_button"        	        	 
+        	android:layout_width="match_parent" 
+        	android:layout_height="wrap_content"
+        	android:text=""/>
+        <TextView android:text="@string/category_text" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"/>
+        <Spinner android:id="@+id/category_spinner" 
+        	android:layout_width="match_parent" 
+        	android:layout_height="wrap_content"/>
+        <TextView android:text="@string/subcategory_text" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"/>
+        <AutoCompleteTextView  android:id="@+id/subcategory_edit_text" 
+        	android:layout_width="match_parent" 
+        	android:layout_height="wrap_content"/>
+        <Button android:id="@+id/create_record_button"        	        	 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="20dip"
+        	android:minWidth="140dip"
+        	android:layout_gravity="center"
+        	android:text="@string/create_record_label"/>		
+	</LinearLayout>
+    
+    
+</LinearLayout>

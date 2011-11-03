@@ -1,0 +1,6 @@
+
+*.jar
+[Bb]in
+[Gg]en
+.classpath
+.project

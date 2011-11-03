@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pocket Accountant</string>
+	<!-- Startup Activity -->
+	<string name="main_title">Pocket Accountant</string> 
+	<string name="new_expense_label">Expense</string> 
+	<string name="new_income_label">Income</string> 
+	<string name="service_label">Service</string> 
+	<string name="exit_label">Exit</string>
+	<!-- Create new record Activity -->
+	<string name="account_text">Account</string>
+	<string name="amount_text">Amount</string>
+	<string name="date_text">Date</string>
+	<string name="category_text">Category</string>
+	<string name="subcategory_text">Description</string>
+	<string name="create_record_label">Save</string>
+</resources>
