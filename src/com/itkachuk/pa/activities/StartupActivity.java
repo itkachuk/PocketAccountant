@@ -1,8 +1,13 @@
 package com.itkachuk.pa.activities;
 
+import java.sql.SQLException;
+
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.entities.Account;
+import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -57,7 +62,6 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 	          intent.putExtra(CreateNewRecordActivity.EXTRAS_IS_EXPENSE, true);
 	          startActivity(intent);
 	         break;
-	         // ...
 	         
 	      case R.id.new_income_button:
 	    	  Log.d(TAG, "clicked on \"New Income\"");
@@ -69,7 +73,26 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 	      case R.id.service_button:
 	         
 	    	  // Temporary code for DB init!!!
+	    	  String mainAccountName = getResources().getString(R.string.main_account_name);
+	    	  String[] expenseCategories = getResources().getStringArray(R.array.expense_categories);
+	    	  String[] incomeCategories = getResources().getStringArray(R.array.income_categories);
 	    	  
+	    	  try {
+		    	  Dao<Account, String> accountDao = getHelper().getAccountDao();
+		    	  Dao<Category, String> categoryDao = getHelper().getCategoryDao();
+
+		    	  accountDao.createIfNotExists(new Account(mainAccountName, "Main account. Can't be removed by user"));
+		    	  
+		    	  for (String categoryName : expenseCategories) {
+		    		  categoryDao.createIfNotExists(new Category(categoryName, true, false));
+		    	  }
+		    	  for (String categoryName : incomeCategories) {
+		    		  categoryDao.createIfNotExists(new Category(categoryName, false, false));
+		    	  }
+	    	  } catch(SQLException e) {
+	    		  Log.e(TAG, "Error during DB init. " + e.getMessage());
+	    	  }  
+	    	  // Temporary code for DB init!!!
 	    	  
 	          break;
 	      case R.id.exit_button:

@@ -5,6 +5,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class Category {
+	public static final String IS_EXPENSE_FIELD_NAME = "isExpense";
 	
 	@DatabaseField(id = true, unique = true)
 	private String name;
@@ -12,10 +13,10 @@ public class Category {
 	@DatabaseField
 	private boolean isRemovable; // Predefined categories can't be removed by user
 	
-	@DatabaseField
+	@DatabaseField(columnName = IS_EXPENSE_FIELD_NAME)
 	private boolean isExpense; // Expense - true, Income - false
 	
-	Category() {
+	public Category() {
 		// needed by ormlite
 	}
 

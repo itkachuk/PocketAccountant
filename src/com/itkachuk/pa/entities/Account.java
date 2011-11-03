@@ -12,7 +12,7 @@ public class Account {
 	@DatabaseField
 	private String description;
 	
-	Account() {
+	public Account() {
 		// needed by ormlite
 	}
 

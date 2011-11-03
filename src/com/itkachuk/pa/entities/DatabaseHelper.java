@@ -63,14 +63,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return recordDao;
 	}
 
-	public Dao<Category, String> getExpenseCategoryDao() throws SQLException {
+	public Dao<Category, String> getCategoryDao() throws SQLException {
 		if (categoryDao == null) {
 			categoryDao = getDao(Category.class);
 		}
 		return categoryDao;
 	}
 	
-	public Dao<Description, String> getExpenseDescriptionDao() throws SQLException {
+	public Dao<Description, String> getDescriptionDao() throws SQLException {
 		if (descriptionDao == null) {
 			descriptionDao = getDao(Description.class);
 		}

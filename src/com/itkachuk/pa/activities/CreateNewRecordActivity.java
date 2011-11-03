@@ -1,10 +1,15 @@
 package com.itkachuk.pa.activities;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +21,7 @@ import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
+import com.j256.ormlite.dao.Dao;
 
 
 public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>{
@@ -45,6 +51,14 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
         categorySpinner = (Spinner) findViewById(R.id.category_spinner);
         descriptionEditText = (AutoCompleteTextView) findViewById(R.id.subcategory_edit_text);
         saveButton = (Button) findViewById(R.id.create_record_button);
+        
+        try {
+			refreshAccountSpinnerEntries();
+			refreshCategorySpinnerEntries();
+		} catch (SQLException e) {
+			Log.e(TAG, "Error during Spinners refreshing. " + e.getMessage());
+		}
+        
     }
 
     @Override
@@ -75,6 +89,41 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	private int getRecordId() {
 		return getIntent().getIntExtra(RECORD_ID, -1);
+	}
+	
+	private boolean isExpense() {
+		return getIntent().getBooleanExtra(EXTRAS_IS_EXPENSE, true);
+	}
+	
+	private void refreshAccountSpinnerEntries() throws SQLException {
+		Dao<Account, String> accountDao = getHelper().getAccountDao();
+		List<Account> accounts = new ArrayList<Account>();
+		accounts.addAll(accountDao.queryForAll());
+		ArrayAdapter<Account> adapter =
+				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);
+
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		accountSpinner.setAdapter(adapter);
+	}
+	
+	private void refreshCategorySpinnerEntries() throws SQLException {
+		Dao<Category, String> categoryDao = getHelper().getCategoryDao();
+		List<Category> categories = new ArrayList<Category>();
+		categories.add(new Category()); // first entry should be empty
+		if (isExpense()) {
+			categories.addAll(categoryDao.queryBuilder().where()
+					.eq(Category.IS_EXPENSE_FIELD_NAME, true)
+					.query());
+		} else {
+			categories.addAll(categoryDao.queryBuilder().where()
+					.eq(Category.IS_EXPENSE_FIELD_NAME, false)
+					.query());
+		}
+		ArrayAdapter<Category> adapter =
+				new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categories);
+
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		categorySpinner.setAdapter(adapter);
 	}
 	
 	private IncomeOrExpenseRecord saveToObj() {
@@ -108,7 +157,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		// Set description
 		record.setDescription(descriptionEditText.getText().toString());
 		// Set flags
-		if (getIntent().getBooleanExtra(EXTRAS_IS_EXPENSE, true)) {
+		if (isExpense()) {
 			record.setExpense(true);
 		} else {
 			record.setExpense(false);

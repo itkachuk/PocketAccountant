@@ -14,4 +14,26 @@
 	<string name="category_text">Category</string>
 	<string name="subcategory_text">Description</string>
 	<string name="create_record_label">Save</string>
+	
+	<!-- Main Account -->
+	<string name="main_account_name">[main]</string>
+	<!-- Categories -->
+	<string-array name="expense_categories">
+		<item>Flat</item>
+        <item>Car</item>
+        <item>Bills</item>
+        <item>Shopping</item>
+        <item>Medicine</item>
+        <item>Credit</item>
+        <item>Leisure</item>
+        <item>Pets</item>
+        <item>Traveling</item>
+        <item>Gifts</item>       
+        <item>Transport</item>
+    </string-array>
+    <string-array name="income_categories">
+        <item>Salary</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>
