@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
-public class ExpenseCategory {
+public class Category {
 	
 	@DatabaseField(id = true, unique = true)
 	private String name;
@@ -12,14 +12,18 @@ public class ExpenseCategory {
 	@DatabaseField
 	private boolean isRemovable; // Predefined categories can't be removed by user
 	
-	ExpenseCategory() {
+	@DatabaseField
+	private boolean isExpense; // Expense - true, Income - false
+	
+	Category() {
 		// needed by ormlite
 	}
 
-	public ExpenseCategory(String name, boolean isRemovable) {
+	public Category(String name, boolean isExpense, boolean isRemovable) {
 		super();
 		this.name = name;
 		this.isRemovable = isRemovable;
+		this.isExpense = isExpense;
 	}
 
 	public String getName() {
@@ -38,9 +42,17 @@ public class ExpenseCategory {
 		this.isRemovable = isRemovable;
 	}
 
+	public boolean isExpense() {
+		return isExpense;
+	}
+
+	public void setExpense(boolean isExpense) {
+		this.isExpense = isExpense;
+	}
+
 	@Override
 	public String toString() {
-		return "ExpenseCategory [name=" + name + ", isRemovable=" + isRemovable
-				+ "]";
+		return "Category [name=" + name + ", isRemovable=" + isRemovable
+				+ ", isExpense=" + isExpense + "]";
 	}	
 }

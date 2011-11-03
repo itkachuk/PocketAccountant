@@ -12,9 +12,9 @@ import android.widget.Spinner;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.entities.Account;
-import com.itkachuk.pa.entities.ExpenseCategory;
+import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
-import com.itkachuk.pa.entities.ExpenseRecord;
+import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 
@@ -77,8 +77,8 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		return getIntent().getIntExtra(RECORD_ID, -1);
 	}
 	
-	private ExpenseRecord saveToObj() {
-		ExpenseRecord record = new ExpenseRecord();
+	private IncomeOrExpenseRecord saveToObj() {
+		IncomeOrExpenseRecord record = new IncomeOrExpenseRecord();
 		
 		// Set Id
 		int recordId = getRecordId();
@@ -100,7 +100,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		record.setDate(new Date(millis)); // TODO - now hardcoded to use only current date
 		// Set category - TODO work with spinner
 		if (categorySpinner.getSelectedItem() != null) {
-			ExpenseCategory category = (ExpenseCategory) categorySpinner.getSelectedItem();
+			Category category = (Category) categorySpinner.getSelectedItem();
 			if (category != null) {
 				record.setCategory(category);
 			}

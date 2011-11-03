@@ -22,12 +22,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	private Dao<Account, String> accountDao;
-	private Dao<ExpenseRecord, Integer> expenseRecordDao;
-	private Dao<IncomeRecord, Integer> incomeRecordDao;	
-	private Dao<ExpenseCategory, String> expenseCategoryDao;
-	private Dao<IncomeCategory, String> incomeCategoryDao;
-	private Dao<ExpenseDescription, String> expenseDescriptionDao;
-	private Dao<IncomeDescription, String> incomeDescriptionDao;
+	private Dao<IncomeOrExpenseRecord, Integer> recordDao;
+	private Dao<Category, String> categoryDao;
+	private Dao<Description, String> descriptionDao;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -38,13 +35,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void onCreate(SQLiteDatabase sqliteDatabase, ConnectionSource connectionSource) {
 		try {
 			TableUtils.createTable(connectionSource, Account.class);
-			TableUtils.createTable(connectionSource, ExpenseCategory.class);
-			TableUtils.createTable(connectionSource, ExpenseDescription.class);
-			TableUtils.createTable(connectionSource, ExpenseRecord.class);
-			TableUtils.createTable(connectionSource, IncomeCategory.class);
-			TableUtils.createTable(connectionSource, IncomeDescription.class);
-			TableUtils.createTable(connectionSource, IncomeRecord.class);
-			Log.i(DatabaseHelper.class.getName(), "Successfully created 7 DB tables in onCreate()");
+			TableUtils.createTable(connectionSource, Category.class);
+			TableUtils.createTable(connectionSource, Description.class);
+			TableUtils.createTable(connectionSource, IncomeOrExpenseRecord.class);
+			Log.i(DatabaseHelper.class.getName(), "Successfully created 4 DB tables in onCreate()");
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Unable to create database tables", e);
 		}
@@ -62,46 +56,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return accountDao;
 	}
 	
-	public Dao<ExpenseRecord, Integer> getExpenseRecordDao() throws SQLException {
-		if (expenseRecordDao == null) {
-			expenseRecordDao = getDao(ExpenseRecord.class);
+	public Dao<IncomeOrExpenseRecord, Integer> getRecordDao() throws SQLException {
+		if (recordDao == null) {
+			recordDao = getDao(IncomeOrExpenseRecord.class);
 		}
-		return expenseRecordDao;
-	}
-	
-	public Dao<IncomeRecord, Integer> getIncomeRecordDao() throws SQLException {
-		if (incomeRecordDao == null) {
-			incomeRecordDao = getDao(IncomeRecord.class);
-		}
-		return incomeRecordDao;
+		return recordDao;
 	}
 
-	public Dao<ExpenseCategory, String> getExpenseCategoryDao() throws SQLException {
-		if (expenseCategoryDao == null) {
-			expenseCategoryDao = getDao(ExpenseCategory.class);
+	public Dao<Category, String> getExpenseCategoryDao() throws SQLException {
+		if (categoryDao == null) {
+			categoryDao = getDao(Category.class);
 		}
-		return expenseCategoryDao;
+		return categoryDao;
 	}
 	
-	public Dao<IncomeCategory, String> getIncomeCategoryDao() throws SQLException {
-		if (incomeCategoryDao == null) {
-			incomeCategoryDao = getDao(IncomeCategory.class);
+	public Dao<Description, String> getExpenseDescriptionDao() throws SQLException {
+		if (descriptionDao == null) {
+			descriptionDao = getDao(Description.class);
 		}
-		return incomeCategoryDao;
-	}
-	
-	public Dao<ExpenseDescription, String> getExpenseDescriptionDao() throws SQLException {
-		if (expenseDescriptionDao == null) {
-			expenseDescriptionDao = getDao(ExpenseDescription.class);
-		}
-		return expenseDescriptionDao;
-	}
-	
-	public Dao<IncomeDescription, String> getIncomeDescriptionDao() throws SQLException {
-		if (incomeDescriptionDao == null) {
-			incomeDescriptionDao = getDao(IncomeDescription.class);
-		}
-		return incomeDescriptionDao;
+		return descriptionDao;
 	}
 	
 	/**
@@ -111,11 +84,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public void close() {
 		super.close();
 		accountDao = null;
-		expenseRecordDao = null;
-		incomeRecordDao = null;
-		expenseCategoryDao = null;
-		incomeCategoryDao = null;
-		expenseDescriptionDao = null;
-		incomeDescriptionDao = null;
+		recordDao = null;
+		categoryDao = null;
+		descriptionDao = null;
 	}
 }

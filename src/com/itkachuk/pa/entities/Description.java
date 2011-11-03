@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
-public class IncomeDescription {
+public class Description {
 	
 	@DatabaseField(generatedId = true)
 	private int id;
@@ -12,14 +12,14 @@ public class IncomeDescription {
 	@DatabaseField(uniqueCombo=true)
 	private String description; // it can be subcategory name, or any note for expense/income record
 
-	@DatabaseField(foreign = true, uniqueCombo=true)
-	private IncomeCategory parentCategory;
+	@DatabaseField(canBeNull = false, foreign = true, uniqueCombo=true)
+	private Category parentCategory;
 
-	IncomeDescription() {
+	Description() {
 		// needed by ormlite
 	}
-	
-	public IncomeDescription(String description, IncomeCategory parentCategory) {
+
+	public Description(String description, Category parentCategory) {
 		super();
 		this.description = description;
 		this.parentCategory = parentCategory;
@@ -28,11 +28,7 @@ public class IncomeDescription {
 	public int getId() {
 		return id;
 	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
+	
 	public String getDescription() {
 		return description;
 	}
@@ -41,17 +37,19 @@ public class IncomeDescription {
 		this.description = description;
 	}
 
-	public IncomeCategory getParentCategory() {
+	public Category getParentCategory() {
 		return parentCategory;
 	}
 
-	public void setParentCategory(IncomeCategory parentCategory) {
+	public void setParentCategory(Category parentCategory) {
 		this.parentCategory = parentCategory;
 	}
 
 	@Override
 	public String toString() {
-		return "IncomeDescription [id=" + id + ", description=" + description
-				+ ", parentCategory=" + parentCategory + "]";
-	}		
+		return "SubCategory [description=" + description + ", parentCategory="
+				+ parentCategory + "]";
+	}
+	
+	
 }
