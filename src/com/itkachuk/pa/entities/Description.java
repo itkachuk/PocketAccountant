@@ -47,8 +47,7 @@ public class Description {
 
 	@Override
 	public String toString() {
-		return "SubCategory [description=" + description + ", parentCategory="
-				+ parentCategory + "]";
+		return description == null ? "" : description;
 	}
 	
 	

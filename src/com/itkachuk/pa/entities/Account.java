@@ -40,7 +40,7 @@ public class Account {
 
 	@Override
 	public String toString() {
-		return "Account [name=" + name + ", description=" + description + "]";
+		return name == null ? "" : name;
 	}
 	
 	

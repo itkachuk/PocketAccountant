@@ -14,6 +14,9 @@
 	<string name="category_text">Category</string>
 	<string name="subcategory_text">Description</string>
 	<string name="create_record_label">Save</string>
+	<!-- Create new record Activity Error messages -->
+	<string name="empty_category_message">Please, select a category</string>
+	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>
 	
 	<!-- Main Account -->
 	<string name="main_account_name">[main]</string>
