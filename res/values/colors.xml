@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <color name="background">#3500ffff</color>
+   <!-- History Report Activity -->
+   <color name="date_color">#ffffffaa</color>
+   <color name="category_color">#ffffffff</color>
+   <color name="description_color">#CCCCFFFF</color>
+   <color name="income_amount_color">#ff66ff99</color>
+   <color name="expense_amount_color">#ffff6600</color>
 </resources>

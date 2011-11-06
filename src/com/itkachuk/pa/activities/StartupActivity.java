@@ -30,6 +30,8 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
         newExpenseButton.setOnClickListener(this);
         View newIncomeButton = findViewById(R.id.new_income_button);
         newIncomeButton.setOnClickListener(this);
+        View reportsButton = findViewById(R.id.reports_button);
+        reportsButton.setOnClickListener(this);
         View serviceButton = findViewById(R.id.service_button);
         serviceButton.setOnClickListener(this);
         View exitButton = findViewById(R.id.exit_button);
@@ -70,6 +72,12 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 	          startActivity(intent);
 	         break;
 
+	      case R.id.reports_button:
+	    	  Log.d(TAG, "clicked on \"Reports\"");
+	          intent = new Intent(StartupActivity.this, ReportsMenuActivity.class);
+	          startActivity(intent);
+	    	  break;
+	         
 	      case R.id.service_button:
 	         
 	    	  // Temporary code for DB init!!!

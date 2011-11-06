@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.itkachuk.pa.R;
@@ -36,7 +37,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	private static final String TAG = "PocketAccountant";
 	
-	private static final String RECORD_ID = "recordId";
+	private static final String EXTRAS_RECORD_ID = "recordId";
 	public static final String EXTRAS_IS_EXPENSE = "isExpense";
 	public static final String EXTRAS_IS_REGULAR = "isRegular";
 	
@@ -79,15 +80,12 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	        	mExistedRecordToEdit = recordDao.queryForId(getRecordId());
 	        	if (mExistedRecordToEdit != null) {
 	        		loadFromObj(mExistedRecordToEdit);
-	        	}
-	        	
-	        } else {
-	        	updateDateButtonLabel();
-	        }
-               			
+	        	}	        	
+	        }               			
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
+		updateDateButtonLabel();
 		
 		// add a click listener to the Save button
 		mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -96,14 +94,16 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 					IncomeOrExpenseRecord record = saveToObj();
 					Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
 					// TODO logic for update goes here
-					recordDao.create(record);
-					Intent intent = new Intent(CreateNewRecordActivity.this, StartupActivity.class);        
-			        startActivity(intent);
+					if (getRecordId() > -1) { // Edit existed record mode
+						recordDao.update(record);
+					} else {
+						recordDao.create(record); // Create new record
+					}					
+					finish();
 					
 				} catch (SQLException e){
 					throw new RuntimeException(e);
 				} catch (IllegalArgumentException e) {
-					// TODO - show error dialog
 					Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
 				}
 			}
@@ -148,9 +148,10 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		c.startActivity(new Intent(c, CreateNewRecordActivity.class));
 	}
 
-	public static void callMe(Context c, int recordId) {
+	public static void callMe(Context c, int recordId, boolean isExpense) {
 		Intent intent = new Intent(c, CreateNewRecordActivity.class);
-		intent.putExtra(RECORD_ID, recordId);
+		intent.putExtra(EXTRAS_RECORD_ID, recordId);
+		intent.putExtra(EXTRAS_IS_EXPENSE, isExpense);
 		c.startActivity(intent);
 	}
 	
@@ -166,7 +167,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 	
 	private int getRecordId() {
-		return getIntent().getIntExtra(RECORD_ID, -1);
+		return getIntent().getIntExtra(EXTRAS_RECORD_ID, -1);
 	}
 	
 	private boolean isExpense() {
@@ -220,15 +221,6 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		
 	}
 	
-	private void updateDateButtonLabel(int year, int month, int day) {
-		//Date date = new Date();
-		//SimpleDateFormat dateFormatter = new SimpleDateFormat();
-		DateFormat dateFormatter = SimpleDateFormat.getDateInstance();
-		//dateFormatter.applyPattern("yyyy-MM-dd");
-		mDateButton.setText(dateFormatter.format(new Date(year - 1900, month, day)));
-		
-	}
-	
 	private IncomeOrExpenseRecord saveToObj() {
 		IncomeOrExpenseRecord record;
 		
@@ -258,9 +250,14 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		// Set date and time stamp
 		if (recordId == -1) { // Create new record mode
 			long millis = System.currentTimeMillis();
-			record.setTimestamp(millis);			
+			record.setTimestamp(millis);
+			record.setDate(new Date(mYear - 1900, mMonth, mDay)); 
+		} else {
+			record.getDate().setYear(mYear - 1900);
+			record.getDate().setMonth(mMonth);
+			record.getDate().setDate(mDay);
 		}
-		record.setDate(new Date(mYear - 1900, mMonth, mDay)); 
+		
 		
 		// Set category - TODO work with spinner
 		if (mCategorySpinner.getSelectedItem() != null) {
@@ -277,19 +274,54 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			record.setDescription(mDescriptionEditText.getText().toString());
 		} catch(Exception e){}
 		
-		// Set flags
-		if (isExpense()) {
-			record.setExpense(true);
-		} else {
-			record.setExpense(false);
+		// Set flags, only when create new record. We can't edit them later
+		if (recordId == -1) { // Create new record mode
+			if (isExpense()) {
+				record.setExpense(true);
+			} else {
+				record.setExpense(false);
+			}
+			record.setRegular(false); // from UI wizard - always false
 		}
-		record.setRegular(false); // from UI wizard - always false
 		
 		return record;
 	}
 	
 	private void loadFromObj(IncomeOrExpenseRecord record) throws SQLException {
-		//TODO
+		selectSpinnerAccount(record.getAccount().getName()); // TODO - do we need refresh here??
+		mAmountEditText.setText(Double.toString(record.getAmount()));
+		// Update Date components
+		mYear = record.getDate().getYear() + 1900;
+		mMonth = record.getDate().getMonth();
+		mDay = record.getDate().getDay();
+		Log.d(TAG, "loadFromObj: " + mYear + " " + mMonth + " " + mDay);
+		
+		selectSpinnerCategory(record.getCategory().getName()); // TODO - do we need refresh here??
+		mDescriptionEditText.setText(record.getDescription());
+	}
+	
+	private void selectSpinnerAccount(String accountName) {
+		SpinnerAdapter adapter = mAccountSpinner.getAdapter();
+		int count = adapter.getCount();
+		for (int i = 0; i < count; i++) {
+			Account account = (Account) adapter.getItem(i);
+			if (account != null && account.getName() != null && account.getName().equals(accountName)) {
+				mAccountSpinner.setSelection(i);
+				break;
+			}
+		}
+	}
+	
+	private void selectSpinnerCategory(String categoryName) {
+		SpinnerAdapter adapter = mCategorySpinner.getAdapter();
+		int count = adapter.getCount();
+		for (int i = 0; i < count; i++) {
+			Category category = (Category) adapter.getItem(i);
+			if (category != null && category.getName() != null && category.getName().equals(categoryName)) {
+				mCategorySpinner.setSelection(i);
+				break;
+			}
+		}
 	}
 	
 	private double getDoubleFromString(String number) {

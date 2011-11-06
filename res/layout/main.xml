@@ -22,7 +22,11 @@
 	  	<Button android:id="@+id/new_income_button" 
 	  		android:layout_width="fill_parent" 
 	  		android:layout_height="wrap_content" 
-	  		android:text="@string/new_income_label" /> 
+	  		android:text="@string/new_income_label" />
+	  	<Button android:id="@+id/reports_button" 
+	  		android:layout_width="fill_parent" 
+	  		android:layout_height="wrap_content" 
+	  		android:text="@string/reports_label" />  
 	  	<Button android:id="@+id/service_button" 
 	  		android:layout_width="fill_parent" 
 	  		android:layout_height="wrap_content" 
