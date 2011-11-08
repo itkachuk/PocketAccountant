@@ -8,18 +8,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
+import com.itkachuk.pa.widgets.DateTimePicker;
 
 
 public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>{
@@ -49,12 +51,11 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private Button mSaveButton;
 	
 	private IncomeOrExpenseRecord mExistedRecordToEdit;
+	
 	// Date picker fields
-	private DatePickerDialog.OnDateSetListener mOnDateSetListener;
-	private int mYear;
-    private int mMonth;
-    private int mDay;
-    static final int DATE_DIALOG_ID = 0;
+	private RelativeLayout mDateTimeDialogView;
+	private Dialog mDateTimeDialog;
+	private DateTimePicker mDateTimePicker;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,8 +69,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
         mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.subcategory_edit_text);
         mSaveButton = (Button) findViewById(R.id.create_record_button);
               
-        // get the current date
-        getCurrentDate();
+        setupDateTimeDialog();
        
         try {
         	refreshAccountSpinnerEntries();
@@ -93,7 +93,6 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 				try {
 					IncomeOrExpenseRecord record = saveToObj();
 					Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
-					// TODO logic for update goes here
 					if (getRecordId() > -1) { // Edit existed record mode
 						recordDao.update(record);
 					} else {
@@ -112,20 +111,12 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		// add a click listener to the Date button
         mDateButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showDialog(DATE_DIALOG_ID);
+                //showDialog(DATE_DIALOG_ID);
+
+        		// Display the dialog
+        		mDateTimeDialog.show();
             }
-        });
-        
-        // add a listener to the Date Picker dialog
-        mOnDateSetListener = new DatePickerDialog.OnDateSetListener() {
-            public void onDateSet(DatePicker view, int year, 
-                                  int monthOfYear, int dayOfMonth) {
-                mYear = year;
-                mMonth = monthOfYear;
-                mDay = dayOfMonth;
-                updateDateButtonLabel();
-            }
-        };
+        });        
     }
 
     @Override
@@ -144,26 +135,17 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
        finish();
     }
     
-    public static void callMe(Context c) {
-		c.startActivity(new Intent(c, CreateNewRecordActivity.class));
-	}
-
-	public static void callMe(Context c, int recordId, boolean isExpense) {
+	public static void callMe(Context c, boolean isExpense) {
 		Intent intent = new Intent(c, CreateNewRecordActivity.class);
-		intent.putExtra(EXTRAS_RECORD_ID, recordId);
 		intent.putExtra(EXTRAS_IS_EXPENSE, isExpense);
 		c.startActivity(intent);
 	}
-	
-	@Override
-	protected Dialog onCreateDialog(int id) {
-	    switch (id) {
-	    case DATE_DIALOG_ID:
-	        return new DatePickerDialog(this,
-	                    mOnDateSetListener,
-	                    mYear, mMonth, mDay);
-	    }
-	    return null;
+    
+	public static void callMe(Context c, boolean isExpense, int recordId) {
+		Intent intent = new Intent(c, CreateNewRecordActivity.class);
+		intent.putExtra(EXTRAS_IS_EXPENSE, isExpense);
+		intent.putExtra(EXTRAS_RECORD_ID, recordId);		
+		c.startActivity(intent);
 	}
 	
 	private int getRecordId() {
@@ -172,13 +154,6 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	
 	private boolean isExpense() {
 		return getIntent().getBooleanExtra(EXTRAS_IS_EXPENSE, true);
-	}
-	
-	private void getCurrentDate() {
-		final Calendar calendar = Calendar.getInstance();
-	    mYear = calendar.get(Calendar.YEAR);
-	    mMonth = calendar.get(Calendar.MONTH);
-	    mDay = calendar.get(Calendar.DAY_OF_MONTH);
 	}
 	
 	private void refreshAccountSpinnerEntries() throws SQLException {
@@ -213,12 +188,8 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 	
 	private void updateDateButtonLabel() {
-		//Date date = new Date();
-		//SimpleDateFormat dateFormatter = new SimpleDateFormat();
-		DateFormat dateFormatter = SimpleDateFormat.getDateInstance();
-		//dateFormatter.applyPattern("yyyy-MM-dd");
-		mDateButton.setText(dateFormatter.format(new Date(mYear - 1900, mMonth, mDay)));
-		
+		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
+		mDateButton.setText(dateFormatter.format(mDateTimePicker.getDateTimeMillis()));
 	}
 	
 	private IncomeOrExpenseRecord saveToObj() {
@@ -232,7 +203,6 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			record = new IncomeOrExpenseRecord();		
 		}
 		
-		// Set account - TODO work with spinner
 		if (mAccountSpinner.getSelectedItem() != null) {
 			Account account = (Account) mAccountSpinner.getSelectedItem();
 			if (account != null) {
@@ -240,7 +210,6 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 			}
 		}
 		
-		// Set amount TODO - handle exceptions
 		try {
 			record.setAmount(getDoubleFromString(mAmountEditText.getText().toString()));
 		} catch(Exception e) {
@@ -248,18 +217,15 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		}
 		
 		// Set date and time stamp
-		if (recordId == -1) { // Create new record mode
-			long millis = System.currentTimeMillis();
-			record.setTimestamp(millis);
-			record.setDate(new Date(mYear - 1900, mMonth, mDay)); 
+		long millis = mDateTimePicker.getDateTimeMillis();
+		record.setTimestamp(mDateTimePicker.getDateTimeMillis());
+		if (recordId == -1) { // Create new record mode			
+			record.setDate(new Date(millis)); 
 		} else {
-			record.getDate().setYear(mYear - 1900);
-			record.getDate().setMonth(mMonth);
-			record.getDate().setDate(mDay);
+			record.getDate().setTime(millis);
 		}
 		
 		
-		// Set category - TODO work with spinner
 		if (mCategorySpinner.getSelectedItem() != null) {
 			Category category = (Category) mCategorySpinner.getSelectedItem();
 			if (category != null && !category.toString().equals("")) {
@@ -291,10 +257,12 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		selectSpinnerAccount(record.getAccount().getName()); // TODO - do we need refresh here??
 		mAmountEditText.setText(Double.toString(record.getAmount()));
 		// Update Date components
-		mYear = record.getDate().getYear() + 1900;
-		mMonth = record.getDate().getMonth();
-		mDay = record.getDate().getDay();
-		Log.d(TAG, "loadFromObj: " + mYear + " " + mMonth + " " + mDay);
+		// TODO - move this stuff to DatetimePicker class
+		mDateTimePicker.setDateTimeMillis(record.getTimestamp());
+		mDateTimePicker.updateDate(mDateTimePicker.get(Calendar.YEAR), mDateTimePicker.get(Calendar.MONTH), mDateTimePicker.get(Calendar.DAY_OF_MONTH));
+		mDateTimePicker.updateTime(mDateTimePicker.get(Calendar.HOUR_OF_DAY), mDateTimePicker.get(Calendar.MINUTE));
+		Log.d(TAG, "loadFromObj: date " + mDateTimePicker.get(Calendar.YEAR) + "-" + mDateTimePicker.get(Calendar.MONTH) + "-" + mDateTimePicker.get(Calendar.DAY_OF_MONTH));
+		Log.d(TAG, "loadFromObj: time " + mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
 		
 		selectSpinnerCategory(record.getCategory().getName()); // TODO - do we need refresh here??
 		mDescriptionEditText.setText(record.getDescription());
@@ -327,5 +295,50 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private double getDoubleFromString(String number) {
 		number.replace(',', '.');
 		return Double.parseDouble(number);
+	}
+	
+	private void setupDateTimeDialog() {
+		// Create the dialog
+		mDateTimeDialog = new Dialog(this);
+		// Inflate the root layout
+		mDateTimeDialogView = (RelativeLayout) getLayoutInflater().inflate(R.layout.date_time_dialog, null);
+		// Grab widget instance
+		mDateTimePicker = (DateTimePicker) mDateTimeDialogView.findViewById(R.id.DateTimePicker);
+		// Check is system is set to use 24h time (this doesn't seem to work as expected though)
+		final String timeS = android.provider.Settings.System.getString(getContentResolver(), android.provider.Settings.System.TIME_12_24);
+		final boolean is24h = !(timeS == null || timeS.equals("12"));
+		
+		// Update demo TextViews when the "OK" button is clicked 
+		((Button) mDateTimeDialogView.findViewById(R.id.SetDateTime)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				mDateTimePicker.clearFocus();
+				updateDateButtonLabel();
+				mDateTimeDialog.dismiss();
+			}
+		});
+
+		// Cancel the dialog when the "Cancel" button is clicked
+		((Button) mDateTimeDialogView.findViewById(R.id.CancelDialog)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				mDateTimeDialog.cancel();
+			}
+		});
+
+		// Reset Date and Time pickers when the "Reset" button is clicked
+		((Button) mDateTimeDialogView.findViewById(R.id.ResetDateTime)).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				mDateTimePicker.reset();
+			}
+		});
+		
+		// Setup TimePicker
+		mDateTimePicker.setIs24HourView(is24h);
+		// No title on the dialog window
+		mDateTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// Set the dialog content view
+		mDateTimeDialog.setContentView(mDateTimeDialogView);
 	}
 }

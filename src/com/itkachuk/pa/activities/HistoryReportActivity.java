@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,7 +53,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
-				CreateNewRecordActivity.callMe(HistoryReportActivity.this, record.getId(), record.isExpense());
+				CreateNewRecordActivity.callMe(HistoryReportActivity.this, record.isExpense(), record.getId());
 			}
 		});
 
@@ -59,6 +61,20 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 				IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
 				// TODO - removing logic goes here
+//				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+//				builder.setMessage("Are you sure you want to exit?")
+//				       .setCancelable(false)
+//				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//				           public void onClick(DialogInterface dialog, int id) {
+//				                //MyActivity.this.finish();
+//				           }
+//				       })
+//				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+//				           public void onClick(DialogInterface dialog, int id) {
+//				                dialog.cancel();
+//				           }
+//				       });
+//				AlertDialog alert = builder.create();
 				return true;
 			}
 		});
@@ -79,7 +95,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		Log.d(TAG, "Show list of records");
 		Dao<IncomeOrExpenseRecord, Integer> dao = getHelper().getRecordDao();
 		QueryBuilder<IncomeOrExpenseRecord, Integer> builder = dao.queryBuilder();
-		builder.orderBy(IncomeOrExpenseRecord.DATE_FIELD_NAME, false).limit(HistoryReportActivity.MAX_ITEMS_PER_PAGE);
+		builder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).limit(HistoryReportActivity.MAX_ITEMS_PER_PAGE);
 		List<IncomeOrExpenseRecord> list = dao.query(builder.prepare());
 		ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
 		listView.setAdapter(arrayAdapter);
@@ -100,13 +116,10 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 			IncomeOrExpenseRecord record = getItem(position);
 
-			Date date = record.getDate();
-			if (record.getDate() == null) {
-				fillText(v, R.id.recordDate, "");
-			} else {
-				DateFormat dateFormatter = SimpleDateFormat.getDateInstance();
-				fillText(v, R.id.recordDate, dateFormatter.format(date));
-			}
+			Long millis = record.getTimestamp();
+			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
+			fillText(v, R.id.recordDate, dateFormatter.format(millis));
+
 			
 			Category category = record.getCategory();			
 			try {

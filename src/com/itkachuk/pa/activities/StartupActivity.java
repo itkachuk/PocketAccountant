@@ -10,6 +10,7 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -60,16 +61,12 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 		switch (v.getId()) {
 	      case R.id.new_expense_button:
 	    	  Log.d(TAG, "clicked on \"New Expense\"");
-	          intent = new Intent(StartupActivity.this, CreateNewRecordActivity.class);
-	          intent.putExtra(CreateNewRecordActivity.EXTRAS_IS_EXPENSE, true);
-	          startActivity(intent);
+	          CreateNewRecordActivity.callMe(StartupActivity.this, true);
 	         break;
 	         
 	      case R.id.new_income_button:
 	    	  Log.d(TAG, "clicked on \"New Income\"");
-	          intent = new Intent(StartupActivity.this, CreateNewRecordActivity.class);
-	          intent.putExtra(CreateNewRecordActivity.EXTRAS_IS_EXPENSE, false);
-	          startActivity(intent);
+	    	  CreateNewRecordActivity.callMe(StartupActivity.this, false);
 	         break;
 
 	      case R.id.reports_button:
