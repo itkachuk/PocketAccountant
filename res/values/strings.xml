@@ -43,6 +43,7 @@
 	
 	<!-- Main Account -->
 	<string name="main_account_name">[main]</string>
+	<string name="main_account_description">The main account of program. Can\'t be removed</string>
 	<!-- Categories -->
 	<string-array name="expense_categories">
 		<item>Flat</item>

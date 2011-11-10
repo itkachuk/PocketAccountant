@@ -58,6 +58,7 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 		        intent = new Intent(ReportsMenuActivity.this, HistoryReportActivity.class);
 		        //intent.putExtra(HistoryReportActivity.EXTRAS_IS_EXPENSE, true);
 		        startActivity(intent);
+		        // TODO - show no data was found
 		    break;
 	         
 	      	case R.id.common_report_button:

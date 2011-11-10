@@ -159,7 +159,9 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	private void refreshAccountSpinnerEntries() throws SQLException {
 		Dao<Account, String> accountDao = getHelper().getAccountDao();
 		List<Account> accounts = new ArrayList<Account>();
-		accounts.addAll(accountDao.queryForAll());
+		String mainAccountName = getResources().getString(R.string.main_account_name);		
+		accounts.add(new Account(mainAccountName, null, false)); // first add main account to spinner
+		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
 		ArrayAdapter<Account> adapter =
 				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);
 
@@ -172,10 +174,18 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		List<Category> categories = new ArrayList<Category>();
 		categories.add(new Category()); // first entry should be empty
 		if (isExpense()) {
-			categories.addAll(categoryDao.queryBuilder().where()
+			String[] array = getResources().getStringArray(R.array.expense_categories);
+			for(String categoryName : array) {
+				categories.add(new Category(categoryName, true, false)); // Add predefined categories
+			}
+			categories.addAll(categoryDao.queryBuilder().where() // Add custom categories from DB
 					.eq(Category.IS_EXPENSE_FIELD_NAME, true)
 					.query());
 		} else {
+			String[] array = getResources().getStringArray(R.array.income_categories);
+			for(String categoryName : array) {
+				categories.add(new Category(categoryName, false, false));
+			}
 			categories.addAll(categoryDao.queryBuilder().where()
 					.eq(Category.IS_EXPENSE_FIELD_NAME, false)
 					.query());
@@ -261,10 +271,10 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		mDateTimePicker.setDateTimeMillis(record.getTimestamp());
 		mDateTimePicker.updateDate(mDateTimePicker.get(Calendar.YEAR), mDateTimePicker.get(Calendar.MONTH), mDateTimePicker.get(Calendar.DAY_OF_MONTH));
 		mDateTimePicker.updateTime(mDateTimePicker.get(Calendar.HOUR_OF_DAY), mDateTimePicker.get(Calendar.MINUTE));
-		Log.d(TAG, "loadFromObj: date " + mDateTimePicker.get(Calendar.YEAR) + "-" + mDateTimePicker.get(Calendar.MONTH) + "-" + mDateTimePicker.get(Calendar.DAY_OF_MONTH));
-		Log.d(TAG, "loadFromObj: time " + mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
+		//Log.d(TAG, "loadFromObj: date " + mDateTimePicker.get(Calendar.YEAR) + "-" + mDateTimePicker.get(Calendar.MONTH) + "-" + mDateTimePicker.get(Calendar.DAY_OF_MONTH));
+		//Log.d(TAG, "loadFromObj: time " + mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
 		
-		selectSpinnerCategory(record.getCategory()); // TODO - do we need refresh here??
+		selectSpinnerCategory(record.getCategory()); 
 		mDescriptionEditText.setText(record.getDescription());
 	}
 	
