@@ -5,16 +5,18 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class Category {
+	public static final String NAME_FIELD_NAME = "name";
 	public static final String IS_EXPENSE_FIELD_NAME = "isExpense";
+	public static final String IS_REMOVABLE_FIELD_NAME = "isRemovable";	
 	
-	@DatabaseField(id = true, unique = true)
+	@DatabaseField(id = true, uniqueCombo = true, columnName = NAME_FIELD_NAME)
 	private String name;
-
-	@DatabaseField
-	private boolean isRemovable; // Predefined categories can't be removed by user
 	
-	@DatabaseField(columnName = IS_EXPENSE_FIELD_NAME)
+	@DatabaseField(uniqueCombo = true, columnName = IS_EXPENSE_FIELD_NAME)
 	private boolean isExpense; // Expense - true, Income - false
+	
+	@DatabaseField(columnName = IS_REMOVABLE_FIELD_NAME)
+	private boolean isRemovable; // Predefined categories can't be removed by user
 	
 	public Category() {
 		// needed by ormlite

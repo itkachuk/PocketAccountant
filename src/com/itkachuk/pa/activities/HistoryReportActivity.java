@@ -128,13 +128,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
 			fillText(v, R.id.recordDate, dateFormatter.format(millis));
 		
-			Category category = record.getCategory();			
-			try {
-				getHelper().getCategoryDao().refresh(category);
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
-			fillText(v, R.id.recordCategory, category.getName());
+			fillText(v, R.id.recordCategory, record.getCategory());
 
 			fillText(v, R.id.recordDescription, record.getDescription());
 						

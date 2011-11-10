@@ -206,7 +206,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		if (mAccountSpinner.getSelectedItem() != null) {
 			Account account = (Account) mAccountSpinner.getSelectedItem();
 			if (account != null) {
-				record.setAccount(account);
+				record.setAccount(account.getName());
 			}
 		}
 		
@@ -229,7 +229,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		if (mCategorySpinner.getSelectedItem() != null) {
 			Category category = (Category) mCategorySpinner.getSelectedItem();
 			if (category != null && !category.toString().equals("")) {
-				record.setCategory(category);
+				record.setCategory(category.getName());
 			} else {
 				throw new IllegalArgumentException(getResources().getString(R.string.empty_category_message));
 			}
@@ -254,7 +254,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 	}
 	
 	private void loadFromObj(IncomeOrExpenseRecord record) throws SQLException {
-		selectSpinnerAccount(record.getAccount().getName()); // TODO - do we need refresh here??
+		selectSpinnerAccount(record.getAccount()); 
 		mAmountEditText.setText(Double.toString(record.getAmount()));
 		// Update Date components
 		// TODO - move this stuff to DatetimePicker class
@@ -264,7 +264,7 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		Log.d(TAG, "loadFromObj: date " + mDateTimePicker.get(Calendar.YEAR) + "-" + mDateTimePicker.get(Calendar.MONTH) + "-" + mDateTimePicker.get(Calendar.DAY_OF_MONTH));
 		Log.d(TAG, "loadFromObj: time " + mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
 		
-		selectSpinnerCategory(record.getCategory().getName()); // TODO - do we need refresh here??
+		selectSpinnerCategory(record.getCategory()); // TODO - do we need refresh here??
 		mDescriptionEditText.setText(record.getDescription());
 	}
 	

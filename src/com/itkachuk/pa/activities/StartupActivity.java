@@ -75,27 +75,28 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 	    	  break;
 	         
 	      case R.id.service_button:
-	         	    	  
-	    	  // Temporary code for DB init!!!
-	    	  String mainAccountName = getResources().getString(R.string.main_account_name);
-	    	  String[] expenseCategories = getResources().getStringArray(R.array.expense_categories);
-	    	  String[] incomeCategories = getResources().getStringArray(R.array.income_categories);
+	    	  Log.d(TAG, "clicked on \"Service\"");
 	    	  
-	    	  try {
-		    	  Dao<Account, String> accountDao = getHelper().getAccountDao();
-		    	  Dao<Category, String> categoryDao = getHelper().getCategoryDao();
-
-		    	  accountDao.createIfNotExists(new Account(mainAccountName, "Main account. Can't be removed by user"));
-		    	  
-		    	  for (String categoryName : expenseCategories) {
-		    		  categoryDao.createIfNotExists(new Category(categoryName, true, false));
-		    	  }
-		    	  for (String categoryName : incomeCategories) {
-		    		  categoryDao.createIfNotExists(new Category(categoryName, false, false));
-		    	  }
-	    	  } catch(SQLException e) {
-	    		  Log.e(TAG, "Error during DB init. " + e.getMessage());
-	    	  }  
+	    	  // Temporary code for DB init!!!
+//	    	  String mainAccountName = getResources().getString(R.string.main_account_name);
+//	    	  String[] expenseCategories = getResources().getStringArray(R.array.expense_categories);
+//	    	  String[] incomeCategories = getResources().getStringArray(R.array.income_categories);
+//	    	  
+//	    	  try {
+//		    	  Dao<Account, String> accountDao = getHelper().getAccountDao();
+//		    	  Dao<Category, String> categoryDao = getHelper().getCategoryDao();
+//
+//		    	  accountDao.createIfNotExists(new Account(mainAccountName, "Main account. Can't be removed by user"));
+//		    	  
+//		    	  for (String categoryName : expenseCategories) {
+//		    		  categoryDao.createIfNotExists(new Category(categoryName, true, false));
+//		    	  }
+//		    	  for (String categoryName : incomeCategories) {
+//		    		  categoryDao.createIfNotExists(new Category(categoryName, false, false));
+//		    	  }
+//	    	  } catch(SQLException e) {
+//	    		  Log.e(TAG, "Error during DB init. " + e.getMessage());
+//	    	  }  
 	    	  // Temporary code for DB init!!!
 	    	  
 	          break;
