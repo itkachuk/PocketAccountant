@@ -35,11 +35,13 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final Integer MAX_ITEMS_PER_PAGE = 20;
 	
 	private ListView listView;
+	private AlertDialog.Builder builder;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.history_report);
+		builder = new AlertDialog.Builder(this);
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -49,7 +51,6 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		listView = (ListView) findViewById(R.id.recordsHistoryList);
 	
-		// TODO add click listeners on listView
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
@@ -59,22 +60,29 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-				IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
-				// TODO - removing logic goes here
-//				AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-//				builder.setMessage("Are you sure you want to exit?")
-//				       .setCancelable(false)
-//				       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//				           public void onClick(DialogInterface dialog, int id) {
-//				                //MyActivity.this.finish();
-//				           }
-//				       })
-//				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-//				           public void onClick(DialogInterface dialog, int id) {
-//				                dialog.cancel();
-//				           }
-//				       });
-//				AlertDialog alert = builder.create();
+				final IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
+				
+				//AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+				builder.setMessage(getResources().getString(R.string.history_report_delete_record_dialog))
+				       .setCancelable(false)
+				       .setPositiveButton(getResources().getString(R.string.yes_button_label), new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	   try{
+				        		   Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
+				        		   recordDao.deleteById(record.getId());
+				        		   fillList();
+				        	   } catch (SQLException e) {
+				        		   throw new RuntimeException(e);
+				        	   }
+				           }
+				       })
+				       .setNegativeButton(getResources().getString(R.string.no_button_label), new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                dialog.cancel();
+				           }
+				       });
+				AlertDialog alert = builder.create();
+				alert.show();
 				return true;
 			}
 		});
@@ -119,8 +127,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			Long millis = record.getTimestamp();
 			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
 			fillText(v, R.id.recordDate, dateFormatter.format(millis));
-
-			
+		
 			Category category = record.getCategory();			
 			try {
 				getHelper().getCategoryDao().refresh(category);

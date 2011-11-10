@@ -10,7 +10,6 @@ import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -76,7 +75,7 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 	    	  break;
 	         
 	      case R.id.service_button:
-	         
+	         	    	  
 	    	  // Temporary code for DB init!!!
 	    	  String mainAccountName = getResources().getString(R.string.main_account_name);
 	    	  String[] expenseCategories = getResources().getStringArray(R.array.expense_categories);

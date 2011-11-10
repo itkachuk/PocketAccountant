@@ -8,7 +8,13 @@
 	<LinearLayout android:orientation="vertical" 
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
-		android:layout_gravity="center">	  	 
+		android:layout_gravity="center">
+		<TextView android:text="@string/reports_menu_header_text" 
+	  		android:layout_height="wrap_content" 
+	  		android:layout_width="wrap_content" 
+	  		android:layout_gravity="center" 
+	  		android:layout_marginBottom="25dip" 
+	  		android:textSize="23sp" />	  	 
 	  	<Button android:id="@+id/history_report_button" 
 	  		android:layout_width="fill_parent" 
 	  		android:layout_height="wrap_content" 

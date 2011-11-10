@@ -2,7 +2,12 @@
 <resources>
 	<!-- Common -->
     <string name="app_name">Pocket Accountant</string>
-    <string name="back_button_label">Back</string> 
+    <string name="back_button_label">Back</string>
+    <string name="yes_button_label">Yes</string>
+    <string name="no_button_label">No</string>
+    <string name="ok_button_label">Ok</string>
+    <string name="cancel_button_label">Cancel</string>   
+       
 	<!-- Startup Activity -->
 	<string name="main_title">Pocket Accountant</string> 
 	<string name="new_expense_label">Expense</string> 
@@ -10,6 +15,7 @@
 	<string name="reports_label">Reports</string>  
 	<string name="service_label">Service</string> 
 	<string name="exit_label">Exit</string>
+	
 	<!-- Create new record Activity -->
 	<string name="account_text">Account</string>
 	<string name="amount_text">Amount</string>
@@ -17,14 +23,23 @@
 	<string name="category_text">Category</string>
 	<string name="subcategory_text">Description</string>
 	<string name="create_record_label">Save</string>
+	<!-- DateTimePicker widget buttons -->
+	<string name="reset_button_label">Reset</string>
+	<string name="settime_button_label">Set time</string>
+	<string name="setdate_button_label">Set date</string>
+	
 	<!-- Reports menu Activity -->
+	<string name="reports_menu_header_text">Reports</string>
 	<string name="history_report_label">History</string> 
 	<string name="common_report_label">Common</string> 
 	<string name="consolidated_report_label">Consolidated</string>
 	
+	<!-- History Report Activity -->
+	<string name="history_report_delete_record_dialog">Selected record will be removed. Continue?</string> 
+	
 	<!-- Create new record Activity Error messages -->
 	<string name="empty_category_message">Please, select a category</string>
-	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>
+	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>		
 	
 	<!-- Main Account -->
 	<string name="main_account_name">[main]</string>
@@ -33,7 +48,10 @@
 		<item>Flat</item>
         <item>Car</item>
         <item>Bills</item>
-        <item>Shopping</item>
+        <item>Shopping-food</item>
+        <item>Shopping-wear</item>
+        <item>Shopping-technics</item>
+        <item>Shopping-other</item>
         <item>Medicine</item>
         <item>Credit</item>
         <item>Leisure</item>
@@ -41,9 +59,11 @@
         <item>Traveling</item>
         <item>Gifts</item>       
         <item>Transport</item>
+        <item>Other</item>
     </string-array>
     <string-array name="income_categories">
         <item>Salary</item>
+        <item>Gifts</item>
         <item>Other</item>
     </string-array>
 
