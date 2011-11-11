@@ -34,12 +34,21 @@
 	<string name="common_report_label">Common</string> 
 	<string name="consolidated_report_label">Consolidated</string>
 	
-	<!-- History Report Activity -->
-	<string name="history_report_delete_record_dialog">Selected record will be removed. Continue?</string> 
+	<!-- Service menu Activity -->
+	<string name="service_menu_header_text">Service</string>
+	<string name="accounts_label">Accounts</string> 
+	<string name="categories_label">Categories</string> 
+	<string name="program_settings_label">Program Settings</string>
+	
+	<!-- Dialogs -->
+	<string name="history_report_delete_record_dialog">Selected record will be removed. Continue?</string>
+	<string name="account_delete_dialog">Selected account will be removed. Continue?</string>  
 	
 	<!-- Create new record Activity Error messages -->
 	<string name="empty_category_message">Please, select a category</string>
 	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>		
+	
+	<string name="no_data_message">No data to display</string>
 	
 	<!-- Main Account -->
 	<string name="main_account_name">[main]</string>

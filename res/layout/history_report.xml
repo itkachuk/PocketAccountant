@@ -3,20 +3,25 @@
 	android:background="@color/background"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-    <ListView
+    android:layout_height="fill_parent">
+    
+    <ListView android:id="@+id/recordsHistoryList"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:id="@+id/recordsHistoryList"/>
+        android:layout_weight="1"/>
+        
+    <TextView android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/no_data_message"/>    <!-- TODO - test it -->    
 
 	<LinearLayout android:orientation="horizontal" 
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
 		android:layout_gravity="center">
-    	<Button
-    		android:id="@+id/backButton"
+		
+    	<Button android:id="@+id/backButton"
     		android:gravity="left"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"

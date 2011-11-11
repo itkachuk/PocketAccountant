@@ -76,6 +76,8 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 	         
 	      case R.id.service_button:
 	    	  Log.d(TAG, "clicked on \"Service\"");
+	    	  intent = new Intent(StartupActivity.this, ServiceMenuActivity.class);
+	          startActivity(intent);
 	    	  
 	    	  // Temporary code for DB init!!!
 //	    	  String mainAccountName = getResources().getString(R.string.main_account_name);
