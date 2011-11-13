@@ -60,12 +60,12 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 		switch (v.getId()) {
 	      case R.id.new_expense_button:
 	    	  Log.d(TAG, "clicked on \"New Expense\"");
-	          CreateNewRecordActivity.callMe(StartupActivity.this, true);
+	          RecordEditorActivity.callMe(StartupActivity.this, true);
 	         break;
 	         
 	      case R.id.new_income_button:
 	    	  Log.d(TAG, "clicked on \"New Income\"");
-	    	  CreateNewRecordActivity.callMe(StartupActivity.this, false);
+	    	  RecordEditorActivity.callMe(StartupActivity.this, false);
 	         break;
 
 	      case R.id.reports_button:

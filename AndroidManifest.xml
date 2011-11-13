@@ -16,7 +16,7 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".activities.CreateNewRecordActivity"
+        <activity android:name=".activities.RecordEditorActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
@@ -34,6 +34,11 @@
         <activity android:name=".activities.AccountsManagementActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity android:name=".activities.AccountEditorActivity"
+                  android:screenOrientation="portrait"
+                  >
         </activity>
         
         <activity android:name=".activities.HistoryReportActivity"

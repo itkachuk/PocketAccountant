@@ -35,7 +35,7 @@ import com.j256.ormlite.dao.Dao;
 import com.itkachuk.pa.widgets.DateTimePicker;
 
 
-public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>{
+public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	
 	private static final String TAG = "PocketAccountant";
 	
@@ -60,14 +60,14 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_new_record);
+        setContentView(R.layout.record_editor);
         
         mAccountSpinner = (Spinner) findViewById(R.id.account_spinner);
         mAmountEditText = (EditText) findViewById(R.id.amount_edit_text);
         mDateButton = (Button) findViewById(R.id.edit_date_button);
         mCategorySpinner = (Spinner) findViewById(R.id.category_spinner);
         mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.subcategory_edit_text);
-        mSaveButton = (Button) findViewById(R.id.create_record_button);
+        mSaveButton = (Button) findViewById(R.id.save_button);
               
         setupDateTimeDialog();
        
@@ -136,13 +136,13 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
     }
     
 	public static void callMe(Context c, boolean isExpense) {
-		Intent intent = new Intent(c, CreateNewRecordActivity.class);
+		Intent intent = new Intent(c, RecordEditorActivity.class);
 		intent.putExtra(EXTRAS_IS_EXPENSE, isExpense);
 		c.startActivity(intent);
 	}
     
 	public static void callMe(Context c, boolean isExpense, int recordId) {
-		Intent intent = new Intent(c, CreateNewRecordActivity.class);
+		Intent intent = new Intent(c, RecordEditorActivity.class);
 		intent.putExtra(EXTRAS_IS_EXPENSE, isExpense);
 		intent.putExtra(EXTRAS_RECORD_ID, recordId);		
 		c.startActivity(intent);
@@ -267,7 +267,6 @@ public class CreateNewRecordActivity extends OrmLiteBaseActivity<DatabaseHelper>
 		selectSpinnerAccount(record.getAccount()); 
 		mAmountEditText.setText(Double.toString(record.getAmount()));
 		// Update Date components
-		// TODO - move this stuff to DatetimePicker class
 		mDateTimePicker.setDateTimeMillis(record.getTimestamp());
 		mDateTimePicker.updateDate(mDateTimePicker.get(Calendar.YEAR), mDateTimePicker.get(Calendar.MONTH), mDateTimePicker.get(Calendar.DAY_OF_MONTH));
 		mDateTimePicker.updateTime(mDateTimePicker.get(Calendar.HOUR_OF_DAY), mDateTimePicker.get(Calendar.MINUTE));

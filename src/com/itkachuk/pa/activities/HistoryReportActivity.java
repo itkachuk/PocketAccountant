@@ -54,7 +54,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
-				CreateNewRecordActivity.callMe(HistoryReportActivity.this, record.isExpense(), record.getId());
+				RecordEditorActivity.callMe(HistoryReportActivity.this, record.isExpense(), record.getId());
 			}
 		});
 

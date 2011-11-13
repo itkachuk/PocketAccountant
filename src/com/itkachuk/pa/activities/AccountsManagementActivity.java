@@ -36,19 +36,27 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		setContentView(R.layout.accounts_list);
 		builder = new AlertDialog.Builder(this);
 
-//		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
-//			public void onClick(View view) {
-//				finish(); // Close activity on Back button pressing
-//			}
-//		});
+		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				finish(); // Close activity on Back button pressing
+			}
+		});
+		
+		findViewById(R.id.addButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				AccountEditorActivity.callMe(AccountsManagementActivity.this);
+			}
+		});
 
 		listView = (ListView) findViewById(R.id.accountsList);
 		
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				// TODO - implement account editing wizard
-				//IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
-				//CreateNewRecordActivity.callMe(HistoryReportActivity.this, record.isExpense(), record.getId());
+				Account account = (Account) listView.getAdapter().getItem(i);
+				if (account.isRemovable()) {
+					AccountEditorActivity.callMe(AccountsManagementActivity.this, account.getName());
+				}
 			}
 		});
 

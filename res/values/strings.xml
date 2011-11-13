@@ -6,7 +6,8 @@
     <string name="yes_button_label">Yes</string>
     <string name="no_button_label">No</string>
     <string name="ok_button_label">Ok</string>
-    <string name="cancel_button_label">Cancel</string>   
+    <string name="cancel_button_label">Cancel</string>
+    <string name="save_button_label">Save</string>   
        
 	<!-- Startup Activity -->
 	<string name="main_title">Pocket Accountant</string> 
@@ -22,7 +23,6 @@
 	<string name="date_text">Date</string>
 	<string name="category_text">Category</string>
 	<string name="subcategory_text">Description</string>
-	<string name="create_record_label">Save</string>
 	<!-- DateTimePicker widget buttons -->
 	<string name="reset_button_label">Reset</string>
 	<string name="settime_button_label">Set time</string>
@@ -40,13 +40,19 @@
 	<string name="categories_label">Categories</string> 
 	<string name="program_settings_label">Program Settings</string>
 	
+	<!-- Accounts Management Activities (Accounts List and Account Editor) -->
+	<string name="add_account_button_label">Add Account</string>
+	<string name="account_name_text">Account Name</string>
+	<string name="account_description_text">Account Description</string>
+	
 	<!-- Dialogs -->
 	<string name="history_report_delete_record_dialog">Selected record will be removed. Continue?</string>
 	<string name="account_delete_dialog">Selected account will be removed. Continue?</string>  
 	
-	<!-- Create new record Activity Error messages -->
+	<!-- Error messages -->
 	<string name="empty_category_message">Please, select a category</string>
-	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>		
+	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>
+	<string name="empty_account_message">Please, enter correct Account name</string>		
 	
 	<string name="no_data_message">No data to display</string>
 	
