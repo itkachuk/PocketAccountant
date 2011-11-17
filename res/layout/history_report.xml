@@ -6,15 +6,11 @@
     android:layout_height="fill_parent">
     
     <ListView android:id="@+id/recordsHistoryList"
+    	android:background="@color/background"
+    	android:layout_marginBottom="5dip"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
-        
-    <TextView android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="@string/no_data_message"/>    <!-- TODO - test it -->    
+        android:layout_weight="1"/>   
 
 	<LinearLayout android:orientation="horizontal" 
 		android:layout_height="wrap_content" 
@@ -22,10 +18,12 @@
 		android:layout_gravity="center">
 		
     	<Button android:id="@+id/backButton"
-    		android:gravity="left"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:text="@string/back_button_label"/>
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="2"
+	        android:text="@string/back_button_label"
+	        android:drawableLeft="@drawable/undo"/>
 	        
     </LinearLayout>
 </LinearLayout>

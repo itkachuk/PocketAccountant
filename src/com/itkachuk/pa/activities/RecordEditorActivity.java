@@ -66,7 +66,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         mAmountEditText = (EditText) findViewById(R.id.amount_edit_text);
         mDateButton = (Button) findViewById(R.id.edit_date_button);
         mCategorySpinner = (Spinner) findViewById(R.id.category_spinner);
-        mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.subcategory_edit_text);
+        mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.description_edit_text);
         mSaveButton = (Button) findViewById(R.id.save_button);
               
         setupDateTimeDialog();
@@ -160,7 +160,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		Dao<Account, String> accountDao = getHelper().getAccountDao();
 		List<Account> accounts = new ArrayList<Account>();
 		String mainAccountName = getResources().getString(R.string.main_account_name);		
-		accounts.add(new Account(mainAccountName, null, false)); // first add main account to spinner
+		accounts.add(new Account(mainAccountName, null, null, false)); // first add main account to spinner
 		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
 		ArrayAdapter<Account> adapter =
 				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);

@@ -6,11 +6,15 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Account {
 	public static final String NAME_FIELD_NAME = "name";
+	public static final String CURRENCY_FIELD_NAME = "currency";
 	public static final String DESCRIPTION_FIELD_NAME = "description";
 	public static final String IS_REMOVABLE_FIELD_NAME = "isRemovable";	
 	
 	@DatabaseField(id = true, unique = true, columnName = NAME_FIELD_NAME)
 	private String name;
+	
+	@DatabaseField(columnName = CURRENCY_FIELD_NAME)
+	private String currency;
 	
 	@DatabaseField(columnName = DESCRIPTION_FIELD_NAME)
 	private String description;
@@ -22,9 +26,10 @@ public class Account {
 		// needed by ormlite
 	}
 
-	public Account(String name, String description, boolean isRemovable) {
+	public Account(String name, String currency, String description, boolean isRemovable) {
 		super();
 		this.name = name;
+		this.currency = currency;
 		this.description = description;
 		this.isRemovable = isRemovable;
 	}
@@ -35,6 +40,14 @@ public class Account {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
 	}
 
 	public String getDescription() {

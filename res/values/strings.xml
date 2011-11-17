@@ -22,7 +22,7 @@
 	<string name="amount_text">Amount</string>
 	<string name="date_text">Date</string>
 	<string name="category_text">Category</string>
-	<string name="subcategory_text">Description</string>
+	<string name="description_text">Description</string>
 	<!-- DateTimePicker widget buttons -->
 	<string name="reset_button_label">Reset</string>
 	<string name="settime_button_label">Set time</string>
@@ -43,7 +43,7 @@
 	<!-- Accounts Management Activities (Accounts List and Account Editor) -->
 	<string name="add_account_button_label">Add Account</string>
 	<string name="account_name_text">Account Name</string>
-	<string name="account_description_text">Account Description</string>
+	<string name="currency_text">Currency</string>
 	
 	<!-- Dialogs -->
 	<string name="history_report_delete_record_dialog">Selected record will be removed. Continue?</string>
@@ -59,6 +59,8 @@
 	<!-- Main Account -->
 	<string name="main_account_name">[main]</string>
 	<string name="main_account_description">The main account of program. Can\'t be removed</string>
+	
+	<!-- Predefined Application Content -->
 	<!-- Categories -->
 	<string-array name="expense_categories">
 		<item>Flat</item>
@@ -81,6 +83,14 @@
         <item>Salary</item>
         <item>Gifts</item>
         <item>Other</item>
+    </string-array>
+    
+    <!-- Currencies -->
+    <string-array name="currencies_list">
+    	<item>UAH</item>
+      	<item>USD</item>
+      	<item>RUB</item>
+      	<item>EUR</item>
     </string-array>
 
 </resources>

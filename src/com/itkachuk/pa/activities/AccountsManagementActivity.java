@@ -52,7 +52,6 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				// TODO - implement account editing wizard
 				Account account = (Account) listView.getAdapter().getItem(i);
 				if (account.isRemovable()) {
 					AccountEditorActivity.callMe(AccountsManagementActivity.this, account.getName());
@@ -106,6 +105,7 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		// Load predefined Main account first
 		list.add(new Account(
 				getResources().getString(R.string.main_account_name),
+				"UAH", // TODO - implement reading of currency from Program Preferences
 				getResources().getString(R.string.main_account_description),
 				false));
 		// Load custom accounts from DB
@@ -129,7 +129,8 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 				v = vi.inflate(R.layout.account_row, null);
 			}
 			Account account = getItem(position);
-			fillText(v, R.id.accountName, account.getName());		
+			fillText(v, R.id.accountName, account.getName());
+			fillText(v, R.id.accountCurrency, account.getCurrency());
 			fillText(v, R.id.accountDescription, account.getDescription());						
 			return v;
 		}

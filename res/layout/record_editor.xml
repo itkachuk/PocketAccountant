@@ -4,7 +4,7 @@
 	android:background="@color/background"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:padding="20dip"  
+	android:padding="10dip"  
 	android:orientation="vertical">
     <LinearLayout android:orientation="vertical" 
 		android:layout_height="wrap_content" 
@@ -39,12 +39,13 @@
         <Spinner android:id="@+id/category_spinner" 
         	android:layout_width="match_parent" 
         	android:layout_height="wrap_content"/>
-        <TextView android:text="@string/subcategory_text" 
+        <TextView android:text="@string/description_text" 
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content"/>
-        <AutoCompleteTextView  android:id="@+id/subcategory_edit_text" 
+        <AutoCompleteTextView  android:id="@+id/description_edit_text" 
         	android:layout_width="match_parent" 
-        	android:layout_height="wrap_content"/>
+        	android:layout_height="wrap_content"
+        	android:inputType="textAutoComplete"/>
         <Button android:id="@+id/save_button"        	        	 
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content"

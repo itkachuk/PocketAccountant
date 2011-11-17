@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <color name="background">#3500ffff</color>
+   <color name="background2">#5000ffff</color>
    <!-- History Report Activity -->
    <color name="date_color">#ffffffaa</color>
    <color name="category_color">#ffffffff</color>
