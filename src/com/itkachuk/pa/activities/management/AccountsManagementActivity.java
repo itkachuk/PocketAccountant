@@ -1,4 +1,4 @@
-package com.itkachuk.pa.activities;
+package com.itkachuk.pa.activities.management;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.AccountEditorActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;

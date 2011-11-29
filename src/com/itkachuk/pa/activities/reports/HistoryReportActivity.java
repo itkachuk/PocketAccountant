@@ -1,4 +1,4 @@
-package com.itkachuk.pa.activities;
+package com.itkachuk.pa.activities.reports;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;

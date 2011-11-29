@@ -1,4 +1,4 @@
-package com.itkachuk.pa.activities;
+package com.itkachuk.pa.activities.editors;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

@@ -17,7 +17,7 @@
 	<string name="service_label">Service</string> 
 	<string name="exit_label">Exit</string>
 	
-	<!-- Create new record Activity -->
+	<!-- Record Editor Activity -->
 	<string name="account_text">Account</string>
 	<string name="amount_text">Amount</string>
 	<string name="date_text">Date</string>
@@ -33,6 +33,17 @@
 	<string name="history_report_label">History</string> 
 	<string name="common_report_label">Common</string> 
 	<string name="consolidated_report_label">Consolidated</string>
+	
+	<!-- Common Report Activity -->
+	<string name="current_month_text">Current Month</string>
+	<string name="income_text">Income</string>
+	<string name="expense_text">Expense</string>
+	<string name="balance_text">Balance</string>
+	<string name="current_text">Current</string>
+	<string name="past_text">Past</string>
+	<string name="month_text">Month</string>
+	<string name="quarter_text">Quarter</string>
+	<string name="year_text">Year</string>
 	
 	<!-- Service menu Activity -->
 	<string name="service_menu_header_text">Service</string>
@@ -63,13 +74,15 @@
 	<!-- Predefined Application Content -->
 	<!-- Categories -->
 	<string-array name="expense_categories">
-		<item>Flat</item>
+		<item>House</item>
         <item>Car</item>
         <item>Bills</item>
         <item>Shopping-food</item>
         <item>Shopping-wear</item>
         <item>Shopping-technics</item>
         <item>Shopping-other</item>
+        <item>Services</item>
+        <item>Communication</item>
         <item>Medicine</item>
         <item>Credit</item>
         <item>Leisure</item>

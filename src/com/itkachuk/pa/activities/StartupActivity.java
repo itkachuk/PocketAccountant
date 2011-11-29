@@ -3,6 +3,9 @@ package com.itkachuk.pa.activities;
 import java.sql.SQLException;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.RecordEditorActivity;
+import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
+import com.itkachuk.pa.activities.menus.ServiceMenuActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;

@@ -16,32 +16,42 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".activities.RecordEditorActivity"
+        <activity android:name=".activities.editors.RecordEditorActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
-        <activity android:name=".activities.ReportsMenuActivity"
+        <activity android:name=".activities.menus.ReportsMenuActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
-        <activity android:name=".activities.ServiceMenuActivity"
+        <activity android:name=".activities.menus.ServiceMenuActivityivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
-        <activity android:name=".activities.AccountsManagementActivity"
+        <activity android:name=".activities.management.AccountsManagementActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
-        <activity android:name=".activities.AccountEditorActivity"
+        <activity android:name=".activities.management.CategoriesManagementActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
-        <activity android:name=".activities.HistoryReportActivity"
+        <activity android:name=".activities.editors.AccountEditorActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity android:name=".activities.reports.HistoryReportActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity android:name=".activities.reports.CommonReportActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>

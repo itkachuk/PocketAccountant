@@ -1,4 +1,4 @@
-package com.itkachuk.pa.activities;
+package com.itkachuk.pa.activities.editors;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -258,6 +258,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 				record.setExpense(false);
 			}
 			record.setRegular(false); // from UI wizard - always false
+			record.setPlanned(false); // functionality for Expenses Planning isn't implemented yet. Set to false.
 		}
 		
 		return record;
