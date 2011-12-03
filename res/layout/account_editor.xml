@@ -37,26 +37,26 @@
 			android:layout_height="wrap_content"/>	
 	</LinearLayout> 
 		
-        <LinearLayout android:orientation="horizontal" 
-			android:layout_width="fill_parent" 
-			android:layout_height="wrap_content" 		
-			android:layout_gravity="center">
-		
-	    	<Button android:id="@+id/back_button"
-	    		android:gravity="center"
-	    		android:layout_width="fill_parent" 
-	    		android:layout_height="wrap_content"	               
-		        android:layout_weight="1.8"
-		        android:text="@string/back_button_label"
-		        android:drawableLeft="@drawable/undo"/>
-		    
-		    <Button android:id="@+id/save_button"
-	    		android:gravity="center"
-	    		android:layout_width="fill_parent" 
-	    		android:layout_height="wrap_content"	               
-		        android:layout_weight="1"
-		        android:text="@string/save_button_label"
-		        android:drawableLeft="@drawable/ic_menu_save"/>    
-    	</LinearLayout>			
+    <LinearLayout android:orientation="horizontal" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 		
+		android:layout_gravity="center">
+	
+    	<Button android:id="@+id/backButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="1.8"
+	        android:text="@string/back_button_label"
+	        android:drawableLeft="@drawable/undo"/>
+	    
+	    <Button android:id="@+id/saveButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="1"
+	        android:text="@string/save_button_label"
+	        android:drawableLeft="@drawable/ic_menu_save"/>    
+   	</LinearLayout>			
 	      
 </LinearLayout>

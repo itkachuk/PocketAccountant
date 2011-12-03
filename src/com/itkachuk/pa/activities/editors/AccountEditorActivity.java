@@ -30,7 +30,6 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private EditText mAccountNameEditText;
 	private Spinner mAccountCurrencySpinner;
 	private EditText mAccountDescriptionEditText;
-	private Button mBackButton;
 	private Button mSaveButton;
 	
 	private Account mExistedAccountToEdit;
@@ -43,8 +42,7 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         mAccountNameEditText = (EditText) findViewById(R.id.account_name_edit_text);
         mAccountCurrencySpinner = (Spinner) findViewById(R.id.account_currency_spinner);
         mAccountDescriptionEditText = (EditText) findViewById(R.id.account_description_edit_text);
-        mSaveButton = (Button) findViewById(R.id.save_button);
-        mBackButton = (Button) findViewById(R.id.back_button);      
+        mSaveButton = (Button) findViewById(R.id.saveButton);      
 
         refreshCurrencySpinnerEntries();
         try {
@@ -59,7 +57,7 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
 
-		mBackButton.setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				finish(); // Close activity on Back button pressing
 			}

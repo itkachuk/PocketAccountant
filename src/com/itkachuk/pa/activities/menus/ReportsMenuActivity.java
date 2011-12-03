@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.reports.CommonReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -64,7 +65,8 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	         
 	      	case R.id.common_report_button:
 	      		Log.d(TAG, "clicked on \"Common Report\"");
-
+	      		intent = new Intent(ReportsMenuActivity.this, CommonReportActivity.class);
+		        startActivity(intent);
 	        break;
 
 	      	case R.id.consolidated_report_button:

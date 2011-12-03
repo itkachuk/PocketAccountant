@@ -67,7 +67,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         mDateButton = (Button) findViewById(R.id.edit_date_button);
         mCategorySpinner = (Spinner) findViewById(R.id.category_spinner);
         mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.description_edit_text);
-        mSaveButton = (Button) findViewById(R.id.save_button);
+        mSaveButton = (Button) findViewById(R.id.saveButton);
               
         setupDateTimeDialog();
        
@@ -86,6 +86,12 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
 		updateDateButtonLabel();
+		
+		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				finish(); // Close activity on Back button pressing
+			}
+		});
 		
 		// add a click listener to the Save button
 		mSaveButton.setOnClickListener(new View.OnClickListener() {

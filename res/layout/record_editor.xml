@@ -9,7 +9,8 @@
     <LinearLayout android:orientation="vertical" 
 		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
-		android:layout_gravity="center">
+		android:layout_gravity="center"
+		android:layout_weight="1">
 		<TextView android:text="@string/account_text" 
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content"/>
@@ -22,7 +23,6 @@
 		<EditText android:id="@+id/amount_edit_text"
 			android:layout_width="match_parent" 
 			android:layout_height="wrap_content" 
-			android:text="0"
 			android:inputType="numberDecimal"
 			android:digits="0123456789."
 			android:gravity="right"/>
@@ -45,15 +45,29 @@
         <AutoCompleteTextView  android:id="@+id/description_edit_text" 
         	android:layout_width="match_parent" 
         	android:layout_height="wrap_content"
-        	android:inputType="textAutoComplete"/>
-        <Button android:id="@+id/save_button"        	        	 
-        	android:layout_width="wrap_content" 
-        	android:layout_height="wrap_content"
-        	android:layout_marginTop="20dip"
-        	android:minWidth="140dip"
-        	android:layout_gravity="center"
-        	android:text="@string/save_button_label"/>		
+        	android:inputType="textAutoComplete"/>	
 	</LinearLayout>
     
+    <LinearLayout android:orientation="horizontal" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 		
+		android:layout_gravity="center">
+	
+    	<Button android:id="@+id/backButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="1.8"
+	        android:text="@string/back_button_label"
+	        android:drawableLeft="@drawable/undo"/>
+	    
+	    <Button android:id="@+id/saveButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="1"
+	        android:text="@string/save_button_label"
+	        android:drawableLeft="@drawable/ic_menu_save"/>    
+   	</LinearLayout>	
     
 </LinearLayout>

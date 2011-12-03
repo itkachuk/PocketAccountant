@@ -5,7 +5,12 @@
    <!-- History Report Activity -->
    <color name="date_color">#ffffffaa</color>
    <color name="category_color">#ffffffff</color>
-   <color name="description_color">#CCCCFFFF</color>
+   <color name="description_color">#ccccffff</color>
    <color name="income_amount_color">#ff66ff99</color>
    <color name="expense_amount_color">#ffff6600</color>
+   <!-- Common -->
+   <color name="pure_white_color">#ffffffff</color>
+   <color name="light_yellow_color">#ffffffaa</color>
+   <color name="light_blue_color">#ccccffff</color>
+   
 </resources>

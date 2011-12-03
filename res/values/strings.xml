@@ -35,7 +35,7 @@
 	<string name="consolidated_report_label">Consolidated</string>
 	
 	<!-- Common Report Activity -->
-	<string name="current_month_text">Current Month</string>
+	<string name="inc_exp_per_month_text">Incomes/Expenses per Month</string>
 	<string name="income_text">Income</string>
 	<string name="expense_text">Expense</string>
 	<string name="balance_text">Balance</string>
