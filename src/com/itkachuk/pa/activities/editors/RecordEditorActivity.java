@@ -2,6 +2,7 @@ package com.itkachuk.pa.activities.editors;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +13,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -68,7 +70,9 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         mCategorySpinner = (Spinner) findViewById(R.id.category_spinner);
         mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.description_edit_text);
         mSaveButton = (Button) findViewById(R.id.saveButton);
-              
+        mAmountEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        mDescriptionEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        
         setupDateTimeDialog();
        
         try {
@@ -227,7 +231,9 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		}
 		
 		try {
-			record.setAmount(getDoubleFromString(mAmountEditText.getText().toString()));
+			double amount = Double.valueOf(mAmountEditText.getText().toString());
+			amount = (double)Math.round(amount * 100) / 100; // trim for two places after decimal point
+			record.setAmount(amount);
 		} catch(Exception e) {
 			throw new IllegalArgumentException(getResources().getString(R.string.wrong_amount_number_message));
 		}
@@ -306,12 +312,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 				break;
 			}
 		}
-	}
-	
-	private double getDoubleFromString(String number) {
-		number.replace(',', '.');
-		return Double.parseDouble(number);
-	}
+	}	
 	
 	private void setupDateTimeDialog() {
 		// Create the dialog

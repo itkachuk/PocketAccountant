@@ -85,10 +85,11 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private String calculateBalance(String incomeString, String expenseString) {
 		try {
-			float income = Float.valueOf(incomeString);
-			float expense = Float.valueOf(expenseString);
-			float balance = income - expense;
-			return Float.toString(balance); // TODO - trim rational part
+			double income = Double.valueOf(incomeString);
+			double expense = Double.valueOf(expenseString);
+			double balance = income - expense;			
+			balance = (double)Math.round(balance * 100) / 100; // trim for two places after decimal point
+			return Double.toString(balance); // TODO - trim rational part
 		} catch (NumberFormatException e) {
 			return "";
 		}
