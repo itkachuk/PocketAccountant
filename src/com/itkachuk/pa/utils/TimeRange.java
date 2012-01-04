@@ -1,5 +1,8 @@
 package com.itkachuk.pa.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class TimeRange {
 	
 	private long mStartTime;
@@ -33,4 +36,12 @@ public class TimeRange {
 					"Start: " + startTime + ", End: " + endTime);
 		}
 	}
+
+	@Override
+	public String toString() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+		return "TimeRange [mStartTime=" + mStartTime + ", mEndTime=" + mEndTime + "]\n" +
+				"Formatted: " + sdf.format(new Date(mStartTime)) + " - " + sdf.format(new Date(mEndTime)) + "\n";
+	}
+		
 }
