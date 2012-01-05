@@ -69,19 +69,18 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
 		
 		TimeRange currentMonthInterval = DateUtils.getTimeRange(DateUtils.MONTH, false);
-		//Log.d(TAG, "currentMonth=" + currentMonth.toString());		
-		
-		String currentMonthExpenseValue = getSumOfRecords(recordDao, true, currentMonthInterval);
-		//Log.d(TAG, "currentMonthExpense=" + currentMonthExpenseValue);
-		currentMonthExpense.setText(currentMonthExpenseValue);
-		String currentMonthIncomeValue = getSumOfRecords(recordDao, false, currentMonthInterval);
-		//Log.d(TAG, "currentMonthIncome=" + currentMonthIncomeValue);
-		currentMonthIncome.setText(currentMonthIncomeValue);
-		
 		TimeRange pastMonthInterval = DateUtils.getTimeRange(DateUtils.MONTH, true);
+		//Log.d(TAG, "currentMonth=" + currentMonth.toString());				
+		String currentMonthExpenseValue = getSumOfRecords(recordDao, true, currentMonthInterval);
+		String currentMonthIncomeValue = getSumOfRecords(recordDao, false, currentMonthInterval);
+		//Log.d(TAG, "currentMonthExpense=" + currentMonthExpenseValue);
+		//Log.d(TAG, "currentMonthIncome=" + currentMonthIncomeValue);
+		currentMonthExpense.setText(currentMonthExpenseValue);				
+		currentMonthIncome.setText(currentMonthIncomeValue);		
+		
 		String pastMonthExpenseValue = getSumOfRecords(recordDao, true, pastMonthInterval);
-		pastMonthExpense.setText(pastMonthExpenseValue);
 		String pastMonthIncomeValue = getSumOfRecords(recordDao, false, pastMonthInterval);
+		pastMonthExpense.setText(pastMonthExpenseValue);		
 		pastMonthIncome.setText(pastMonthIncomeValue);
 		
 		String currentMonthBalanceValue = calculateBalance(currentMonthIncomeValue, currentMonthExpenseValue);

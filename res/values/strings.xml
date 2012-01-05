@@ -45,6 +45,30 @@
 	<string name="quarter_text">Quarter</string>
 	<string name="year_text">Year</string>
 	
+	<!-- Reports Filtering Activity -->
+	<string name="what_to_show_text">To Show</string>
+	<string name="time_interval_text">Time Interval</string>
+	<string name="start_date_text">Start Date</string>
+	<string name="end_date_text">End Date</string>
+	<string name="show_report_button_label">Show Report</string>
+	<!-- Filtering Spinner items -->
+	<string name="all_text">All</string>
+	<string name="incomes_text">Incomes</string>
+	<string name="expenses_text">Expenses</string>
+	<!-- Time-filtering Spinner items -->
+	<string-array name="time_ranges_list">
+        <item>All Time</item>
+        <item>Custom</item>
+        <item>Past Week</item>
+        <item>Past Month</item>
+        <item>Past Quarter</item>
+        <item>Past Year</item>
+        <item>Current Week</item>
+        <item>Current Month</item>
+        <item>Current Quarter</item>
+        <item>Current Year</item>
+    </string-array>
+	
 	<!-- Service menu Activity -->
 	<string name="service_menu_header_text">Service</string>
 	<string name="accounts_label">Accounts</string> 
