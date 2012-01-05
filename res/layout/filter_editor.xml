@@ -15,7 +15,7 @@
         <TextView android:text="@string/what_to_show_text" 
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content"/>
-		<Spinner android:id="@+id/whatToShowSpinner"
+		<Spinner android:id="@+id/recordsFilterSpinner"
 			android:layout_width="match_parent" 
 			android:layout_height="wrap_content"/>
         

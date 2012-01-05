@@ -47,6 +47,11 @@
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
+        <activity android:name=".activities.filters.FilterActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
         <activity android:name=".activities.reports.HistoryReportActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.activities.reports.CommonReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
@@ -42,7 +43,7 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
     @Override
     protected void onStop() {
     	super.onStop();
-    	finish();
+    	//finish();
     }
     
     @Override
@@ -53,20 +54,16 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
     
 	@Override
 	public void onClick(View v) {
-		Intent intent;
 		switch (v.getId()) {
 	      	case R.id.history_report_button:
 		    	Log.d(TAG, "clicked on \"History Report\"");
-		        intent = new Intent(ReportsMenuActivity.this, HistoryReportActivity.class);
-		        //intent.putExtra(HistoryReportActivity.EXTRAS_IS_EXPENSE, true);
-		        startActivity(intent);
+		    	FilterActivity.callMe(ReportsMenuActivity.this, "History");
 		        // TODO - show no data was found
 		    break;
 	         
 	      	case R.id.common_report_button:
 	      		Log.d(TAG, "clicked on \"Common Report\"");
-	      		intent = new Intent(ReportsMenuActivity.this, CommonReportActivity.class);
-		        startActivity(intent);
+	      		FilterActivity.callMe(ReportsMenuActivity.this, "Common");
 	        break;
 
 	      	case R.id.consolidated_report_button:
