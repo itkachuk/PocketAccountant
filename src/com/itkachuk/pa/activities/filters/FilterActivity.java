@@ -1,6 +1,8 @@
 package com.itkachuk.pa.activities.filters;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
@@ -36,6 +38,9 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private Button mEndDateButton;
 	private Button mShowReportButton;
 	
+	private long mStartDate = 0L;
+	private long mEndDate = Long.MAX_VALUE;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,16 +56,20 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
         setUIObjectsState();
         
-        refreshRecordsSpinnerEntries();
-        refreshAccountsSpinnerEntries();
-        //refreshCategoriesSpinnerEntries();
-        refreshTimeSpinnerEntries();
-
+        try {
+	        refreshRecordsSpinnerEntries();
+	        refreshAccountsSpinnerEntries();
+	        refreshCategoriesSpinnerEntries();
+	        refreshTimeSpinnerEntries();
+		} catch (SQLException e) {
+			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
+		}
         
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				finish(); // Close activity on Back button pressing
+				//moveTaskToBack(true);
 			}
 		});
 		
@@ -70,8 +79,15 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				Intent intent;
 				if (reportName != null) {
 					if (reportName.equals("History")) {
-						intent = new Intent(FilterActivity.this, HistoryReportActivity.class);
-				        startActivity(intent);
+						
+						String recordsToShowFilter = mRecordsFilterSpinner.getSelectedItem().toString();
+						String accountsFilter = mAccountsFilterSpinner.getSelectedItem().toString();
+						String categoriesFilter = mCategoriesFilterSpinner.getSelectedItem().toString();
+						
+						//mStartDate = 1320617246585L;
+						//mEndDate = 1320617785016L;
+						HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+								categoriesFilter, mStartDate, mEndDate);
 					}
 					if (reportName.equals("Common")) {
 						intent = new Intent(FilterActivity.this, CommonReportActivity.class);
@@ -84,72 +100,66 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void setUIObjectsState() {
 		// TODO Auto-generated method stub
-		FilterSingleton filterSingleton = FilterSingleton.getInstance();
 		String reportName = getReportName();
 		if (reportName.equals("History")) {
 			mRecordsFilterSpinner.setEnabled(true);
 			mAccountsFilterSpinner.setEnabled(true);
 			mCategoriesFilterSpinner.setEnabled(false);
 			mTimeFilterSpinner.setEnabled(true);
-			filterSingleton.setRecordsFilterEnabled(true);
-			filterSingleton.setAccountsFilterEnabled(true);
-			filterSingleton.setCategoriesFilterEnabled(false);
-			filterSingleton.setTimeFilterEnabled(true);
 		}
 		if (reportName.equals("Common")) {
 			mRecordsFilterSpinner.setEnabled(false);
 			mAccountsFilterSpinner.setEnabled(true);
 			mCategoriesFilterSpinner.setEnabled(false);
 			mTimeFilterSpinner.setEnabled(false);
-			filterSingleton.setRecordsFilterEnabled(false);
-			filterSingleton.setAccountsFilterEnabled(true);
-			filterSingleton.setCategoriesFilterEnabled(false);
-			filterSingleton.setTimeFilterEnabled(false);
 		}
 	}
 
-	private void updateUIObjectsState() {
-		// TODO Auto-generated method stub
-		FilterSingleton filterSingleton = FilterSingleton.getInstance();
-		if (filterSingleton.isRecordsFilterEnabled()) {
-			mRecordsFilterSpinner.setEnabled(true);
-		} else {
-			mRecordsFilterSpinner.setEnabled(false);
-		}
-		if (filterSingleton.isAccountsFilterEnabled()) {
-			mAccountsFilterSpinner.setEnabled(true);
-		} else {
-			mAccountsFilterSpinner.setEnabled(false);
-		}
-		if (filterSingleton.isCategoriesFilterEnabled()) {
-			mCategoriesFilterSpinner.setEnabled(true);
-		} else {
-			mCategoriesFilterSpinner.setEnabled(false);
-		}
-		if (filterSingleton.isTimeFilterEnabled()) {
-			mTimeFilterSpinner.setEnabled(true);
-			
-		} else {
-			mTimeFilterSpinner.setEnabled(false);
-			mStartDateButton.setEnabled(false);
-			mEndDateButton.setEnabled(false);
-		}
-	}
 
 	private void refreshRecordsSpinnerEntries() {
-		// TODO Auto-generated method stub
-		
+		String[] filterItemsList;		
+		if (getReportName().equals("Consolidated")) {
+			filterItemsList = new String[2];
+			filterItemsList[0] = getResources().getString(R.string.expenses_text);
+			filterItemsList[1] = getResources().getString(R.string.incomes_text);			
+		} else {
+			filterItemsList = new String[3];
+			filterItemsList[0] = getResources().getString(R.string.all_text);
+			filterItemsList[1] = getResources().getString(R.string.expenses_text);
+			filterItemsList[2] = getResources().getString(R.string.incomes_text);
+		}		
+		ArrayAdapter<String> adapter =
+				new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, filterItemsList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mRecordsFilterSpinner.setAdapter(adapter);
 	}
-	private void refreshAccountsSpinnerEntries() {
-		// TODO Auto-generated method stub
-		
+	
+	private void refreshAccountsSpinnerEntries() throws SQLException {
+		Dao<Account, String> accountDao = getHelper().getAccountDao();
+		List<Account> accounts = new ArrayList<Account>();
+		String mainAccountName = getResources().getString(R.string.main_account_name);		
+		accounts.add(new Account(mainAccountName, null, null, false)); // first add main account to spinner
+		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
+		ArrayAdapter<Account> adapter =
+				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);
+
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mAccountsFilterSpinner.setAdapter(adapter);				
 	}
+	
 	private void refreshCategoriesSpinnerEntries() {
-		// TODO Auto-generated method stub
-		
+		// TODO 
+		String[] filterItemsList;
+		filterItemsList = new String[1];
+		filterItemsList[0] = getResources().getString(R.string.all_text);
+		ArrayAdapter<String> adapter =
+			new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, filterItemsList);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mCategoriesFilterSpinner.setAdapter(adapter);
 	}
+	
 	private void refreshTimeSpinnerEntries() {
-		// TODO Auto-generated method stub
+		// TODO 
 		String[] timeIntervals = getResources().getStringArray(R.array.time_ranges_list);		
 		ArrayAdapter<String> adapter =
 				new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, timeIntervals);
