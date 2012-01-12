@@ -1,7 +1,10 @@
 package com.itkachuk.pa.activities.filters;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.itkachuk.pa.R;
@@ -14,13 +17,18 @@ import com.itkachuk.pa.entities.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -40,6 +48,45 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private long mStartDate = 0L;
 	private long mEndDate = Long.MAX_VALUE;
+
+	private int mStartYear = 1970;
+    private int mStartMonth = 1;
+    private int mStartDay = 1;
+    private int mEndYear = 2099;
+    private int mEndMonth = 1;
+    private int mEndDay = 1;
+
+    static final int START_DATE_DIALOG_ID = 0;
+    static final int END_DATE_DIALOG_ID = 1;
+    
+    // the callback received when the user "sets" the date in the dialog
+    private DatePickerDialog.OnDateSetListener mStartDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+
+                public void onDateSet(DatePicker view, int year, 
+                                      int monthOfYear, int dayOfMonth) {
+                    mStartYear = year;
+                    mStartMonth = monthOfYear;
+                    mStartDay = dayOfMonth;
+                    Date date = new Date(year, monthOfYear, dayOfMonth);
+                    mStartDate = date.getTime();
+                    updateDateButtonLabel(mStartDateButton, mStartDate);
+                }
+            };
+    private DatePickerDialog.OnDateSetListener mEndDateSetListener =
+        new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, 
+                                  int monthOfYear, int dayOfMonth) {
+                mEndYear = year;
+                mEndMonth = monthOfYear;
+                mEndDay = dayOfMonth;
+                Date date = new Date(year, monthOfYear, dayOfMonth);
+                mEndDate = date.getTime();
+                updateDateButtonLabel(mEndDateButton, mEndDate);
+            }
+        };        
+            
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +112,38 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
         
+		// add a click listener to the Date picker buttons
+		mStartDateButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showDialog(START_DATE_DIALOG_ID);
+            }
+        });
+		mEndDateButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                showDialog(END_DATE_DIALOG_ID);
+            }
+        });
+		
+		// Time Spinner Listener
+		mTimeFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+				Log.d(TAG, "OnItemSelectedListener: i=" + i + ", l=" + l);
+				if (i == 1) { // Second item is selected - "Custom" time filter
+					mStartDateButton.setEnabled(true);
+					mEndDateButton.setEnabled(true);
+				} else {
+					mStartDateButton.setEnabled(false);
+					mEndDateButton.setEnabled(false);
+				}
+				
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				return;
+			}
+		});
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -97,6 +176,28 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		});       
     }
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+	    switch (id) {
+	    case START_DATE_DIALOG_ID: {
+	        return new DatePickerDialog(this,
+	                    mStartDateSetListener,
+	                    mStartYear, mStartMonth, mStartDay);
+	    }
+		case END_DATE_DIALOG_ID: {
+	        return new DatePickerDialog(this,
+	                    mEndDateSetListener,
+	                    mEndYear, mEndMonth, mEndDay);
+	    }
+	    }
+	    return null;
+	}
+	
+	private void updateDateButtonLabel(Button dateButton, long millis) {
+		DateFormat dateFormatter = SimpleDateFormat.getDateInstance();
+		dateButton.setText(dateFormatter.format(millis));
+	}
 
 	private void setUIObjectsState() {
 		// TODO Auto-generated method stub
@@ -105,7 +206,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			mRecordsFilterSpinner.setEnabled(true);
 			mAccountsFilterSpinner.setEnabled(true);
 			mCategoriesFilterSpinner.setEnabled(false);
-			mTimeFilterSpinner.setEnabled(true);
+			mTimeFilterSpinner.setEnabled(true);			
 		}
 		if (reportName.equals("Common")) {
 			mRecordsFilterSpinner.setEnabled(false);
@@ -113,6 +214,8 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			mCategoriesFilterSpinner.setEnabled(false);
 			mTimeFilterSpinner.setEnabled(false);
 		}
+		mStartDateButton.setEnabled(false);
+		mEndDateButton.setEnabled(false);
 	}
 
 
