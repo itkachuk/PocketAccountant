@@ -155,7 +155,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			whereClauseStarted = true;
 		}
 		
-		if (mStartDateFilter != 0 || mEndDateFilter != Long.MAX_VALUE) {
+		if (mStartDateFilter != FilterActivity.DEFAULT_START_DATE || mEndDateFilter != FilterActivity.DEFAULT_END_DATE) {
 			if (whereClauseStarted) where.and();
 			where.between(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, mStartDateFilter, mEndDateFilter);
 		}

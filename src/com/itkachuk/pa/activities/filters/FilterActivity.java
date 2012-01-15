@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,8 @@ import com.itkachuk.pa.activities.reports.CommonReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
+import com.itkachuk.pa.utils.DateUtils;
+import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 
@@ -30,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -38,23 +42,24 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private static final String EXTRAS_REPORT_NAME = "reportName";
 	
+	public static final long DEFAULT_START_DATE = 0L;
+//	public static final long DEFAULT_END_DATE = 4102444800000L; // 1 Jan 2100
+	public static final long DEFAULT_END_DATE = Long.MAX_VALUE; // 20 Nov 2286
+	
 	private Spinner mRecordsFilterSpinner;
 	private Spinner mAccountsFilterSpinner;
 	private Spinner mCategoriesFilterSpinner;
 	private Spinner mTimeFilterSpinner;
 	private Button mStartDateButton;
 	private Button mEndDateButton;
+	private ImageButton mRollForwardButton;
+	private ImageButton mRollBackwardButton;
 	private Button mShowReportButton;
 	
-	private long mStartDate = 0L;
-	private long mEndDate = Long.MAX_VALUE;
-
-	private int mStartYear = 1970;
-    private int mStartMonth = 1;
-    private int mStartDay = 1;
-    private int mEndYear = 2099;
-    private int mEndMonth = 1;
-    private int mEndDay = 1;
+    private Calendar mStartDate;
+    private Calendar mEndDate;
+    
+    private View.OnClickListener rollButtonsOnClickListener;
 
     static final int START_DATE_DIALOG_ID = 0;
     static final int END_DATE_DIALOG_ID = 1;
@@ -65,12 +70,9 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
                 public void onDateSet(DatePicker view, int year, 
                                       int monthOfYear, int dayOfMonth) {
-                    mStartYear = year;
-                    mStartMonth = monthOfYear;
-                    mStartDay = dayOfMonth;
-                    Date date = new Date(year, monthOfYear, dayOfMonth);
-                    mStartDate = date.getTime();
-                    updateDateButtonLabel(mStartDateButton, mStartDate);
+                	mStartDate.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
+                	mStartDate.clear(Calendar.MILLISECOND);
+                    updateDateButtonLabel(mStartDateButton, mStartDate.getTimeInMillis());
                 }
             };
     private DatePickerDialog.OnDateSetListener mEndDateSetListener =
@@ -78,12 +80,9 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
             public void onDateSet(DatePicker view, int year, 
                                   int monthOfYear, int dayOfMonth) {
-                mEndYear = year;
-                mEndMonth = monthOfYear;
-                mEndDay = dayOfMonth;
-                Date date = new Date(year, monthOfYear, dayOfMonth);
-                mEndDate = date.getTime();
-                updateDateButtonLabel(mEndDateButton, mEndDate);
+            	mEndDate.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
+            	mEndDate.clear(Calendar.MILLISECOND);
+                updateDateButtonLabel(mEndDateButton, mEndDate.getTimeInMillis());
             }
         };        
             
@@ -93,12 +92,17 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.filter_editor);
         
+        mStartDate = Calendar.getInstance();
+        mEndDate = Calendar.getInstance();
+        
         mRecordsFilterSpinner = (Spinner) findViewById(R.id.recordsFilterSpinner);
         mAccountsFilterSpinner = (Spinner) findViewById(R.id.accountsFilteringSpinner);
         mCategoriesFilterSpinner = (Spinner) findViewById(R.id.categoriesFilteringSpinner);
         mTimeFilterSpinner = (Spinner) findViewById(R.id.timeFilteringSpinner);
         mStartDateButton = (Button) findViewById(R.id.startDateButton);
-        mEndDateButton = (Button) findViewById(R.id.endDateButton); 
+        mEndDateButton = (Button) findViewById(R.id.endDateButton);
+        mRollForwardButton = (ImageButton) findViewById(R.id.rollForwardButton);
+        mRollBackwardButton = (ImageButton) findViewById(R.id.rollBackwardButton);
         mShowReportButton = (Button) findViewById(R.id.showReportButton);      
 
         setUIObjectsState();
@@ -129,12 +133,81 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 				Log.d(TAG, "OnItemSelectedListener: i=" + i + ", l=" + l);
-				if (i == 1) { // Second item is selected - "Custom" time filter
-					mStartDateButton.setEnabled(true);
-					mEndDateButton.setEnabled(true);
-				} else {
-					mStartDateButton.setEnabled(false);
-					mEndDateButton.setEnabled(false);
+				TimeRange timeRange = null;
+				
+				switch(i){
+				case 0: { // "All Time" time filter
+					clearDateButtons();
+					disableDateButtons();
+					disableRollButtons();
+					break;
+				}
+				case 1: { // "Custom" time filter
+					updateDateButtons();
+					enableDateButtons();
+					disableRollButtons();
+					break;
+				}
+				case 2: { // "Day" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.DAY, false);
+					updateCalendarsAndButtons(timeRange);
+					enableRollButtons();
+					break;
+				}
+				case 3: { // "Week" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.WEEK, false);
+					updateCalendarsAndButtons(timeRange);
+					enableRollButtons();
+					break;
+				}
+				case 4: { // "Month" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.MONTH, false);
+					updateCalendarsAndButtons(timeRange);
+					enableRollButtons();
+					break;
+				}
+				case 5: { // "Quarter" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.QUARTER, false);
+					updateCalendarsAndButtons(timeRange);
+					enableRollButtons();
+					break;
+				}
+				case 6: { // "Year" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.YEAR, false);
+					updateCalendarsAndButtons(timeRange);
+					enableRollButtons();
+					break;
+				}
+				case 7: { // "Past Day" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.DAY, true);
+					updateCalendarsAndButtons(timeRange);
+					disableRollButtons();
+					break;
+				}
+				case 8: { // "Past Week" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.WEEK, true);
+					updateCalendarsAndButtons(timeRange);
+					disableRollButtons();
+					break;
+				}
+				case 9: { // "Past Month" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.MONTH, true);
+					updateCalendarsAndButtons(timeRange);
+					disableRollButtons();
+					break;
+				}
+				case 10: { // "Past Quarter" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.QUARTER, true);
+					updateCalendarsAndButtons(timeRange);
+					disableRollButtons();
+					break;
+				}
+				case 11: { // "Past Year" time filter
+					timeRange = DateUtils.getTimeRange(DateUtils.YEAR, true);
+					updateCalendarsAndButtons(timeRange);
+					disableRollButtons();
+					break;
+				}
 				}
 				
 			}
@@ -144,11 +217,79 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				return;
 			}
 		});
+		
+		rollButtonsOnClickListener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				switch((int)mTimeFilterSpinner.getSelectedItemId()){
+				case 2: { // Day
+					if (v.getId() == R.id.rollBackwardButton) {
+						mStartDate.add(Calendar.DAY_OF_MONTH, -1);
+						mEndDate.add(Calendar.DAY_OF_MONTH, -1);
+					} else {
+						mStartDate.add(Calendar.DAY_OF_MONTH, 1);
+						mEndDate.add(Calendar.DAY_OF_MONTH, 1);
+					}
+					updateDateButtons();
+					break;
+				}
+				case 3: { // Week
+					if (v.getId() == R.id.rollBackwardButton) {
+						mStartDate.add(Calendar.WEEK_OF_YEAR, -1);
+						mEndDate.add(Calendar.WEEK_OF_YEAR, -1);
+					} else {
+						mStartDate.add(Calendar.WEEK_OF_YEAR, 1);
+						mEndDate.add(Calendar.WEEK_OF_YEAR, 1);
+					}
+					updateDateButtons();
+					break;
+				}
+				case 4: { // Month
+					if (v.getId() == R.id.rollBackwardButton) {
+						mStartDate.add(Calendar.MONTH, -1);
+						mEndDate.add(Calendar.MONTH, -1);
+					} else {
+						mStartDate.add(Calendar.MONTH, 1);
+						mEndDate.add(Calendar.MONTH, 1);
+					}
+					updateDateButtons();
+					break;
+				}
+				case 5: { // Quarter
+					if (v.getId() == R.id.rollBackwardButton) {
+						mStartDate.add(Calendar.MONTH, -3);
+						mEndDate.add(Calendar.MONTH, -3);
+					} else {
+						mStartDate.add(Calendar.MONTH, 3);
+						mEndDate.add(Calendar.MONTH, 3);
+					}
+					updateDateButtons();
+					break;
+				}
+				case 6: { // Year
+					if (v.getId() == R.id.rollBackwardButton) {
+						mStartDate.add(Calendar.YEAR, -1);
+						mEndDate.add(Calendar.YEAR, -1);
+					} else {
+						mStartDate.add(Calendar.YEAR, 1);
+						mEndDate.add(Calendar.YEAR, 1);
+					}
+					updateDateButtons();
+					break;
+				}
+				}				
+			}
+		};
+		
+		// Roll Time Buttons Listeners
+		mRollForwardButton.setOnClickListener(rollButtonsOnClickListener);		
+		mRollBackwardButton.setOnClickListener(rollButtonsOnClickListener);	
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				finish(); // Close activity on Back button pressing
-				//moveTaskToBack(true);
 			}
 		});
 		
@@ -163,10 +304,18 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						String accountsFilter = mAccountsFilterSpinner.getSelectedItem().toString();
 						String categoriesFilter = mCategoriesFilterSpinner.getSelectedItem().toString();
 						
-						//mStartDate = 1320617246585L;
-						//mEndDate = 1320617785016L;
-						HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
-								categoriesFilter, mStartDate, mEndDate);
+						if (mTimeFilterSpinner.getSelectedItemId() > 0) { // If time filter was set - not "All Time" item selected
+							if (mStartDate.compareTo(mEndDate) >= 0) { // Error, if dates are equal or start > end
+								Toast.makeText(getApplicationContext(), getResources().getString(R.string.wrong_time_filter_message), Toast.LENGTH_LONG).show();
+								return;
+							}
+							HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+									categoriesFilter, mStartDate.getTimeInMillis(), mEndDate.getTimeInMillis());
+						} else {
+							HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+									categoriesFilter, FilterActivity.DEFAULT_START_DATE, FilterActivity.DEFAULT_END_DATE);
+						}
+						
 					}
 					if (reportName.equals("Common")) {
 						intent = new Intent(FilterActivity.this, CommonReportActivity.class);
@@ -183,12 +332,16 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	    case START_DATE_DIALOG_ID: {
 	        return new DatePickerDialog(this,
 	                    mStartDateSetListener,
-	                    mStartYear, mStartMonth, mStartDay);
+	                    mStartDate.get(Calendar.YEAR), 
+	                    mStartDate.get(Calendar.MONTH), 
+	                    mStartDate.get(Calendar.DAY_OF_MONTH));
 	    }
 		case END_DATE_DIALOG_ID: {
 	        return new DatePickerDialog(this,
 	                    mEndDateSetListener,
-	                    mEndYear, mEndMonth, mEndDay);
+	                    mEndDate.get(Calendar.YEAR), 
+	                    mEndDate.get(Calendar.MONTH), 
+	                    mEndDate.get(Calendar.DAY_OF_MONTH));
 	    }
 	    }
 	    return null;
@@ -197,6 +350,43 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private void updateDateButtonLabel(Button dateButton, long millis) {
 		DateFormat dateFormatter = SimpleDateFormat.getDateInstance();
 		dateButton.setText(dateFormatter.format(millis));
+	}
+	
+	private void updateDateButtons() {		
+		updateDateButtonLabel(mStartDateButton, mStartDate.getTimeInMillis());
+		updateDateButtonLabel(mEndDateButton, mEndDate.getTimeInMillis());
+	}
+	
+	private void clearDateButtons() {		
+		mStartDateButton.setText("");
+		mEndDateButton.setText("");
+	}
+	
+	private void enableDateButtons() {		
+		mStartDateButton.setEnabled(true);
+		mEndDateButton.setEnabled(true);
+	}
+	
+	private void disableRollButtons() {		
+		mRollForwardButton.setEnabled(false);
+		mRollBackwardButton.setEnabled(false);
+	}
+	
+	private void enableRollButtons() {		
+		mRollForwardButton.setEnabled(true);
+		mRollBackwardButton.setEnabled(true);
+	}
+	
+	private void disableDateButtons() {		
+		mStartDateButton.setEnabled(false);
+		mEndDateButton.setEnabled(false);
+	}
+	
+	private void updateCalendarsAndButtons(TimeRange timeRange) {
+		mStartDate.setTimeInMillis(timeRange.getStartTime());
+		mEndDate.setTimeInMillis(timeRange.getEndTime());
+		updateDateButtons();
+		disableDateButtons();
 	}
 
 	private void setUIObjectsState() {

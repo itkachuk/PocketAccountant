@@ -26,6 +26,12 @@ public class ServiceMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
         categoriesButton.setOnClickListener(this);
         View programSettingsButton = findViewById(R.id.program_settings_button);
         programSettingsButton.setOnClickListener(this);
+        
+        findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				finish(); // Close activity on Back button pressing
+			}
+		});
     }
 
 	@Override

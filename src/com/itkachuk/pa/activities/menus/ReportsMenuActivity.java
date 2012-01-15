@@ -28,6 +28,12 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
         commonReportButton.setOnClickListener(this);
         View consolidatedReportButton = findViewById(R.id.consolidated_report_button);
         consolidatedReportButton.setOnClickListener(this);
+        
+        findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				finish(); // Close activity on Back button pressing
+			}
+		});
     }
 
     @Override

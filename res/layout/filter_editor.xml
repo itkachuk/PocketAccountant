@@ -58,6 +58,10 @@
 				<Button android:id="@+id/startDateButton"
 					android:layout_width="match_parent" 
 					android:layout_height="wrap_content"/>
+				<ImageButton android:id="@+id/rollBackwardButton"
+					android:layout_width="match_parent" 
+					android:layout_height="wrap_content"
+					android:src="@drawable/ic_menu_back"/>
 			</LinearLayout>
 			
 			<LinearLayout android:orientation="vertical" 
@@ -70,7 +74,11 @@
 		        	android:layout_height="wrap_content"/>
 				<Button android:id="@+id/endDateButton"
 					android:layout_width="match_parent" 
-					android:layout_height="wrap_content"/>	
+					android:layout_height="wrap_content"/>
+				<ImageButton android:id="@+id/rollForwardButton"
+					android:layout_width="match_parent" 
+					android:layout_height="wrap_content"					
+					android:src="@drawable/ic_menu_forward"/>	
 			</LinearLayout>	
 		</LinearLayout> 					
 	</LinearLayout> 

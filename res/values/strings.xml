@@ -58,15 +58,17 @@
 	<!-- Time-filtering Spinner items -->
 	<string-array name="time_ranges_list">
         <item>All Time</item>
-        <item>Custom</item>
+        <item>Custom</item>  
+        <item>Day</item>      
+        <item>Week</item>
+        <item>Month</item>
+        <item>Quarter</item>
+        <item>Year</item>
+        <item>Past Day</item>
         <item>Past Week</item>
         <item>Past Month</item>
         <item>Past Quarter</item>
         <item>Past Year</item>
-        <item>Current Week</item>
-        <item>Current Month</item>
-        <item>Current Quarter</item>
-        <item>Current Year</item>
     </string-array>
 	
 	<!-- Service menu Activity -->
@@ -87,7 +89,8 @@
 	<!-- Error messages -->
 	<string name="empty_category_message">Please, select a category</string>
 	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>
-	<string name="empty_account_message">Please, enter correct Account name</string>		
+	<string name="empty_account_message">Please, enter correct Account name</string>
+	<string name="wrong_time_filter_message">Start date can\'t be equal or grater than end date. Such filter will show nothing.</string>		
 	
 	<string name="no_data_message">No data to display</string>
 	
