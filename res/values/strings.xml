@@ -45,6 +45,10 @@
 	<string name="quarter_text">Quarter</string>
 	<string name="year_text">Year</string>
 	
+	<!-- Consolidated Report Activity -->
+	<string name="change_view_button_label">Change View</string>
+	
+	
 	<!-- Reports Filtering Activity -->
 	<string name="what_to_show_text">To Show</string>
 	<string name="time_interval_text">Time Interval</string>

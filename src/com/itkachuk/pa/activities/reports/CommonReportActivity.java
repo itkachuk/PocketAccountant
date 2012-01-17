@@ -119,7 +119,7 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			double expense = Double.valueOf(expenseString);
 			double balance = income - expense;			
 			balance = (double)Math.round(balance * 100) / 100; // trim for two places after decimal point
-			return Double.toString(balance); // TODO - trim rational part
+			return Double.toString(balance); 
 		} catch (NumberFormatException e) {
 			return "";
 		}

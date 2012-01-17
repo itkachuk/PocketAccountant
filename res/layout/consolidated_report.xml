@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:background="@color/background"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+    <ListView android:id="@+id/categoriesAmountsList"
+    	android:background="@color/background"
+    	android:layout_marginBottom="5dip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>   
+
+	    <LinearLayout android:orientation="horizontal" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 		
+		android:layout_gravity="center">
+	
+    	<Button android:id="@+id/backButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="1.8"
+	        android:text="@string/back_button_label"
+	        android:drawableLeft="@drawable/undo"/>
+	    
+	    <Button android:id="@+id/changeViewButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"	               
+	        android:layout_weight="1"
+	        android:text="@string/change_view_button_label"
+	        android:drawableLeft="@drawable/ic_menu_chart"/>    
+   	</LinearLayout>	
+</LinearLayout>
