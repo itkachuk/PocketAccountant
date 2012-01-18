@@ -74,7 +74,7 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 
 	      	case R.id.consolidated_report_button:
 	      		Log.d(TAG, "clicked on \"Consolidated Report\"");
-	    	  
+	      		FilterActivity.callMe(ReportsMenuActivity.this, "Consolidated");
 	      	break;
 		}	
 	}

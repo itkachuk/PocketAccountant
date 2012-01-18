@@ -1,6 +1,8 @@
 package com.itkachuk.pa.activities.reports;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -8,14 +10,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
+import com.itkachuk.pa.utils.CalcUtils;
+import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -32,7 +39,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private ListView listView;
 	
 	// Filters, passed via extras
-	private String mRecordsToShowFilter;
+	private boolean mRecordsToShowFilter;
 	private String mAccountsFilter;
 	private long mStartDateFilter;
 	private long mEndDateFilter;
@@ -51,7 +58,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 
 		listView = (ListView) findViewById(R.id.categoriesAmountsList);
 	}
-/*	
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -61,7 +68,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			throw new RuntimeException(e);
 		}
 	}
-*/	
+	
 	public static void callMe(Context c, String recordsToShowFilter, String accountsFilter,
 			long startDateFilter, long endDateFilter) {
 		Intent intent = new Intent(c, ConsolidatedReportActivity.class);
@@ -72,39 +79,18 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		c.startActivity(intent);
 	}
 	
-/*
+
 	private void fillList() throws SQLException {
 		// TODO - implement paging!
-		Log.d(TAG, "Show list of records");
-		boolean whereClauseStarted = false;
+		Log.d(TAG, "Show list of aggregated amounts per category");
 		Dao<IncomeOrExpenseRecord, Integer> dao = getHelper().getRecordDao();
-		QueryBuilder<IncomeOrExpenseRecord, Integer> builder = dao.queryBuilder();
-		Where<IncomeOrExpenseRecord, Integer> where = builder.where();
 		
-		if (mRecordsToShowFilter != null && mRecordsToShowFilter.equals(getResources().getString(R.string.expenses_text))) {
-			where.eq(IncomeOrExpenseRecord.IS_EXPENSE_FIELD_NAME, true);
-			whereClauseStarted = true;
-		} else if (mRecordsToShowFilter != null && mRecordsToShowFilter.equals(getResources().getString(R.string.incomes_text))) {
-			where.eq(IncomeOrExpenseRecord.IS_EXPENSE_FIELD_NAME, false);
-			whereClauseStarted = true;
-		}
+		List<String[]> list = CalcUtils.getAmountsPerCategoryList(dao, mAccountsFilter, 
+				mRecordsToShowFilter, new TimeRange(mStartDateFilter, mEndDateFilter));
 		
-		if (mAccountsFilter != null && !mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
-			if (whereClauseStarted) where.and();
-			where.eq(IncomeOrExpenseRecord.ACCOUNT_FIELD_NAME, mAccountsFilter);
-			whereClauseStarted = true;
-		}		
-		
-		if (mStartDateFilter != FilterActivity.DEFAULT_START_DATE || mEndDateFilter != FilterActivity.DEFAULT_END_DATE) {
-			if (whereClauseStarted) where.and();
-			where.between(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, mStartDateFilter, mEndDateFilter);
-		}
-		
-		builder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false);
-		List<IncomeOrExpenseRecord> list = dao.query(builder.prepare());
-		ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
+		ArrayAdapter<String[]> arrayAdapter = new AmountsPerCategoryAdapter(this, R.layout.category_amount_row, list);
 		listView.setAdapter(arrayAdapter);
-	}*/
+	}
 	
 	private String getRecordsToShowFilter() {		
 		return getIntent().getStringExtra(EXTRAS_RECORDS_TO_SHOW_FILTER);
@@ -123,9 +109,46 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	}
 	
 	private void parseFilters() {
-		mRecordsToShowFilter = getRecordsToShowFilter();
+		if (getRecordsToShowFilter().equals(getResources().getString(R.string.expenses_text)))
+			mRecordsToShowFilter = true;
+		else mRecordsToShowFilter = false;
 		mAccountsFilter = getAccountsFilter();
+		if (mAccountsFilter.equals(getResources().getString(R.string.all_text))) 
+			mAccountsFilter = null;
 		mStartDateFilter = getStartDateFilter();
 		mEndDateFilter = getEndDateFilter();
+	}
+	
+	private class AmountsPerCategoryAdapter extends ArrayAdapter<String[]> {
+
+		public AmountsPerCategoryAdapter(Context context, int textViewResourceId, List<String[]> items) {
+			super(context, textViewResourceId, items);
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			if (v == null) {
+				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate(R.layout.category_amount_row, null);
+			}
+			String[] row = getItem(position);
+		
+			fillText(v, R.id.categoryName, row[0]);
+
+			fillText(v, R.id.categoryAmount, row[1]);						
+	
+			return v;
+		}
+
+		private void fillText(View v, int id, String text) {
+			TextView textView = (TextView) v.findViewById(id);
+			textView.setText(text == null ? "" : text);
+		}
+		
+		private void setTextColor(View v, int id, int colorId) {
+			TextView textView = (TextView) v.findViewById(id);
+			textView.setTextColor(getResources().getColor(colorId));
+		}
 	}
 }

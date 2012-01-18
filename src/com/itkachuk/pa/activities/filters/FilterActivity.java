@@ -12,6 +12,7 @@ import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.activities.reports.CommonReportActivity;
+import com.itkachuk.pa.activities.reports.ConsolidatedReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
@@ -296,14 +297,13 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		mShowReportButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				String reportName = getReportName();
-				Intent intent;
+				
 				if (reportName != null) {
-					if (reportName.equals("History")) {
-						
-						String recordsToShowFilter = mRecordsFilterSpinner.getSelectedItem().toString();
-						String accountsFilter = mAccountsFilterSpinner.getSelectedItem().toString();
-						String categoriesFilter = mCategoriesFilterSpinner.getSelectedItem().toString();
-						
+					String recordsToShowFilter = mRecordsFilterSpinner.getSelectedItem().toString();
+					String accountsFilter = mAccountsFilterSpinner.getSelectedItem().toString();
+					String categoriesFilter = mCategoriesFilterSpinner.getSelectedItem().toString();
+					
+					if (reportName.equals("History")) {										
 						if (mTimeFilterSpinner.getSelectedItemId() > 0) { // If time filter was set - not "All Time" item selected
 							if (mStartDate.compareTo(mEndDate) >= 0) { // Error, if dates are equal or start > end
 								Toast.makeText(getApplicationContext(), getResources().getString(R.string.wrong_time_filter_message), Toast.LENGTH_LONG).show();
@@ -317,10 +317,26 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 						}
 						
 					}
+					
 					if (reportName.equals("Common")) {
-						intent = new Intent(FilterActivity.this, CommonReportActivity.class);
-				        startActivity(intent);
+						CommonReportActivity.callMe(FilterActivity.this, accountsFilter);
 					}
+					
+					if (reportName.equals("Consolidated")) {
+						if (mTimeFilterSpinner.getSelectedItemId() > 0) { // If time filter was set - not "All Time" item selected
+							if (mStartDate.compareTo(mEndDate) >= 0) { // Error, if dates are equal or start > end
+								Toast.makeText(getApplicationContext(), getResources().getString(R.string.wrong_time_filter_message), Toast.LENGTH_LONG).show();
+								return;
+							}
+							ConsolidatedReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+									mStartDate.getTimeInMillis(), mEndDate.getTimeInMillis());
+						} else {
+							ConsolidatedReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+									FilterActivity.DEFAULT_START_DATE, FilterActivity.DEFAULT_END_DATE);
+						}
+					}
+				} else {
+					// TODO - throw exception
 				}
 			}
 		});       
@@ -403,6 +419,12 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			mAccountsFilterSpinner.setEnabled(true);
 			mCategoriesFilterSpinner.setEnabled(false);
 			mTimeFilterSpinner.setEnabled(false);
+		}
+		if (reportName.equals("Consolidated")) {
+			mRecordsFilterSpinner.setEnabled(true);
+			mAccountsFilterSpinner.setEnabled(true);
+			mCategoriesFilterSpinner.setEnabled(false);
+			mTimeFilterSpinner.setEnabled(true);			
 		}
 		mStartDateButton.setEnabled(false);
 		mEndDateButton.setEnabled(false);

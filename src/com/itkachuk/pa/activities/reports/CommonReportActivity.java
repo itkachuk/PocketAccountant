@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
+import com.itkachuk.pa.utils.CalcUtils;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -23,6 +26,8 @@ import com.j256.ormlite.stmt.QueryBuilder;
 
 public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = "PocketAccountant";
+	
+	private static final String EXTRAS_ACCOUNTS_FILTER = "accountsFilter";
 	
 	private TextView pastMonthIncome;
 	private TextView pastMonthExpense;
@@ -35,10 +40,18 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private TextView currentYearBalance;
 	private TextView pastYearBalance;
 	
+	// Filters, passed via extras
+	private String mAccountsFilter;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.common_report);
+		
+		mAccountsFilter = getAccountsFilter();
+		if (mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
+			mAccountsFilter = null; 
+		}
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -64,6 +77,16 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}
 	
+	public static void callMe(Context c, String accountsFilter) {
+		Intent intent = new Intent(c, CommonReportActivity.class);
+		intent.putExtra(EXTRAS_ACCOUNTS_FILTER, accountsFilter);
+		c.startActivity(intent);
+	}
+	
+	private String getAccountsFilter() {		
+		return getIntent().getStringExtra(EXTRAS_ACCOUNTS_FILTER);
+	}
+	
 	private void fillTables() throws SQLException {
 		Log.d(TAG, "Populate tables with amounts");
 		Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
@@ -71,73 +94,47 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		TimeRange currentMonthInterval = DateUtils.getTimeRange(DateUtils.MONTH, false);
 		TimeRange pastMonthInterval = DateUtils.getTimeRange(DateUtils.MONTH, true);
 		//Log.d(TAG, "currentMonth=" + currentMonth.toString());				
-		String currentMonthExpenseValue = getSumOfRecords(recordDao, true, currentMonthInterval);
-		String currentMonthIncomeValue = getSumOfRecords(recordDao, false, currentMonthInterval);
+		String currentMonthExpenseValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, true, currentMonthInterval);
+		String currentMonthIncomeValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, false, currentMonthInterval);
 		//Log.d(TAG, "currentMonthExpense=" + currentMonthExpenseValue);
 		//Log.d(TAG, "currentMonthIncome=" + currentMonthIncomeValue);
 		currentMonthExpense.setText(currentMonthExpenseValue);				
 		currentMonthIncome.setText(currentMonthIncomeValue);		
 		
-		String pastMonthExpenseValue = getSumOfRecords(recordDao, true, pastMonthInterval);
-		String pastMonthIncomeValue = getSumOfRecords(recordDao, false, pastMonthInterval);
+		String pastMonthExpenseValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, true, pastMonthInterval);
+		String pastMonthIncomeValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, false, pastMonthInterval);
 		pastMonthExpense.setText(pastMonthExpenseValue);		
 		pastMonthIncome.setText(pastMonthIncomeValue);
 		
-		String currentMonthBalanceValue = calculateBalance(currentMonthIncomeValue, currentMonthExpenseValue);
-		String pastMonthBalanceValue = calculateBalance(pastMonthIncomeValue, pastMonthExpenseValue);
+		String currentMonthBalanceValue = CalcUtils.calculateBalance(currentMonthIncomeValue, currentMonthExpenseValue);
+		String pastMonthBalanceValue = CalcUtils.calculateBalance(pastMonthIncomeValue, pastMonthExpenseValue);
 		currentMonthBalance.setText(currentMonthBalanceValue);
 		pastMonthBalance.setText(pastMonthBalanceValue);
 		
 		// Balance for quarters
 		TimeRange currentQuarterInterval = DateUtils.getTimeRange(DateUtils.QUARTER, false);
 		TimeRange pastQuarterInterval = DateUtils.getTimeRange(DateUtils.QUARTER, true);
-		String currentQuarterExpenseValue = getSumOfRecords(recordDao, true, currentQuarterInterval);
-		String currentQuarterIncomeValue = getSumOfRecords(recordDao, false, currentQuarterInterval);
-		String pastQuarterExpenseValue = getSumOfRecords(recordDao, true, pastQuarterInterval);
-		String pastQuarterIncomeValue = getSumOfRecords(recordDao, false, pastQuarterInterval);
-		String currentQuarterBalanceValue = calculateBalance(currentQuarterIncomeValue, currentQuarterExpenseValue);
-		String pastQuarterBalanceValue = calculateBalance(pastQuarterIncomeValue, pastQuarterExpenseValue);
+		String currentQuarterExpenseValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, true, currentQuarterInterval);
+		String currentQuarterIncomeValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, false, currentQuarterInterval);
+		String pastQuarterExpenseValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, true, pastQuarterInterval);
+		String pastQuarterIncomeValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, false, pastQuarterInterval);
+		String currentQuarterBalanceValue = CalcUtils.calculateBalance(currentQuarterIncomeValue, currentQuarterExpenseValue);
+		String pastQuarterBalanceValue = CalcUtils.calculateBalance(pastQuarterIncomeValue, pastQuarterExpenseValue);
 		currentQuarterBalance.setText(currentQuarterBalanceValue);
 		pastQuarterBalance.setText(pastQuarterBalanceValue);
 		
 		// Balance for years
 		TimeRange currentYearInterval = DateUtils.getTimeRange(DateUtils.YEAR, false);
 		TimeRange pastYearInterval = DateUtils.getTimeRange(DateUtils.YEAR, true);
-		String currentYearExpenseValue = getSumOfRecords(recordDao, true, currentYearInterval);
-		String currentYearIncomeValue = getSumOfRecords(recordDao, false, currentYearInterval);
-		String pastYearExpenseValue = getSumOfRecords(recordDao, true, pastYearInterval);
-		String pastYearIncomeValue = getSumOfRecords(recordDao, false, pastYearInterval);
-		String currentYearBalanceValue = calculateBalance(currentYearIncomeValue, currentYearExpenseValue);
-		String pastYearBalanceValue = calculateBalance(pastYearIncomeValue, pastYearExpenseValue);
+		String currentYearExpenseValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, true, currentYearInterval);
+		String currentYearIncomeValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, false, currentYearInterval);
+		String pastYearExpenseValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, true, pastYearInterval);
+		String pastYearIncomeValue = CalcUtils.getSumOfRecords(recordDao, mAccountsFilter, false, pastYearInterval);
+		String currentYearBalanceValue = CalcUtils.calculateBalance(currentYearIncomeValue, currentYearExpenseValue);
+		String pastYearBalanceValue = CalcUtils.calculateBalance(pastYearIncomeValue, pastYearExpenseValue);
 		currentYearBalance.setText(currentYearBalanceValue);
 		pastYearBalance.setText(pastYearBalanceValue);
 	}
 
-	private String calculateBalance(String incomeString, String expenseString) {
-		try {
-			double income = Double.valueOf(incomeString);
-			double expense = Double.valueOf(expenseString);
-			double balance = income - expense;			
-			balance = (double)Math.round(balance * 100) / 100; // trim for two places after decimal point
-			return Double.toString(balance); 
-		} catch (NumberFormatException e) {
-			return "";
-		}
-	}
-
-	private String getSumOfRecords(Dao<IncomeOrExpenseRecord, Integer> recordDao, boolean isExpense, TimeRange timeRange) throws SQLException {
-		StringBuilder queryBuilder = new StringBuilder();
-		queryBuilder.append("select sum(amount) from IncomeOrExpenseRecord where isExpense = ");
-		if (isExpense) queryBuilder.append("1");
-		else queryBuilder.append("0");
-		queryBuilder.append(" and isPlanned = 0");
-		queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
-		//Log.d(TAG, "getSumOfRecords query = " + queryBuilder.toString());
-		
-		GenericRawResults<String[]> rawResults = recordDao.queryRaw(queryBuilder.toString());
-		List<String[]> results = rawResults.getResults();
-		String[] resultArray = results.get(0);
-		if (resultArray[0] == null) resultArray[0] = "0";
-		return resultArray[0];
-	}
+	
 }
