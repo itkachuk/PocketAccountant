@@ -27,6 +27,7 @@ import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
+import com.itkachuk.pa.utils.DateUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -155,7 +156,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			whereClauseStarted = true;
 		}
 		
-		if (mStartDateFilter != FilterActivity.DEFAULT_START_DATE || mEndDateFilter != FilterActivity.DEFAULT_END_DATE) {
+		if (mStartDateFilter != DateUtils.DEFAULT_START_DATE || mEndDateFilter != DateUtils.DEFAULT_END_DATE) {
 			if (whereClauseStarted) where.and();
 			where.between(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, mStartDateFilter, mEndDateFilter);
 		}
@@ -179,11 +180,11 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	private long getStartDateFilter() {		
-		return getIntent().getLongExtra(EXTRAS_START_DATE_FILTER, 0L);
+		return getIntent().getLongExtra(EXTRAS_START_DATE_FILTER, DateUtils.DEFAULT_START_DATE);
 	}
 	
 	private long getEndDateFilter() {		
-		return getIntent().getLongExtra(EXTRAS_END_DATE_FILTER, Long.MAX_VALUE);
+		return getIntent().getLongExtra(EXTRAS_END_DATE_FILTER, DateUtils.DEFAULT_END_DATE);
 	}
 	
 	private void parseFilters() {

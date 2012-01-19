@@ -15,6 +15,7 @@ import com.itkachuk.pa.activities.reports.CommonReportActivity;
 import com.itkachuk.pa.activities.reports.ConsolidatedReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
+import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.TimeRange;
@@ -41,11 +42,7 @@ import android.widget.Toast;
 public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = "PocketAccountant";
 	
-	private static final String EXTRAS_REPORT_NAME = "reportName";
-	
-	public static final long DEFAULT_START_DATE = 0L;
-//	public static final long DEFAULT_END_DATE = 4102444800000L; // 1 Jan 2100
-	public static final long DEFAULT_END_DATE = Long.MAX_VALUE; // 20 Nov 2286
+	private static final String EXTRAS_REPORT_NAME = "reportName";	
 	
 	private Spinner mRecordsFilterSpinner;
 	private Spinner mAccountsFilterSpinner;
@@ -313,7 +310,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 									categoriesFilter, mStartDate.getTimeInMillis(), mEndDate.getTimeInMillis());
 						} else {
 							HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
-									categoriesFilter, FilterActivity.DEFAULT_START_DATE, FilterActivity.DEFAULT_END_DATE);
+									categoriesFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 						}
 						
 					}
@@ -332,7 +329,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 									mStartDate.getTimeInMillis(), mEndDate.getTimeInMillis());
 						} else {
 							ConsolidatedReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
-									FilterActivity.DEFAULT_START_DATE, FilterActivity.DEFAULT_END_DATE);
+									DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 						}
 					}
 				} else {
@@ -411,7 +408,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		if (reportName.equals("History")) {
 			mRecordsFilterSpinner.setEnabled(true);
 			mAccountsFilterSpinner.setEnabled(true);
-			mCategoriesFilterSpinner.setEnabled(false);
+			mCategoriesFilterSpinner.setEnabled(true);
 			mTimeFilterSpinner.setEnabled(true);			
 		}
 		if (reportName.equals("Common")) {
@@ -462,19 +459,37 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		mAccountsFilterSpinner.setAdapter(adapter);				
 	}
 	
-	private void refreshCategoriesSpinnerEntries() {
-		// TODO 
-		String[] filterItemsList;
-		filterItemsList = new String[1];
-		filterItemsList[0] = getResources().getString(R.string.all_text);
-		ArrayAdapter<String> adapter =
-			new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, filterItemsList);
+	private void refreshCategoriesSpinnerEntries() throws SQLException {
+		// TODO - separation for Income/Expense
+		
+		Dao<Category, String> categoryDao = getHelper().getCategoryDao();
+		List<Category> categories = new ArrayList<Category>();
+		categories.add(new Category(getResources().getString(R.string.all_text), true, false)); // first entry should be "All" item
+		
+			String[] arrayExpense = getResources().getStringArray(R.array.expense_categories);
+			for(String categoryName : arrayExpense) {
+				categories.add(new Category(categoryName, true, false)); // Add predefined categories
+			}
+			categories.addAll(categoryDao.queryBuilder().where() // Add custom categories from DB
+					.eq(Category.IS_EXPENSE_FIELD_NAME, true)
+					.query());
+	
+			String[] arrayIncome = getResources().getStringArray(R.array.income_categories);
+			for(String categoryName : arrayIncome) {
+				categories.add(new Category(categoryName, false, false));
+			}
+			categories.addAll(categoryDao.queryBuilder().where()
+					.eq(Category.IS_EXPENSE_FIELD_NAME, false)
+					.query());
+		
+		ArrayAdapter<Category> adapter =
+				new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categories);
+
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCategoriesFilterSpinner.setAdapter(adapter);
 	}
 	
 	private void refreshTimeSpinnerEntries() {
-		// TODO 
 		String[] timeIntervals = getResources().getStringArray(R.array.time_ranges_list);		
 		ArrayAdapter<String> adapter =
 				new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, timeIntervals);

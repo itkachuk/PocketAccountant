@@ -30,9 +30,11 @@ public class CalcUtils {
 		queryBuilder.append("select sum(amount) from IncomeOrExpenseRecord where isExpense = ");
 		if (isExpense) queryBuilder.append("1");
 		else queryBuilder.append("0");
-		if (accountFilter != null) queryBuilder.append(" and account = '" + accountFilter + "'");
+		if (accountFilter != null) 
+			queryBuilder.append(" and account = '" + accountFilter + "'");
 		queryBuilder.append(" and isPlanned = 0");
-		queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
+		if (timeRange != null && ((timeRange.getStartTime() > DateUtils.DEFAULT_START_DATE) || (timeRange.getEndTime() < DateUtils.DEFAULT_END_DATE))) 
+			queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
 		//Log.d(TAG, "getSumOfRecords query = " + queryBuilder.toString());
 		
 		GenericRawResults<String[]> rawResults = recordDao.queryRaw(queryBuilder.toString());
@@ -45,12 +47,14 @@ public class CalcUtils {
 	public static List<String[]> getAmountsPerCategoryList(Dao<IncomeOrExpenseRecord, Integer> recordDao, 
 			String accountFilter, boolean isExpense, TimeRange timeRange) throws SQLException {
 		StringBuilder queryBuilder = new StringBuilder();
-		queryBuilder.append("select category, sum(amount) as amounts from IncomeOrExpenseRecord where isExpense = ");
+		queryBuilder.append("select category, sum(amount) as amounts, category from IncomeOrExpenseRecord where isExpense = ");
 		if (isExpense) queryBuilder.append("1");
 		else queryBuilder.append("0");
-		if (accountFilter != null) queryBuilder.append(" and account = '" + accountFilter + "'");
+		if (accountFilter != null) 
+			queryBuilder.append(" and account = '" + accountFilter + "'");
 		queryBuilder.append(" and isPlanned = 0");
-		queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
+		if (timeRange != null && ((timeRange.getStartTime() > DateUtils.DEFAULT_START_DATE) || (timeRange.getEndTime() < DateUtils.DEFAULT_END_DATE))) 
+			queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
 		queryBuilder.append(" group by category order by amounts desc");
 		Log.d(TAG, "getAmountsPerCategoryList query = " + queryBuilder.toString());
 		

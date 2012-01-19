@@ -13,15 +13,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.CalcUtils;
+import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
@@ -37,6 +43,10 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private static final String EXTRAS_END_DATE_FILTER = "endDateFilter";
 	
 	private ListView listView;
+	private Button mChangeViewButton;
+	
+	private int reportViewsCounter = 0; // 0 - amounts, 1 - percentages. TBD: 2 - pie chart, 3 - bars.
+	private static final int REPORT_VIEWS_QTY = 2;
 	
 	// Filters, passed via extras
 	private boolean mRecordsToShowFilter;
@@ -56,7 +66,29 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			}
 		});
 
-		listView = (ListView) findViewById(R.id.categoriesAmountsList);
+		listView = (ListView) findViewById(R.id.categoriesAmountsList);		
+		mChangeViewButton = (Button) findViewById(R.id.changeViewButton);
+		
+		mChangeViewButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				reportViewsCounter++;
+				if (reportViewsCounter >= REPORT_VIEWS_QTY)
+					reportViewsCounter = 0;
+				try {
+					fillList();
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});  
+		
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				String[] categoryAmountRow = (String[]) listView.getAdapter().getItem(i);
+				HistoryReportActivity.callMe(ConsolidatedReportActivity.this, getRecordsToShowFilter(), 
+						mAccountsFilter, categoryAmountRow[0], mStartDateFilter, mEndDateFilter);
+			}
+		});
 	}
 	
 	@Override
@@ -84,14 +116,39 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		// TODO - implement paging!
 		Log.d(TAG, "Show list of aggregated amounts per category");
 		Dao<IncomeOrExpenseRecord, Integer> dao = getHelper().getRecordDao();
+		TimeRange timeRange = new TimeRange(mStartDateFilter, mEndDateFilter);
 		
 		List<String[]> list = CalcUtils.getAmountsPerCategoryList(dao, mAccountsFilter, 
-				mRecordsToShowFilter, new TimeRange(mStartDateFilter, mEndDateFilter));
+				mRecordsToShowFilter, timeRange);
+		roundAmountsOfCategoriesList(list);
+		
+		if (reportViewsCounter == 1) { // Percentages displaying mode
+			String sumOfRecords = CalcUtils.getSumOfRecords(dao, mAccountsFilter, mRecordsToShowFilter, timeRange);
+			addPercentValuesToCategoriesList(list, sumOfRecords);
+		}
 		
 		ArrayAdapter<String[]> arrayAdapter = new AmountsPerCategoryAdapter(this, R.layout.category_amount_row, list);
 		listView.setAdapter(arrayAdapter);
 	}
 	
+	private void addPercentValuesToCategoriesList(List<String[]> list, String totalAmount) {
+		float categoryPercent;
+		float totalSum = Float.valueOf(totalAmount);
+		for (String[] row : list) {
+			categoryPercent = (Float.valueOf(row[1])/totalSum) * 100;
+			row[2] = Float.toString(Math.round(categoryPercent * 10)/10f); // third column of the row is dedicated for percents
+		}
+	}
+	
+	private void roundAmountsOfCategoriesList(List<String[]> list) {
+		double categoryAmount;
+		for (String[] row : list) {
+			categoryAmount = Double.valueOf(row[1]);
+			//row[1] = Double.toString(Math.round(categoryAmount * 100)/100f); // trim amount for two places after decimal point
+			row[1] = Long.toString(Math.round(categoryAmount)); // trim rational part
+		}
+	}
+
 	private String getRecordsToShowFilter() {		
 		return getIntent().getStringExtra(EXTRAS_RECORDS_TO_SHOW_FILTER);
 	}
@@ -101,11 +158,11 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	}
 	
 	private long getStartDateFilter() {		
-		return getIntent().getLongExtra(EXTRAS_START_DATE_FILTER, 0L);
+		return getIntent().getLongExtra(EXTRAS_START_DATE_FILTER, DateUtils.DEFAULT_START_DATE);
 	}
 	
 	private long getEndDateFilter() {		
-		return getIntent().getLongExtra(EXTRAS_END_DATE_FILTER, Long.MAX_VALUE);
+		return getIntent().getLongExtra(EXTRAS_END_DATE_FILTER, DateUtils.DEFAULT_END_DATE);
 	}
 	
 	private void parseFilters() {
@@ -136,7 +193,12 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		
 			fillText(v, R.id.categoryName, row[0]);
 
-			fillText(v, R.id.categoryAmount, row[1]);						
+			if (reportViewsCounter == 0) { // Amounts displaying mode
+				fillText(v, R.id.categoryAmount, row[1]);
+			}			
+			if (reportViewsCounter == 1) { // Percentages displaying mode
+				fillText(v, R.id.categoryAmount, row[2] + " %");
+			}
 	
 			return v;
 		}
@@ -146,9 +208,9 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			textView.setText(text == null ? "" : text);
 		}
 		
-		private void setTextColor(View v, int id, int colorId) {
+/*		private void setTextColor(View v, int id, int colorId) {
 			TextView textView = (TextView) v.findViewById(id);
 			textView.setTextColor(getResources().getColor(colorId));
-		}
+		}*/
 	}
 }

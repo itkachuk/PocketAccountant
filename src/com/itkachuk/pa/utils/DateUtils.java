@@ -5,6 +5,10 @@ import java.util.Calendar;
 public class DateUtils {
 	private static final String TAG = "PocketAccountant";
 	
+	public static final long DEFAULT_START_DATE = 0L;
+//	public static final long DEFAULT_END_DATE = 4102444800000L; // 1 Jan 2100
+	public static final long DEFAULT_END_DATE = Long.MAX_VALUE; // 20 Nov 2286
+	
 	public static final int DAY = 0;
 	public static final int WEEK = 1;
 	public static final int MONTH = 2;
@@ -60,7 +64,7 @@ public class DateUtils {
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
 		
-		TimeRange timeRange = new TimeRange(0, Long.MAX_VALUE);
+		TimeRange timeRange = new TimeRange(DEFAULT_START_DATE, DEFAULT_END_DATE);
 		
 		switch (periodType) {
 		
