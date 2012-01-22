@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.management.AccountsManagementActivity;
+import com.itkachuk.pa.activities.management.CategoriesManagementActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
@@ -41,14 +42,14 @@ public class ServiceMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	      	case R.id.accounts_button:
 		    	Log.d(TAG, "clicked on \"Accounts\"");
 		        intent = new Intent(ServiceMenuActivity.this, AccountsManagementActivity.class);
-		        //intent.putExtra(HistoryReportActivity.EXTRAS_IS_EXPENSE, true);
 		        startActivity(intent);
 		        
 		    break;
 	         
 	      	case R.id.categories_button:
 	      		Log.d(TAG, "clicked on \"Categories\"");
-
+	      		intent = new Intent(ServiceMenuActivity.this, CategoriesManagementActivity.class);
+	      		startActivity(intent);
 	        break;
 
 	      	case R.id.program_settings_button:

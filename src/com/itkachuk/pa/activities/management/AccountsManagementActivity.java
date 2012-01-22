@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,6 +22,9 @@ import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.AccountEditorActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
+import com.itkachuk.pa.sectionedList.ListItemAdapter;
+import com.itkachuk.pa.sectionedList.SectionItem;
+import com.itkachuk.pa.sectionedList.SectionedListItem;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.j256.ormlite.dao.Dao;
@@ -34,7 +38,7 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.accounts_list);
+		setContentView(R.layout.items_list);
 		builder = new AlertDialog.Builder(this);
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
@@ -43,13 +47,15 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 			}
 		});
 		
-		findViewById(R.id.addButton).setOnClickListener(new View.OnClickListener() {
+		Button addButton = (Button) findViewById(R.id.addButton);		
+		addButton.setText(getResources().getString(R.string.add_account_button_label));
+		addButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				AccountEditorActivity.callMe(AccountsManagementActivity.this);
 			}
 		});
 
-		listView = (ListView) findViewById(R.id.accountsList);
+		listView = (ListView) findViewById(R.id.itemsList);
 		
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -102,20 +108,28 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 	
 	private void fillList() throws SQLException {
 		Log.d(TAG, "Show list of accounts");
-		List<Account> list = new ArrayList<Account>();
+		ArrayList<SectionedListItem> list = new ArrayList<SectionedListItem>();
+		// Add section
+		list.add(new SectionItem(getResources().getString(R.string.predefined_text) + " " +
+				getResources().getString(R.string.accounts_label)));
 		// Load predefined Main account first
 		list.add(new Account(
 				getResources().getString(R.string.main_account_name),
 				"UAH", // TODO - implement reading of currency from Program Preferences
 				getResources().getString(R.string.main_account_description),
 				false));
+		// Add section
+		list.add(new SectionItem(getResources().getString(R.string.custom_text) + " " +
+				getResources().getString(R.string.accounts_label)));
 		// Load custom accounts from DB
 		Dao<Account, String> accountDao = getHelper().getAccountDao();
 		list.addAll(accountDao.queryForAll());
-		ArrayAdapter<Account> arrayAdapter = new AcountsAdapter(this, R.layout.account_row, list);
-		listView.setAdapter(arrayAdapter);
+		ListItemAdapter listItemAdapter = new ListItemAdapter(this, list);
+		listView.setAdapter(listItemAdapter);
 	}
-	
+
+	// Not used any more
+	/* 
 	private class AcountsAdapter extends ArrayAdapter<Account> {
 
 		public AcountsAdapter(Context context, int textViewResourceId, List<Account> items) {
@@ -140,5 +154,5 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 			TextView textView = (TextView) v.findViewById(id);
 			textView.setText(text == null ? "" : text);
 		}		
-	}	
+	}	*/
 }

@@ -1,10 +1,11 @@
 package com.itkachuk.pa.entities;
 
+import com.itkachuk.pa.sectionedList.SectionedListItem;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
-public class Account {
+public class Account implements SectionedListItem {
 	public static final String NAME_FIELD_NAME = "name";
 	public static final String CURRENCY_FIELD_NAME = "currency";
 	public static final String DESCRIPTION_FIELD_NAME = "description";
@@ -69,6 +70,11 @@ public class Account {
 	@Override
 	public String toString() {
 		return name == null ? "" : name;
+	}
+
+	@Override
+	public boolean isSection() {
+		return false;
 	}
 	
 	

@@ -48,6 +48,11 @@
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
         
+        <activity android:name=".activities.editors.CategoryEditorActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
         <activity android:name=".activities.filters.FilterActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
