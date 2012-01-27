@@ -253,7 +253,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			if (category != null && !category.toString().equals("")) {
 				record.setCategory(category.getName());
 			} else {
-				throw new IllegalArgumentException(getResources().getString(R.string.empty_category_message));
+				throw new IllegalArgumentException(getResources().getString(R.string.not_selected_category_message));
 			}
 		}
 		

@@ -53,14 +53,22 @@ public class ListItemAdapter extends ArrayAdapter<SectionedListItem> {
 				} else if (i instanceof Category) {
 					Category category = (Category) i;
 					// TODO - implement own row layout for category
-					v = vi.inflate(R.layout.account_row, null);
-					fillText(v, R.id.accountName, category.getName());
+//					v = vi.inflate(R.layout.account_row, null);
+//					fillText(v, R.id.accountName, category.getName());
+//					if (category.isExpense()) {
+//						fillText(v, R.id.accountDescription, context.getResources().getString(R.string.expenses_text));
+//					} else {
+//						fillText(v, R.id.accountDescription, context.getResources().getString(R.string.incomes_text));
+//					}
+					v = vi.inflate(R.layout.category_row, null);
+					fillText(v, R.id.categoryName, category.getName());
 					if (category.isExpense()) {
-						fillText(v, R.id.accountDescription, context.getResources().getString(R.string.expenses_text));
+						fillText(v, R.id.categoryGroup, context.getResources().getString(R.string.expenses_text));
+						setTextColor(v, R.id.categoryGroup, context.getResources().getColor(R.color.expense_amount_color));
 					} else {
-						fillText(v, R.id.accountDescription, context.getResources().getString(R.string.incomes_text));
-					}
-						
+						fillText(v, R.id.categoryGroup, context.getResources().getString(R.string.incomes_text));
+						setTextColor(v, R.id.categoryGroup, context.getResources().getColor(R.color.income_amount_color));
+					}	
 				}
 			}
 		}
@@ -70,5 +78,10 @@ public class ListItemAdapter extends ArrayAdapter<SectionedListItem> {
 	private void fillText(View v, int id, String text) {
 		TextView textView = (TextView) v.findViewById(id);
 		textView.setText(text == null ? "" : text);
+	}
+	
+	private void setTextColor(View v, int id, int colorCode) {
+		TextView textView = (TextView) v.findViewById(id);
+		textView.setTextColor(colorCode);
 	}
 }

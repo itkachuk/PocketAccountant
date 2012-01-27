@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:baselineAligned="false"
 	android:background="@color/background"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -13,32 +12,24 @@
 		android:layout_gravity="center"
 		android:layout_weight="1">
 		
-        <TextView android:text="@string/account_name_text" 
+        <TextView android:text="@string/category_name_text" 
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content"/>
-		<EditText android:id="@+id/account_name_edit_text"
+		<EditText android:id="@+id/categoryNameEditText"
 			android:layout_width="match_parent" 
 			android:layout_height="wrap_content"
 			android:inputType="textCapSentences"
 			android:maxLength="20"
 			android:layout_marginBottom="10dip"/>
 			
-		<TextView android:text="@string/currency_text" 
+		<TextView android:text="@string/category_group_text" 
         	android:layout_width="wrap_content" 
         	android:layout_height="wrap_content"/>
-        <Spinner android:id="@+id/account_currency_spinner" 
+        <Spinner android:id="@+id/categoryGroupSpinner" 
         	android:layout_width="match_parent" 
         	android:layout_height="wrap_content"
-        	android:layout_marginBottom="10dip"/>	
+        	android:entries="@array/category_groups_array"/>	
 			
-		<TextView android:text="@string/description_text" 
-        	android:layout_width="wrap_content" 
-        	android:layout_height="wrap_content"/>
-		<EditText android:id="@+id/account_description_edit_text"
-		    android:inputType="textCapSentences"
-		    android:maxLength="200"
-			android:layout_width="match_parent" 
-			android:layout_height="wrap_content"/>	
 	</LinearLayout> 
 		
     <LinearLayout android:orientation="horizontal" 

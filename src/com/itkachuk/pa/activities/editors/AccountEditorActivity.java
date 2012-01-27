@@ -137,9 +137,9 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private Account saveToObj() {
 		Account account;
 		
-		if (getAccountName() != null) { // Edit existed record mode
+		if (getAccountName() != null) { // Edit existed account mode
 			account = mExistedAccountToEdit;
-		} else { // Create new record mode
+		} else { // Create new account mode
 			account = new Account();
 			String name = mAccountNameEditText.getText().toString();
 			if (name != null && !name.equals("")) { // TODO - add additional input validation for correct chars

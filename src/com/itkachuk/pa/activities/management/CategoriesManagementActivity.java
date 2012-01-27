@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.CategoryEditorActivity;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.sectionedList.ListItemAdapter;
@@ -44,7 +45,7 @@ public class CategoriesManagementActivity extends OrmLiteBaseActivity<DatabaseHe
 		
 		addButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				//AccountEditorActivity.callMe(CategoriesManagementActivity.this);
+				CategoryEditorActivity.callMe(CategoriesManagementActivity.this);
 			}
 		});
 
@@ -54,7 +55,7 @@ public class CategoriesManagementActivity extends OrmLiteBaseActivity<DatabaseHe
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Category category = (Category) listView.getAdapter().getItem(i);
 				if (category.isRemovable()) {
-					//AccountEditorActivity.callMe(CategoriesManagementActivity.this, account.getName());
+					CategoryEditorActivity.callMe(CategoriesManagementActivity.this, category.getName());
 				}
 			}
 		});

@@ -44,7 +44,8 @@
         <AutoCompleteTextView  android:id="@+id/description_edit_text" 
         	android:layout_width="match_parent" 
         	android:layout_height="wrap_content"
-        	android:inputType="textAutoComplete"/>	
+        	android:inputType="textAutoComplete"
+        	android:maxLength="200"/>	
 	</LinearLayout>
     
     <LinearLayout android:orientation="horizontal" 

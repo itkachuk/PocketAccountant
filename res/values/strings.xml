@@ -89,7 +89,7 @@
 	<!-- Categories Management Activities (Categories List and Category Editor) -->
 	<string name="add_category_button_label">Add Category</string>
 	<string name="category_name_text">Category Name</string>
-	<string name="category_for_text">Category For</string>
+	<string name="category_group_text">Category Group</string>
 	
 	<!-- Sectioned List Items -->
 	<string name="predefined_text">Predefined</string>
@@ -101,9 +101,10 @@
 	<string name="category_delete_dialog">Selected category will be removed. Continue?</string>    
 	
 	<!-- Error messages -->
-	<string name="empty_category_message">Please, select a category</string>
+	<string name="not_selected_category_message">Please, select a category</string>
 	<string name="wrong_amount_number_message">Please, enter correct Amount number</string>
 	<string name="empty_account_message">Please, enter correct Account name</string>
+	<string name="empty_category_message">Please, enter correct Category name</string>
 	<string name="wrong_time_filter_message">Start date can\'t be equal or grater than end date. Such filter will show nothing.</string>		
 	
 	<string name="no_data_message">No data to display</string>
@@ -137,6 +138,11 @@
         <item>Salary</item>
         <item>Gifts</item>
         <item>Other</item>
+    </string-array>
+    <!-- Category groups -->
+    <string-array name="category_groups_array">
+	    <item>Expenses</item>
+        <item>Incomes</item>
     </string-array>
     
     <!-- Currencies -->
