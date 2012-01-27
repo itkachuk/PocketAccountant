@@ -31,7 +31,7 @@
         <activity android:name=".activities.menus.ServiceMenuActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        </activity>
+        </activity>             
         
         <activity android:name=".activities.management.AccountsManagementActivity"
                   android:screenOrientation="portrait"
@@ -49,6 +49,11 @@
         </activity>
         
         <activity android:name=".activities.editors.CategoryEditorActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        
+        <activity android:name=".activities.editors.PreferencesEditorActivity"
                   android:screenOrientation="portrait"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>

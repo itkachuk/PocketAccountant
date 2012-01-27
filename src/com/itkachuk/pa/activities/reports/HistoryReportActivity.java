@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.entities.Category;
@@ -43,7 +45,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String EXTRAS_START_DATE_FILTER = "startDateFilter";
 	private static final String EXTRAS_END_DATE_FILTER = "endDateFilter";
 
-	private static final Integer MAX_ITEMS_PER_PAGE = 30;
+	public static final Integer DEFAULT_ROWS_PER_PAGE_NUMBER = 30;
 	
 	private ListView listView;
 	private AlertDialog.Builder builder;
@@ -161,7 +163,12 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			where.between(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, mStartDateFilter, mEndDateFilter);
 		}
 		
-		builder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).limit(HistoryReportActivity.MAX_ITEMS_PER_PAGE);
+		// getting roesPerPage limit value from ProgramPreferences
+		SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
+		int rowsPerPage = programSettings.getInt(PreferencesEditorActivity.PREFS_ROWS_PER_PAGE, 
+				HistoryReportActivity.DEFAULT_ROWS_PER_PAGE_NUMBER);
+		
+		builder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).limit(rowsPerPage);
 		List<IncomeOrExpenseRecord> list = dao.query(builder.prepare());
 		ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
 		listView.setAdapter(arrayAdapter);

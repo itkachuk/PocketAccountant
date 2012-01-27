@@ -12,6 +12,7 @@ import java.util.List;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -85,7 +86,12 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	        	if (mExistedRecordToEdit != null) {
 	        		loadFromObj(mExistedRecordToEdit);
 	        	}	        	
-	        }               			
+	        } else { // New record mode
+	        	// Select default account
+	        	SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
+	    		selectSpinnerAccount(programSettings.getString(PreferencesEditorActivity.PREFS_DEFAULT_ACCOUNT, 
+	    				getResources().getString(R.string.main_account_name)));
+	        }
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}

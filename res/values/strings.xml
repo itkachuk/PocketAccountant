@@ -81,6 +81,11 @@
 	<string name="categories_label">Categories</string> 
 	<string name="program_settings_label">Program Settings</string>
 	
+	<!-- Program Settings Activity -->
+	<string name="default_account_text">Default Account</string>
+	<string name="main_account_currency_text">Currency of Main Account</string>
+	<string name="rows_per_page_text">Rows per Page in \"History\" report</string>
+	
 	<!-- Accounts Management Activities (Accounts List and Account Editor) -->
 	<string name="add_account_button_label">Add Account</string>
 	<string name="account_name_text">Account Name</string>
@@ -106,6 +111,7 @@
 	<string name="empty_account_message">Please, enter correct Account name</string>
 	<string name="empty_category_message">Please, enter correct Category name</string>
 	<string name="wrong_time_filter_message">Start date can\'t be equal or grater than end date. Such filter will show nothing.</string>		
+	<string name="wrong_rows_per_page_number_message">Rows per Page number can\'t be less than 5 or grater than 50.</string>		
 	
 	<string name="no_data_message">No data to display</string>
 	

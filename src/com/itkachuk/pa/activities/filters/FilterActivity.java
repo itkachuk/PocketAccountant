@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.activities.reports.CommonReportActivity;
@@ -26,6 +27,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +39,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
@@ -110,6 +113,11 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	        refreshAccountsSpinnerEntries();
 	        refreshCategoriesSpinnerEntries();
 	        refreshTimeSpinnerEntries();
+	        // Select default account
+        	SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
+    		selectSpinnerAccount(programSettings.getString(PreferencesEditorActivity.PREFS_DEFAULT_ACCOUNT, 
+    				getResources().getString(R.string.main_account_name)));
+    		
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
@@ -505,5 +513,18 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private String getReportName() {
 		return getIntent().getStringExtra(EXTRAS_REPORT_NAME);
+	}
+	
+	// TODO - move common Spinner methods to Utils class
+	private void selectSpinnerAccount(String accountName) {
+		SpinnerAdapter adapter = mAccountsFilterSpinner.getAdapter();
+		int count = adapter.getCount();
+		for (int i = 0; i < count; i++) {
+			Account account = (Account) adapter.getItem(i);
+			if (account != null && account.getName() != null && account.getName().equals(accountName)) {
+				mAccountsFilterSpinner.setSelection(i);
+				break;
+			}
+		}
 	}
 }

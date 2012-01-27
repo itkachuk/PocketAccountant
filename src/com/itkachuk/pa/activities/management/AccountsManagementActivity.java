@@ -2,11 +2,14 @@ package com.itkachuk.pa.activities.management;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.AccountEditorActivity;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.sectionedList.ListItemAdapter;
@@ -113,9 +117,12 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		list.add(new SectionItem(getResources().getString(R.string.predefined_text) + " " +
 				getResources().getString(R.string.accounts_label)));
 		// Load predefined Main account first
+		SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
+		String currency = programSettings.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, 
+				Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 		list.add(new Account(
 				getResources().getString(R.string.main_account_name),
-				"UAH", // TODO - implement reading of currency from Program Preferences
+				currency, // got currency from Program Preferences
 				getResources().getString(R.string.main_account_description),
 				false));
 		// Add section

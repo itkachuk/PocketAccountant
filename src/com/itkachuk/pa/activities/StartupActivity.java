@@ -1,11 +1,15 @@
 package com.itkachuk.pa.activities;
 
 import java.sql.SQLException;
+import java.util.Currency;
+import java.util.Locale;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.activities.menus.ServiceMenuActivity;
+import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
@@ -14,6 +18,7 @@ import com.j256.ormlite.dao.Dao;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +44,29 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
         serviceButton.setOnClickListener(this);
         View exitButton = findViewById(R.id.exit_button);
         exitButton.setOnClickListener(this);
+        
+        SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
+        if (!programSettings.contains(PreferencesEditorActivity.PREFS_IS_INITIALIZED)) {
+        	SharedPreferences.Editor editor = programSettings.edit();
+        	// Set default preferences
+        	editor.putString(
+        			PreferencesEditorActivity.PREFS_DEFAULT_ACCOUNT, 
+        			getResources().getString(R.string.main_account_name));
+        	
+        	editor.putString(
+        			PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, 
+        			Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        	Log.d(TAG, "Current locale: " + Locale.getDefault());
+        	Log.d(TAG, "Current currency (saved to preferences): " + Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        	
+        	editor.putInt(
+        			PreferencesEditorActivity.PREFS_ROWS_PER_PAGE, 
+        			HistoryReportActivity.DEFAULT_ROWS_PER_PAGE_NUMBER);
+        	
+        	editor.putBoolean(PreferencesEditorActivity.PREFS_IS_INITIALIZED, true);
+        	editor.commit();
+        	Log.d(TAG, "Program Preferences initialized successfully.");
+        }
     }
 
     @Override

@@ -56,7 +56,7 @@ public class CalcUtils {
 		if (timeRange != null && ((timeRange.getStartTime() > DateUtils.DEFAULT_START_DATE) || (timeRange.getEndTime() < DateUtils.DEFAULT_END_DATE))) 
 			queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
 		queryBuilder.append(" group by category order by amounts desc");
-		Log.d(TAG, "getAmountsPerCategoryList query = " + queryBuilder.toString());
+		//Log.d(TAG, "getAmountsPerCategoryList query = " + queryBuilder.toString());
 		
 		GenericRawResults<String[]> rawResults = recordDao.queryRaw(queryBuilder.toString());
 		return rawResults.getResults();		

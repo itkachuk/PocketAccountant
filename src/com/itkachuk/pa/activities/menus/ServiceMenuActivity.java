@@ -2,11 +2,13 @@ package com.itkachuk.pa.activities.menus;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.management.AccountsManagementActivity;
 import com.itkachuk.pa.activities.management.CategoriesManagementActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
@@ -42,8 +44,7 @@ public class ServiceMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	      	case R.id.accounts_button:
 		    	Log.d(TAG, "clicked on \"Accounts\"");
 		        intent = new Intent(ServiceMenuActivity.this, AccountsManagementActivity.class);
-		        startActivity(intent);
-		        
+		        startActivity(intent);	        
 		    break;
 	         
 	      	case R.id.categories_button:
@@ -54,7 +55,7 @@ public class ServiceMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 
 	      	case R.id.program_settings_button:
 	      		Log.d(TAG, "clicked on \"Program Settings\"");
-	    	  
+	    	    PreferencesEditorActivity.callMe(ServiceMenuActivity.this);
 	      	break;
 		}	
 	}
