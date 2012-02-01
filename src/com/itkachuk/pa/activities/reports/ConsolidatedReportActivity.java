@@ -13,14 +13,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.entities.Account;
@@ -43,7 +46,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private static final String EXTRAS_END_DATE_FILTER = "endDateFilter";
 	
 	private ListView listView;
-	private Button mChangeViewButton;
+	private ImageButton mChangeViewButton;
 	
 	private int reportViewsCounter = 0; // 0 - amounts, 1 - percentages. TBD: 2 - pie chart, 3 - bars.
 	private static final int REPORT_VIEWS_QTY = 2;
@@ -58,16 +61,26 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.consolidated_report);
+		// Hide status bar, but keep title bar
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		parseFilters();
+		updateTitleBar();
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				finish(); // Close activity on Back button pressing
 			}
 		});
+		
+		findViewById(R.id.filterButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				FilterActivity.callMe(ConsolidatedReportActivity.this, "Consolidated");
+			}
+		});
 
 		listView = (ListView) findViewById(R.id.categoriesAmountsList);		
-		mChangeViewButton = (Button) findViewById(R.id.changeViewButton);
+		mChangeViewButton = (ImageButton) findViewById(R.id.changeViewButton);
 		
 		mChangeViewButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -89,6 +102,25 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 						mAccountsFilter, categoryAmountRow[0], mStartDateFilter, mEndDateFilter);
 			}
 		});
+	}
+	
+	private void updateTitleBar() {
+		String accountsFilter = getAccountsFilter();
+		String currency;
+		//If [main] account - get currency from Preferences
+		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
+			currency = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE)
+			.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, "");
+		} else { // if not [main] - get currency from DB
+			try{
+	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
+	 		   	Account account = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter).get(0);
+	 		   	currency = account.getCurrency();
+	 	   	} catch (SQLException e) {
+	 	   		throw new RuntimeException(e);
+	 	   	}
+		}
+		setTitle("Account: " + accountsFilter + ", " + currency);
 	}
 	
 	@Override

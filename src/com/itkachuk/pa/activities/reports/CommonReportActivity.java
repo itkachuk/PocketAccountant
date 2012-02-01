@@ -9,11 +9,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
+import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
+import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.CalcUtils;
@@ -47,6 +51,9 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.common_report);
+		// Hide status bar, but keep title bar
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		updateTitleBar();
 		
 		mAccountsFilter = getAccountsFilter();
 		if (mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
@@ -58,6 +65,12 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				finish(); // Close activity on Back button pressing
 			}
 		});
+		
+		findViewById(R.id.filterButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				FilterActivity.callMe(CommonReportActivity.this, "Common");
+			}
+		});		
 		
 		pastMonthIncome = (TextView) findViewById(R.id.pastMonthIncomeAmount);
 		pastMonthExpense = (TextView) findViewById(R.id.pastMonthExpenseAmount);
@@ -75,6 +88,25 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private void updateTitleBar() {
+		String accountsFilter = getAccountsFilter();
+		String currency;
+		//If [main] account - get currency from Preferences
+		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
+			currency = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE)
+			.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, "");
+		} else { // if not [main] - get currency from DB
+			try{
+	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
+	 		   	Account account = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter).get(0);
+	 		   	currency = account.getCurrency();
+	 	   	} catch (SQLException e) {
+	 	   		throw new RuntimeException(e);
+	 	   	}
+		}
+		setTitle("Account: " + accountsFilter + ", " + currency);
 	}
 	
 	public static void callMe(Context c, String accountsFilter) {

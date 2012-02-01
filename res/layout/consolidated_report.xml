@@ -12,25 +12,30 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"/>   
 
-	    <LinearLayout android:orientation="horizontal" 
+	<LinearLayout android:orientation="horizontal" 
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content" 		
 		android:layout_gravity="center">
 	
-    	<Button android:id="@+id/backButton"
+    	<ImageButton android:id="@+id/backButton"
     		android:gravity="center"
     		android:layout_width="fill_parent" 
-    		android:layout_height="wrap_content"	               
-	        android:layout_weight="1.8"
-	        android:text="@string/back_button_label"
-	        android:drawableLeft="@drawable/undo"/>
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"               
+	        android:src="@drawable/undo"/>
+    	
+    	<ImageButton android:id="@+id/filterButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"               
+	        android:src="@drawable/ic_menu_filter"/> 
 	    
-	    <Button android:id="@+id/changeViewButton"
+	    <ImageButton android:id="@+id/changeViewButton"
     		android:gravity="center"
     		android:layout_width="fill_parent" 
-    		android:layout_height="wrap_content"	               
-	        android:layout_weight="1"
-	        android:text="@string/change_view_button_label"
-	        android:drawableLeft="@drawable/ic_menu_refresh"/>    
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"	               
+	        android:src="@drawable/ic_menu_refresh"/>    
    	</LinearLayout>	
 </LinearLayout>

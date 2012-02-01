@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -26,6 +27,7 @@ import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
@@ -62,11 +64,21 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.history_report);
 		builder = new AlertDialog.Builder(this);
+		// Hide status bar, but keep title bar
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		parseFilters();
+		updateTitleBar();
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				finish(); // Close activity on Back button pressing
+			}
+		});
+		
+		findViewById(R.id.filterButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				FilterActivity.callMe(HistoryReportActivity.this, "History");
 			}
 		});
 
@@ -107,6 +119,25 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				return true;
 			}
 		});
+	}
+
+	private void updateTitleBar() {
+		String accountsFilter = getAccountsFilter();
+		String currency;
+		//If [main] account - get currency from Preferences
+		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
+			currency = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE)
+			.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, "");
+		} else { // if not [main] - get currency from DB
+			try{
+	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
+	 		   	Account account = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter).get(0);
+	 		   	currency = account.getCurrency();
+	 	   	} catch (SQLException e) {
+	 	   		throw new RuntimeException(e);
+	 	   	}
+		}
+		setTitle("Account: " + accountsFilter + ", " + currency);
 	}
 
 	@Override

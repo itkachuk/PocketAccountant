@@ -64,18 +64,15 @@
         </activity>
         
         <activity android:name=".activities.reports.HistoryReportActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  android:screenOrientation="portrait">
         </activity>
         
         <activity android:name=".activities.reports.CommonReportActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  android:screenOrientation="portrait">
         </activity>
         
         <activity android:name=".activities.reports.ConsolidatedReportActivity"
-                  android:screenOrientation="portrait"
-                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+                  android:screenOrientation="portrait">
         </activity>
         		
     </application>   
