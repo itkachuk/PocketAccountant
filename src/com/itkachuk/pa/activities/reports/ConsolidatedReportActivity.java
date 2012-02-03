@@ -26,6 +26,7 @@ import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
@@ -40,12 +41,14 @@ import com.j256.ormlite.stmt.Where;
 public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = "PocketAccountant";
 
+	private static final String EXTRAS_CALLER = "caller";
 	private static final String EXTRAS_RECORDS_TO_SHOW_FILTER = "recordsToShowFilter";
 	private static final String EXTRAS_ACCOUNTS_FILTER = "accountsFilter";
 	private static final String EXTRAS_START_DATE_FILTER = "startDateFilter";
 	private static final String EXTRAS_END_DATE_FILTER = "endDateFilter";
 	
 	private ListView listView;
+	private ImageButton filterButton;
 	private ImageButton mChangeViewButton;
 	
 	private int reportViewsCounter = 0; // 0 - amounts, 1 - percentages. TBD: 2 - pie chart, 3 - bars.
@@ -61,6 +64,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.consolidated_report);
+		filterButton = (ImageButton) findViewById(R.id.filterButton);
 		// Hide status bar, but keep title bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
@@ -73,9 +77,17 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			}
 		});
 		
-		findViewById(R.id.filterButton).setOnClickListener(new View.OnClickListener() {
+		// Check calling activity, enable filter button, only if we came from reports menu activity
+		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
+			filterButton.setEnabled(true);
+		} else {
+			filterButton.setEnabled(false);
+		}
+		
+		filterButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				FilterActivity.callMe(ConsolidatedReportActivity.this, "Consolidated");
+				finish();
 			}
 		});
 
@@ -98,7 +110,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				String[] categoryAmountRow = (String[]) listView.getAdapter().getItem(i);
-				HistoryReportActivity.callMe(ConsolidatedReportActivity.this, getRecordsToShowFilter(), 
+				HistoryReportActivity.callMe(ConsolidatedReportActivity.this, "", getRecordsToShowFilter(), 
 						mAccountsFilter, categoryAmountRow[0], mStartDateFilter, mEndDateFilter);
 			}
 		});
@@ -133,9 +145,10 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		}
 	}
 	
-	public static void callMe(Context c, String recordsToShowFilter, String accountsFilter,
+	public static void callMe(Context c, String caller, String recordsToShowFilter, String accountsFilter,
 			long startDateFilter, long endDateFilter) {
 		Intent intent = new Intent(c, ConsolidatedReportActivity.class);
+		intent.putExtra(EXTRAS_CALLER, caller);
 		intent.putExtra(EXTRAS_RECORDS_TO_SHOW_FILTER, recordsToShowFilter);
 		intent.putExtra(EXTRAS_ACCOUNTS_FILTER, accountsFilter);
 		intent.putExtra(EXTRAS_START_DATE_FILTER, startDateFilter);
@@ -181,6 +194,10 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		}
 	}
 
+	private String getCallingActivityName() {		
+		return getIntent().getStringExtra(EXTRAS_CALLER);
+	}
+	
 	private String getRecordsToShowFilter() {		
 		return getIntent().getStringExtra(EXTRAS_RECORDS_TO_SHOW_FILTER);
 	}

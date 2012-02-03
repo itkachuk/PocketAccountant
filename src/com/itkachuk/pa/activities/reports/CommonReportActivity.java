@@ -11,12 +11,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
@@ -31,6 +33,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = "PocketAccountant";
 	
+	private static final String EXTRAS_CALLER = "caller";
 	private static final String EXTRAS_ACCOUNTS_FILTER = "accountsFilter";
 	
 	private TextView pastMonthIncome;
@@ -44,6 +47,8 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private TextView currentYearBalance;
 	private TextView pastYearBalance;
 	
+	private ImageButton filterButton;
+	
 	// Filters, passed via extras
 	private String mAccountsFilter;
 	
@@ -51,6 +56,7 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.common_report);
+		filterButton = (ImageButton) findViewById(R.id.filterButton);
 		// Hide status bar, but keep title bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		updateTitleBar();
@@ -66,9 +72,17 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		});
 		
-		findViewById(R.id.filterButton).setOnClickListener(new View.OnClickListener() {
+		// Check calling activity, enable filter button, only if we came from reports menu activity
+		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
+			filterButton.setEnabled(true);
+		} else {
+			filterButton.setEnabled(false);
+		}
+		
+		filterButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				FilterActivity.callMe(CommonReportActivity.this, "Common");
+				finish();
 			}
 		});		
 		
@@ -109,10 +123,15 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		setTitle("Account: " + accountsFilter + ", " + currency);
 	}
 	
-	public static void callMe(Context c, String accountsFilter) {
+	public static void callMe(Context c, String caller, String accountsFilter) {
 		Intent intent = new Intent(c, CommonReportActivity.class);
+		intent.putExtra(EXTRAS_CALLER, caller);
 		intent.putExtra(EXTRAS_ACCOUNTS_FILTER, accountsFilter);
 		c.startActivity(intent);
+	}
+	
+	private String getCallingActivityName() {		
+		return getIntent().getStringExtra(EXTRAS_CALLER);
 	}
 	
 	private String getAccountsFilter() {		

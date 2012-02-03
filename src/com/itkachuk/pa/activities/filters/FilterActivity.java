@@ -314,17 +314,17 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 								Toast.makeText(getApplicationContext(), getResources().getString(R.string.wrong_time_filter_message), Toast.LENGTH_LONG).show();
 								return;
 							}
-							HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+							HistoryReportActivity.callMe(FilterActivity.this, "", recordsToShowFilter, accountsFilter, 
 									categoriesFilter, mStartDate.getTimeInMillis(), mEndDate.getTimeInMillis());
 						} else {
-							HistoryReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+							HistoryReportActivity.callMe(FilterActivity.this, "", recordsToShowFilter, accountsFilter, 
 									categoriesFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 						}
 						
 					}
 					
 					if (reportName.equals("Common")) {
-						CommonReportActivity.callMe(FilterActivity.this, accountsFilter);
+						CommonReportActivity.callMe(FilterActivity.this, "", accountsFilter);
 					}
 					
 					if (reportName.equals("Consolidated")) {
@@ -333,10 +333,10 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 								Toast.makeText(getApplicationContext(), getResources().getString(R.string.wrong_time_filter_message), Toast.LENGTH_LONG).show();
 								return;
 							}
-							ConsolidatedReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+							ConsolidatedReportActivity.callMe(FilterActivity.this, "", recordsToShowFilter, accountsFilter, 
 									mStartDate.getTimeInMillis(), mEndDate.getTimeInMillis());
 						} else {
-							ConsolidatedReportActivity.callMe(FilterActivity.this, recordsToShowFilter, accountsFilter, 
+							ConsolidatedReportActivity.callMe(FilterActivity.this, "", recordsToShowFilter, accountsFilter, 
 									DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 						}
 					}

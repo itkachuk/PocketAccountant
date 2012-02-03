@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
@@ -41,6 +43,7 @@ import com.j256.ormlite.stmt.Where;
 public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = "PocketAccountant";
 	
+	private static final String EXTRAS_CALLER = "caller";
 	private static final String EXTRAS_RECORDS_TO_SHOW_FILTER = "recordsToShowFilter";
 	private static final String EXTRAS_ACCOUNTS_FILTER = "accountsFilter";
 	private static final String EXTRAS_CATEGORIES_FILTER = "categoriesFilter";
@@ -51,6 +54,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private ListView listView;
 	private AlertDialog.Builder builder;
+	private ImageButton filterButton;
 	
 	// Filters, passed via extras
 	private String mRecordsToShowFilter;
@@ -64,6 +68,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.history_report);
 		builder = new AlertDialog.Builder(this);
+		filterButton = (ImageButton) findViewById(R.id.filterButton);
 		// Hide status bar, but keep title bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
@@ -76,9 +81,17 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		});
 		
-		findViewById(R.id.filterButton).setOnClickListener(new View.OnClickListener() {
+		// Check calling activity, enable filter button, only if we came from reports menu activity
+		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
+			filterButton.setEnabled(true);
+		} else {
+			filterButton.setEnabled(false);
+		}
+		
+		filterButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				FilterActivity.callMe(HistoryReportActivity.this, "History");
+				finish();
 			}
 		});
 
@@ -150,9 +163,10 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}
 	
-	public static void callMe(Context c, String recordsToShowFilter, String accountsFilter,
+	public static void callMe(Context c, String caller, String recordsToShowFilter, String accountsFilter,
 			String categoriesFilter, long startDateFilter, long endDateFilter) {
 		Intent intent = new Intent(c, HistoryReportActivity.class);
+		intent.putExtra(EXTRAS_CALLER, caller);
 		intent.putExtra(EXTRAS_RECORDS_TO_SHOW_FILTER, recordsToShowFilter);
 		intent.putExtra(EXTRAS_ACCOUNTS_FILTER, accountsFilter);
 		intent.putExtra(EXTRAS_CATEGORIES_FILTER, categoriesFilter);
@@ -203,6 +217,10 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		List<IncomeOrExpenseRecord> list = dao.query(builder.prepare());
 		ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
 		listView.setAdapter(arrayAdapter);
+	}
+	
+	private String getCallingActivityName() {		
+		return getIntent().getStringExtra(EXTRAS_CALLER);
 	}
 	
 	private String getRecordsToShowFilter() {		

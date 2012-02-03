@@ -76,23 +76,23 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	      	case R.id.history_report_button:
 		    	Log.d(TAG, "clicked on \"History Report\"");
 		    	//FilterActivity.callMe(ReportsMenuActivity.this, "History");
-		    	HistoryReportActivity.callMe(ReportsMenuActivity.this, recordsToShowFilter, accountsFilter, 
-						categoriesFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
+		    	HistoryReportActivity.callMe(ReportsMenuActivity.this, ReportsMenuActivity.class.getName(), recordsToShowFilter, 
+		    			accountsFilter, categoriesFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 		        // TODO - show no data was found
 		    break;
 	         
 	      	case R.id.common_report_button:
 	      		Log.d(TAG, "clicked on \"Common Report\"");
 	      		//FilterActivity.callMe(ReportsMenuActivity.this, "Common");
-	      		CommonReportActivity.callMe(ReportsMenuActivity.this, accountsFilter);
+	      		CommonReportActivity.callMe(ReportsMenuActivity.this, ReportsMenuActivity.class.getName(), accountsFilter);
 	        break;
 
 	      	case R.id.consolidated_report_button:
 	      		Log.d(TAG, "clicked on \"Consolidated Report\"");
 	      		//FilterActivity.callMe(ReportsMenuActivity.this, "Consolidated");
 	      		recordsToShowFilter = getResources().getString(R.string.expenses_text);
-	      		ConsolidatedReportActivity.callMe(ReportsMenuActivity.this, recordsToShowFilter, accountsFilter, 
-						DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
+	      		ConsolidatedReportActivity.callMe(ReportsMenuActivity.this, ReportsMenuActivity.class.getName(), recordsToShowFilter, 
+	      				accountsFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 	      	break;
 		}	
 	}
