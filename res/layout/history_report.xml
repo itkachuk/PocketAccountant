@@ -23,6 +23,34 @@
     		android:layout_height="wrap_content"
     		android:layout_weight="1"               
 	        android:src="@drawable/undo"/>
+    	
+    	<ImageButton android:id="@+id/firstPageButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"               
+	        android:src="@drawable/ic_menu_previous"/>
+    	
+    	<ImageButton android:id="@+id/onePageBackButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"               
+	        android:src="@drawable/ic_menu_rewind"/>
+    	
+    	<ImageButton android:id="@+id/onePageForwardButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"               
+	        android:src="@drawable/ic_menu_fforward"/>
+    	
+    	<ImageButton android:id="@+id/lastPageButton"
+    		android:gravity="center"
+    		android:layout_width="fill_parent" 
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1"               
+	        android:src="@drawable/ic_menu_next"/>
 	    
 		<ImageButton android:id="@+id/filterButton"
     		android:gravity="center"
