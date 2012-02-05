@@ -14,6 +14,7 @@ import com.itkachuk.pa.activities.reports.ConsolidatedReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.utils.DateUtils;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> implements OnClickListener {
@@ -65,9 +66,7 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	public void onClick(View v) {
 		String recordsToShowFilter, accountsFilter, categoriesFilter;
 		// Get default account name from preferences
-		accountsFilter = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE)
-		.getString(PreferencesEditorActivity.PREFS_DEFAULT_ACCOUNT, 
-				getResources().getString(R.string.main_account_name));
+		accountsFilter = PreferencesUtils.getDefaultAccountName(this);
 		// Use default "All" for other filters		
 		recordsToShowFilter = getResources().getString(R.string.all_text);
 		categoriesFilter = getResources().getString(R.string.all_text);

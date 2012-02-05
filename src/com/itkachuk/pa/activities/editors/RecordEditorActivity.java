@@ -35,6 +35,7 @@ import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.widgets.DateTimePicker;
 
 
@@ -87,10 +88,8 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	        		loadFromObj(mExistedRecordToEdit);
 	        	}	        	
 	        } else { // New record mode
-	        	// Select default account
-	        	SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
-	    		selectSpinnerAccount(programSettings.getString(PreferencesEditorActivity.PREFS_DEFAULT_ACCOUNT, 
-	    				getResources().getString(R.string.main_account_name)));
+	        	// Select default account	        	
+	    		selectSpinnerAccount(PreferencesUtils.getDefaultAccountName(this));
 	        }
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());

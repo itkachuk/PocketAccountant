@@ -34,6 +34,7 @@ import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.DateUtils;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -54,7 +55,20 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private ListView listView;
 	private AlertDialog.Builder builder;
+	private ImageButton firstPageButton;
+	private ImageButton previousPageButton;
+	private ImageButton nextPageButton;
+	private ImageButton lastPageButton;
 	private ImageButton filterButton;
+	
+	private String accountStringForTitle;
+	
+	// SQL query data
+	private int pageIndex;
+	private int totalPagesCount;
+	private int rowsPerPage;
+	Dao<IncomeOrExpenseRecord, Integer> recordDao;
+	QueryBuilder<IncomeOrExpenseRecord, Integer> queryBuilder;
 	
 	// Filters, passed via extras
 	private String mRecordsToShowFilter;
@@ -62,31 +76,46 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private String mCategoriesFilter;
 	private long mStartDateFilter;
 	private long mEndDateFilter;
+
+	private View.OnClickListener pagingButtonsListener;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG, "HistoryReportActivity: onCreate");		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.history_report);
 		builder = new AlertDialog.Builder(this);
+		firstPageButton = (ImageButton) findViewById(R.id.firstPageButton);
+		previousPageButton = (ImageButton) findViewById(R.id.previousPageButton);
+		nextPageButton = (ImageButton) findViewById(R.id.nextPageButton);
+		lastPageButton = (ImageButton) findViewById(R.id.lastPageButton);		
 		filterButton = (ImageButton) findViewById(R.id.filterButton);
 		// Hide status bar, but keep title bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		parseFilters();
-		updateTitleBar();
-
-		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				finish(); // Close activity on Back button pressing
-			}
-		});
+		buildAccountStringForTitle();
 		
+		try {
+			initializeSQLQueryParameters();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		updatePagingButtonsState();
+		updateTitleBar();
+				
 		// Check calling activity, enable filter button, only if we came from reports menu activity
 		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
 			filterButton.setEnabled(true);
 		} else {
 			filterButton.setEnabled(false);
 		}
+		
+		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				finish(); // Close activity on Back button pressing
+			}
+		});
 		
 		filterButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -132,15 +161,97 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				return true;
 			}
 		});
+		
+		// Paging buttons onClick listener
+		pagingButtonsListener = new View.OnClickListener() {
+			public void onClick(View view) {
+				switch(view.getId()){
+				case R.id.firstPageButton : {
+					pageIndex = 0;
+					break;
+				}
+				case R.id.previousPageButton : {
+					if (pageIndex > 0) pageIndex--;
+					break;
+				}
+				case R.id.nextPageButton : {
+					if (pageIndex < (totalPagesCount - 1)) pageIndex++;
+					break;
+				}
+				case R.id.lastPageButton : {
+					pageIndex = totalPagesCount - 1;
+					break;
+				}
+				}
+				
+				updatePagingButtonsState();
+				updateTitleBar();
+				
+				try {
+					fillList();
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		
+		firstPageButton.setOnClickListener(pagingButtonsListener);
+		previousPageButton.setOnClickListener(pagingButtonsListener);
+		nextPageButton.setOnClickListener(pagingButtonsListener);
+		lastPageButton.setOnClickListener(pagingButtonsListener);
 	}
 
-	private void updateTitleBar() {
+
+	private void initializeSQLQueryParameters() throws SQLException {
+		
+		// getting rowsPerPage limit value from ProgramPreferences	
+		rowsPerPage = PreferencesUtils.getRowsPerPage(this);
+		pageIndex = 0;
+		totalPagesCount = 0;
+		
+		boolean whereClauseStarted = false;
+		recordDao = getHelper().getRecordDao();
+		queryBuilder = recordDao.queryBuilder();
+		Where<IncomeOrExpenseRecord, Integer> where = queryBuilder.where();
+		
+		if (mRecordsToShowFilter != null && mRecordsToShowFilter.equals(getResources().getString(R.string.expenses_text))) {
+			where.eq(IncomeOrExpenseRecord.IS_EXPENSE_FIELD_NAME, true);
+			whereClauseStarted = true;
+		} else if (mRecordsToShowFilter != null && mRecordsToShowFilter.equals(getResources().getString(R.string.incomes_text))) {
+			where.eq(IncomeOrExpenseRecord.IS_EXPENSE_FIELD_NAME, false);
+			whereClauseStarted = true;
+		}
+		
+		if (mAccountsFilter != null && !mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
+			if (whereClauseStarted) where.and();
+			where.eq(IncomeOrExpenseRecord.ACCOUNT_FIELD_NAME, mAccountsFilter);
+			whereClauseStarted = true;
+		}
+		
+		if (mCategoriesFilter != null && !mCategoriesFilter.equals(getResources().getString(R.string.all_text))) {
+			if (whereClauseStarted) where.and();
+			where.eq(IncomeOrExpenseRecord.CATEGORY_FIELD_NAME, mCategoriesFilter);
+			whereClauseStarted = true;
+		}
+		
+		if (mStartDateFilter != DateUtils.DEFAULT_START_DATE || mEndDateFilter != DateUtils.DEFAULT_END_DATE) {
+			if (whereClauseStarted) where.and();
+			where.between(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, mStartDateFilter, mEndDateFilter);
+		}				
+		
+		// get total pages count
+		int totalRows = recordDao.query(queryBuilder.prepare()).size(); // total record objects count, obtained with current filter
+		totalPagesCount = totalRows / rowsPerPage;
+		if (totalRows % rowsPerPage > 0) totalPagesCount++ ;
+		
+	}
+
+	private void buildAccountStringForTitle() {
 		String accountsFilter = getAccountsFilter();
 		String currency;
 		//If [main] account - get currency from Preferences
 		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
-			currency = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE)
-			.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, "");
+			currency = PreferencesUtils.getMainAccountCurrency(this);
 		} else { // if not [main] - get currency from DB
 			try{
 	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
@@ -150,7 +261,27 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	 	   		throw new RuntimeException(e);
 	 	   	}
 		}
-		setTitle("Account: " + accountsFilter + ", " + currency);
+		accountStringForTitle = "Account: " + accountsFilter + ", " + currency;
+	}
+	
+	private void updateTitleBar() {
+		setTitle(accountStringForTitle + "\t\tPage: " + (pageIndex + 1) + "/" + totalPagesCount);
+	}
+	
+	private void updatePagingButtonsState() {
+		if (totalPagesCount <= 1) {
+			disableAllPagingButtons();
+			return;
+		}
+		if (pageIndex == 0) { // if first page
+			disableLeftPagingButtons();
+			enableRightPagingButtons();
+		} else if (pageIndex == (totalPagesCount - 1)) { // if last page
+			enableLeftPagingButtons();
+			disableRightPagingButtons();
+		} else { // if in the middle
+			enableAllPagingButtons();
+		}
 	}
 
 	@Override
@@ -177,44 +308,11 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void fillList() throws SQLException {
 		// TODO - implement paging!
-		Log.d(TAG, "Show list of records");
-		boolean whereClauseStarted = false;
-		Dao<IncomeOrExpenseRecord, Integer> dao = getHelper().getRecordDao();
-		QueryBuilder<IncomeOrExpenseRecord, Integer> builder = dao.queryBuilder();
-		Where<IncomeOrExpenseRecord, Integer> where = builder.where();
-		
-		if (mRecordsToShowFilter != null && mRecordsToShowFilter.equals(getResources().getString(R.string.expenses_text))) {
-			where.eq(IncomeOrExpenseRecord.IS_EXPENSE_FIELD_NAME, true);
-			whereClauseStarted = true;
-		} else if (mRecordsToShowFilter != null && mRecordsToShowFilter.equals(getResources().getString(R.string.incomes_text))) {
-			where.eq(IncomeOrExpenseRecord.IS_EXPENSE_FIELD_NAME, false);
-			whereClauseStarted = true;
-		}
-		
-		if (mAccountsFilter != null && !mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
-			if (whereClauseStarted) where.and();
-			where.eq(IncomeOrExpenseRecord.ACCOUNT_FIELD_NAME, mAccountsFilter);
-			whereClauseStarted = true;
-		}
-		
-		if (mCategoriesFilter != null && !mCategoriesFilter.equals(getResources().getString(R.string.all_text))) {
-			if (whereClauseStarted) where.and();
-			where.eq(IncomeOrExpenseRecord.CATEGORY_FIELD_NAME, mCategoriesFilter);
-			whereClauseStarted = true;
-		}
-		
-		if (mStartDateFilter != DateUtils.DEFAULT_START_DATE || mEndDateFilter != DateUtils.DEFAULT_END_DATE) {
-			if (whereClauseStarted) where.and();
-			where.between(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, mStartDateFilter, mEndDateFilter);
-		}
-		
-		// getting roesPerPage limit value from ProgramPreferences
-		SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
-		int rowsPerPage = programSettings.getInt(PreferencesEditorActivity.PREFS_ROWS_PER_PAGE, 
-				HistoryReportActivity.DEFAULT_ROWS_PER_PAGE_NUMBER);
-		
-		builder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).limit(rowsPerPage);
-		List<IncomeOrExpenseRecord> list = dao.query(builder.prepare());
+		// TODO - put to async task!
+		Log.d(TAG, "Fill list of records");				
+				
+		queryBuilder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).offset(pageIndex * rowsPerPage).limit(rowsPerPage);
+		List<IncomeOrExpenseRecord> list = recordDao.query(queryBuilder.prepare());
 		ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
 		listView.setAdapter(arrayAdapter);
 	}
@@ -294,5 +392,36 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			TextView textView = (TextView) v.findViewById(id);
 			textView.setTextColor(getResources().getColor(colorId));
 		}
+	}
+	
+	// Paging buttons control methods
+	private void enableAllPagingButtons() {
+		firstPageButton.setEnabled(true);
+		previousPageButton.setEnabled(true);
+		nextPageButton.setEnabled(true);
+		lastPageButton.setEnabled(true);
+	}
+	private void disableAllPagingButtons() {
+		firstPageButton.setEnabled(false);
+		previousPageButton.setEnabled(false);
+		nextPageButton.setEnabled(false);
+		lastPageButton.setEnabled(false);
+	}
+	
+	private void enableRightPagingButtons() {		
+		nextPageButton.setEnabled(true);
+		lastPageButton.setEnabled(true);
+	}
+	private void disableRightPagingButtons() {		
+		nextPageButton.setEnabled(false);
+		lastPageButton.setEnabled(false);
+	}
+	private void enableLeftPagingButtons() {
+		firstPageButton.setEnabled(true);
+		previousPageButton.setEnabled(true);		
+	}
+	private void disableLeftPagingButtons() {
+		firstPageButton.setEnabled(false);
+		previousPageButton.setEnabled(false);		
 	}
 }

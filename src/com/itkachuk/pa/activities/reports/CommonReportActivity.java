@@ -24,6 +24,7 @@ import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.CalcUtils;
 import com.itkachuk.pa.utils.DateUtils;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
@@ -109,8 +110,7 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		String currency;
 		//If [main] account - get currency from Preferences
 		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
-			currency = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE)
-			.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, "");
+			currency = PreferencesUtils.getMainAccountCurrency(this);
 		} else { // if not [main] - get currency from DB
 			try{
 	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();

@@ -29,6 +29,7 @@ import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.sectionedList.ListItemAdapter;
 import com.itkachuk.pa.sectionedList.SectionItem;
 import com.itkachuk.pa.sectionedList.SectionedListItem;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.j256.ormlite.dao.Dao;
@@ -117,12 +118,9 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		list.add(new SectionItem(getResources().getString(R.string.predefined_text) + " " +
 				getResources().getString(R.string.accounts_label)));
 		// Load predefined Main account first
-		SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
-		String currency = programSettings.getString(PreferencesEditorActivity.PREFS_MAIN_ACCOUNT_CURRENCY, 
-				Currency.getInstance(Locale.getDefault()).getCurrencyCode());
 		list.add(new Account(
 				getResources().getString(R.string.main_account_name),
-				currency, // got currency from Program Preferences
+				PreferencesUtils.getMainAccountCurrency(this), // get currency from Program Preferences
 				getResources().getString(R.string.main_account_description),
 				false));
 		// Add section

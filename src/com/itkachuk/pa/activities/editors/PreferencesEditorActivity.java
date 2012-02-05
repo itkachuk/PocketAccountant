@@ -23,19 +23,13 @@ import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 
 public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private static final String TAG = "PocketAccountant";
-	
-	// Shared Preferences keys
-	public static final String PREFS_NAME = "paPreferences";
-	public static final String PREFS_IS_INITIALIZED = "isInitialized";
-	public static final String PREFS_DEFAULT_ACCOUNT = "defaultAccount";
-	public static final String PREFS_MAIN_ACCOUNT_CURRENCY = "mainAccountCurrency";
-	public static final String PREFS_ROWS_PER_PAGE = "rowsPerPage";
-	
+		
 	private Spinner mDefaultAccountSpinner;
 	private Spinner mMainAccountCurrencySpinner;
 	private EditText mRowsPerPageEditText;
@@ -81,28 +75,20 @@ public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelpe
 		});       
     }
 
-	private void restorePreferences() {
-		SharedPreferences programSettings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-		selectSpinnerAccount(programSettings.getString(PREFS_DEFAULT_ACCOUNT, 
-				getResources().getString(R.string.main_account_name)));
-		selectSpinnerCurrency(programSettings.getString(PREFS_MAIN_ACCOUNT_CURRENCY, 
-				Currency.getInstance(Locale.getDefault()).getCurrencyCode()));
-		mRowsPerPageEditText.setText(Integer.toString(programSettings.getInt(PREFS_ROWS_PER_PAGE, 
-				HistoryReportActivity.DEFAULT_ROWS_PER_PAGE_NUMBER)));
+	private void restorePreferences() {		
+		selectSpinnerAccount(PreferencesUtils.getDefaultAccountName(this));
+		selectSpinnerCurrency(PreferencesUtils.getMainAccountCurrency(this));
+		mRowsPerPageEditText.setText(new Integer(PreferencesUtils.getRowsPerPage(this)).toString());
 	}
 
 	private void savePreferences() {
 		int rowsPerPage = Integer.valueOf(mRowsPerPageEditText.getText().toString());
 		if (rowsPerPage < 5 || rowsPerPage > 50)
 			throw new IllegalArgumentException(getResources().getString(R.string.wrong_rows_per_page_number_message));
-		
-		SharedPreferences programSettings = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-		SharedPreferences.Editor editor = programSettings.edit();
-		
-		editor.putString(PREFS_DEFAULT_ACCOUNT, mDefaultAccountSpinner.getSelectedItem().toString());				
-		editor.putString(PREFS_MAIN_ACCOUNT_CURRENCY, mMainAccountCurrencySpinner.getSelectedItem().toString());
-		editor.putInt(PREFS_ROWS_PER_PAGE, Integer.valueOf(mRowsPerPageEditText.getText().toString()));
-		editor.commit();
+						
+		PreferencesUtils.setDefaultAccountName(this, mDefaultAccountSpinner.getSelectedItem().toString());				
+		PreferencesUtils.setMainAccountCurrency(this, mMainAccountCurrencySpinner.getSelectedItem().toString());
+		PreferencesUtils.setRowsPerPage(this, Integer.valueOf(mRowsPerPageEditText.getText().toString()));
 	}
 	
 	@Override

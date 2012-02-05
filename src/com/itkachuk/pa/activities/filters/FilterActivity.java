@@ -19,6 +19,7 @@ import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.utils.DateUtils;
+import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
@@ -114,10 +115,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	        refreshCategoriesSpinnerEntries();
 	        refreshTimeSpinnerEntries();
 	        // Select default account
-        	SharedPreferences programSettings = getSharedPreferences(PreferencesEditorActivity.PREFS_NAME, MODE_PRIVATE);
-    		selectSpinnerAccount(programSettings.getString(PreferencesEditorActivity.PREFS_DEFAULT_ACCOUNT, 
-    				getResources().getString(R.string.main_account_name)));
-    		
+	        selectSpinnerAccount(PreferencesUtils.getDefaultAccountName(this));   		
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
@@ -138,7 +136,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		mTimeFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				Log.d(TAG, "OnItemSelectedListener: i=" + i + ", l=" + l);
+				//Log.d(TAG, "OnItemSelectedListener: i=" + i + ", l=" + l);
 				TimeRange timeRange = null;
 				
 				switch(i){
