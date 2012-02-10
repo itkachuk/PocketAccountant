@@ -104,7 +104,9 @@
 	<!-- Dialogs -->
 	<string name="history_report_delete_record_dialog">Selected record will be removed. Continue?</string>
 	<string name="account_delete_dialog">Selected account will be removed. Continue?</string>
-	<string name="category_delete_dialog">Selected category will be removed. Continue?</string>    
+	<string name="category_delete_dialog">Selected category will be removed. Continue?</string>
+	<!-- Progress Dialogs -->
+	<string name="data_loading_text">Data loading ..</string>    
 	
 	<!-- Error messages -->
 	<string name="not_selected_category_message">Please, select a category</string>

@@ -3,20 +3,22 @@ package com.itkachuk.pa.activities.reports;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,12 +27,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
-import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
-import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.DateUtils;
@@ -55,6 +55,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private ListView listView;
 	private AlertDialog.Builder builder;
+	//private ProgressDialog progressDialog;
 	private ImageButton firstPageButton;
 	private ImageButton previousPageButton;
 	private ImageButton nextPageButton;
@@ -85,6 +86,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.history_report);
 		builder = new AlertDialog.Builder(this);
+		listView = (ListView) findViewById(R.id.recordsHistoryList);
 		firstPageButton = (ImageButton) findViewById(R.id.firstPageButton);
 		previousPageButton = (ImageButton) findViewById(R.id.previousPageButton);
 		nextPageButton = (ImageButton) findViewById(R.id.nextPageButton);
@@ -96,13 +98,15 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		parseFilters();
 		buildAccountStringForTitle();
 		
-		try {
+		/*try {
 			initializeSQLQueryParameters();
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 		updatePagingButtonsState();
-		updateTitleBar();
+		updateTitleBar();*/
+		
+		
 				
 		// Check calling activity, enable filter button, only if we came from reports menu activity
 		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
@@ -122,9 +126,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				FilterActivity.callMe(HistoryReportActivity.this, "History");
 				finish();
 			}
-		});
-
-		listView = (ListView) findViewById(R.id.recordsHistoryList);
+		});		
 	
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -199,8 +201,20 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		previousPageButton.setOnClickListener(pagingButtonsListener);
 		nextPageButton.setOnClickListener(pagingButtonsListener);
 		lastPageButton.setOnClickListener(pagingButtonsListener);
+		
+		InitialSQLQueryJob initialSQLQueryJob = new InitialSQLQueryJob(this);
+		initialSQLQueryJob.execute();
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		try {
+			fillList();		
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	private void initializeSQLQueryParameters() throws SQLException {
 		
@@ -245,6 +259,16 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		if (totalRows % rowsPerPage > 0) totalPagesCount++ ;
 		
 	}
+	
+	private void fillList() throws SQLException {
+		Log.d(TAG, "Fill list of records");
+		if (queryBuilder != null) { // runs only if query already initialized
+			queryBuilder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).offset(pageIndex * rowsPerPage).limit(rowsPerPage);
+			List<IncomeOrExpenseRecord> list = recordDao.query(queryBuilder.prepare());
+			ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
+			listView.setAdapter(arrayAdapter);
+		}
+	}
 
 	private void buildAccountStringForTitle() {
 		String accountsFilter = getAccountsFilter();
@@ -265,7 +289,10 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 	
 	private void updateTitleBar() {
-		setTitle(accountStringForTitle + "\t\tPage: " + (pageIndex + 1) + "/" + totalPagesCount);
+		int pageNumber;
+		if (totalPagesCount == 0) pageNumber = 0;
+		else pageNumber = (pageIndex + 1);
+		setTitle(accountStringForTitle + "\t\tPage: " + pageNumber + "/" + totalPagesCount);
 	}
 	
 	private void updatePagingButtonsState() {
@@ -282,17 +309,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		} else { // if in the middle
 			enableAllPagingButtons();
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		try {
-			fillList();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	}	
 	
 	public static void callMe(Context c, String caller, String recordsToShowFilter, String accountsFilter,
 			String categoriesFilter, long startDateFilter, long endDateFilter) {
@@ -306,16 +323,6 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		c.startActivity(intent);
 	}
 
-	private void fillList() throws SQLException {
-		// TODO - implement paging!
-		// TODO - put to async task!
-		Log.d(TAG, "Fill list of records");				
-				
-		queryBuilder.orderBy(IncomeOrExpenseRecord.TIMESTAMP_FIELD_NAME, false).offset(pageIndex * rowsPerPage).limit(rowsPerPage);
-		List<IncomeOrExpenseRecord> list = recordDao.query(queryBuilder.prepare());
-		ArrayAdapter<IncomeOrExpenseRecord> arrayAdapter = new RecordsAdapter(this, R.layout.record_row, list);
-		listView.setAdapter(arrayAdapter);
-	}
 	
 	private String getCallingActivityName() {		
 		return getIntent().getStringExtra(EXTRAS_CALLER);
@@ -347,6 +354,55 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		mCategoriesFilter = getCategoriesFilter();
 		mStartDateFilter = getStartDateFilter();
 		mEndDateFilter = getEndDateFilter();
+	}
+	
+	private class InitialSQLQueryJob extends AsyncTask<Void,Void,String> {
+		private String result = null;
+		private ProgressDialog progressDialog;
+				
+		public InitialSQLQueryJob(Context context) {
+			super();
+			progressDialog = new ProgressDialog(context);
+			progressDialog.setTitle("");
+			progressDialog.setMessage(context.getString(R.string.data_loading_text));
+			progressDialog.setIndeterminate(true);
+			progressDialog.setCancelable(false);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			Log.d(TAG, "InitialSQLQueryJob: called onPreExecute");	
+			if (progressDialog != null && !progressDialog.isShowing()) {
+				progressDialog.show();
+			}
+		};
+		
+		@Override
+		protected String doInBackground(Void... arg0) {
+			Log.d(TAG, "InitialSQLQueryJob: called doInBackground");				
+			
+			try {
+				initializeSQLQueryParameters();				
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+			
+			return result;
+		}
+		
+		@Override
+        protected void onPostExecute(String result) {
+			Log.d(TAG, "InitialSQLQueryJob: called onPostExecute");	
+                 
+    		updatePagingButtonsState();
+    		updateTitleBar();
+    		try {
+    			fillList();
+    		} catch (SQLException e) {
+    			throw new RuntimeException(e);
+    		}
+    		if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
+        }
 	}
 
 	private class RecordsAdapter extends ArrayAdapter<IncomeOrExpenseRecord> {
