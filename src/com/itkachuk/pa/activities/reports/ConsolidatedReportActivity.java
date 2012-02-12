@@ -3,21 +3,34 @@ package com.itkachuk.pa.activities.reports;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.achartengine.ChartFactory;
+import org.achartengine.GraphicalView;
+import org.achartengine.model.XYMultipleSeriesDataset;
+import org.achartengine.model.XYSeries;
+import org.achartengine.renderer.XYMultipleSeriesRenderer;
+import org.achartengine.renderer.XYSeriesRenderer;
+import org.achartengine.renderer.XYMultipleSeriesRenderer.Orientation;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +44,7 @@ import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.CalcUtils;
+import com.itkachuk.pa.utils.ChartUtils;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.utils.TimeRange;
@@ -48,12 +62,12 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private static final String EXTRAS_START_DATE_FILTER = "startDateFilter";
 	private static final String EXTRAS_END_DATE_FILTER = "endDateFilter";
 	
-	private ListView listView;
-	private ImageButton filterButton;
+	private ListView mListView;
+	private ImageButton mFilterButton;
 	private ImageButton mChangeViewButton;
 	
-	private int reportViewsCounter = 0; // 0 - amounts, 1 - percentages. TBD: 2 - pie chart, 3 - bars.
-	private static final int REPORT_VIEWS_QTY = 2;
+	private int reportViewsCounter = 0; // 0 - amounts, 1 - percentages, 2 - bars.
+	private static final int REPORT_VIEWS_QTY = 3;
 	
 	// Filters, passed via extras
 	private boolean mRecordsToShowFilter;
@@ -61,16 +75,30 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private long mStartDateFilter;
 	private long mEndDateFilter;
 	
+	// Chart components
+	private LinearLayout mBarChartLayout;
+	private GraphicalView mChartView;
+	private XYMultipleSeriesDataset mDataset;// = new XYMultipleSeriesDataset();
+	private XYMultipleSeriesRenderer mRenderer;// = new XYMultipleSeriesRenderer();
+	
+	private XYSeries mCurrentSeries;	
+	private XYSeriesRenderer mCurrentRenderer;
+	
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.consolidated_report);
-		filterButton = (ImageButton) findViewById(R.id.filterButton);
+		mBarChartLayout = (LinearLayout) findViewById(R.id.consolidatedBarChart);
+		mFilterButton = (ImageButton) findViewById(R.id.filterButton);
 		// Hide status bar, but keep title bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		parseFilters();
 		updateTitleBar();
+		
+		initChartRenderer();
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -80,19 +108,19 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		
 		// Check calling activity, enable filter button, only if we came from reports menu activity
 		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
-			filterButton.setEnabled(true);
+			mFilterButton.setEnabled(true);
 		} else {
-			filterButton.setEnabled(false);
+			mFilterButton.setEnabled(false);
 		}
 		
-		filterButton.setOnClickListener(new View.OnClickListener() {
+		mFilterButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
 				FilterActivity.callMe(ConsolidatedReportActivity.this, "Consolidated");
 				finish();
 			}
 		});
 
-		listView = (ListView) findViewById(R.id.categoriesAmountsList);		
+		mListView = (ListView) findViewById(R.id.categoriesAmountsList);		
 		mChangeViewButton = (ImageButton) findViewById(R.id.changeViewButton);
 		
 		mChangeViewButton.setOnClickListener(new View.OnClickListener() {
@@ -108,15 +136,23 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			}
 		});  
 		
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-				String[] categoryAmountRow = (String[]) listView.getAdapter().getItem(i);
+				String[] categoryAmountRow = (String[]) mListView.getAdapter().getItem(i);
 				HistoryReportActivity.callMe(ConsolidatedReportActivity.this, "", getRecordsToShowFilter(), 
 						mAccountsFilter, categoryAmountRow[0], mStartDateFilter, mEndDateFilter);
 			}
 		});
 	}
 	
+	private void initChartRenderer() {
+		// TODO Auto-generated method stub
+		mRenderer = ChartUtils.buildBarRenderer(new int[] { Color.CYAN });
+		mRenderer.setOrientation(Orientation.VERTICAL);
+		
+		
+	}
+
 	private void updateTitleBar() {
 		String accountsFilter = getAccountsFilter();
 		String currency;
@@ -158,7 +194,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	
 
 	private void fillList() throws SQLException {
-		// TODO - implement paging!
+		// TODO - put to async task
 		Log.d(TAG, "Show list of aggregated amounts per category");
 		Dao<IncomeOrExpenseRecord, Integer> dao = getHelper().getRecordDao();
 		TimeRange timeRange = new TimeRange(mStartDateFilter, mEndDateFilter);
@@ -167,15 +203,59 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 				mRecordsToShowFilter, timeRange);
 		roundAmountsOfCategoriesList(list);
 		
-		if (reportViewsCounter == 1) { // Percentages displaying mode
+		if (reportViewsCounter == 2) { // Bars displaying mode
 			String sumOfRecords = CalcUtils.getSumOfRecords(dao, mAccountsFilter, mRecordsToShowFilter, timeRange);
-			addPercentValuesToCategoriesList(list, sumOfRecords);
-		}
+			prepareRendererAndDataSet(list, sumOfRecords);
+			if (mChartView == null) {
+				mChartView = ChartFactory.getLineChartView(this, mDataset, mRenderer);
+				mBarChartLayout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));    				     
+			} else {
+				mChartView.repaint();
+			}
+			mListView.setEnabled(false);
+			mBarChartLayout.setEnabled(true);
+		} else {
+			if (reportViewsCounter == 1) { // Percentages displaying mode
 		
-		ArrayAdapter<String[]> arrayAdapter = new AmountsPerCategoryAdapter(this, R.layout.category_amount_row, list);
-		listView.setAdapter(arrayAdapter);
+				String sumOfRecords = CalcUtils.getSumOfRecords(dao, mAccountsFilter, mRecordsToShowFilter, timeRange);
+				addPercentValuesToCategoriesList(list, sumOfRecords);
+			}
+		
+			ArrayAdapter<String[]> arrayAdapter = new AmountsPerCategoryAdapter(this, R.layout.category_amount_row, list);
+			mListView.setAdapter(arrayAdapter);
+			mListView.setEnabled(true);
+			mBarChartLayout.setEnabled(false);
+		}
 	}
 	
+	private void prepareRendererAndDataSet(List<String[]> list, String totalAmount) {
+		// TODO Auto-generated method stub
+		float totalSum = Float.valueOf(totalAmount);
+		
+		ChartUtils.setChartSettings(mRenderer, "Incomes/Expenses per category", "Amount", "Categories", 
+				0, 25, 0, totalSum, Color.GRAY, Color.LTGRAY);
+		
+		mRenderer.setXLabels(1);
+		mRenderer.setYLabels(list.size());
+		
+		String[] titles = new String[] { "title?" };
+		List<double[]> arrayListOfValues = new ArrayList<double[]>();
+		double[] values = new double[list.size()];
+		int i = 0;
+		// translate array of strings to array of numbers, and in parallel add Y-axis labels (Categories)
+		for (String[] row : list) {
+			double amountNumber = Double.valueOf(row[1]);
+			values[i] = amountNumber;
+			mRenderer.addXTextLabel(i+1, row[0]);
+			i++;
+		}
+		arrayListOfValues.add(values);
+
+		mRenderer.getSeriesRendererAt(0).setDisplayChartValues(true);
+		
+		mDataset = ChartUtils.buildBarDataset(titles, arrayListOfValues);
+	}
+
 	private void addPercentValuesToCategoriesList(List<String[]> list, String totalAmount) {
 		float categoryPercent;
 		float totalSum = Float.valueOf(totalAmount);
