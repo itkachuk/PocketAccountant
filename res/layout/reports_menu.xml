@@ -27,6 +27,10 @@
 	  		android:layout_width="fill_parent" 
 	  		android:layout_height="wrap_content" 
 	  		android:text="@string/consolidated_report_label" /> 
+	  	<Button android:id="@+id/balance_over_time_report_button" 
+	  		android:layout_width="fill_parent" 
+	  		android:layout_height="wrap_content" 
+	  		android:text="@string/balance_over_time_report_label" /> 
 	    <Button android:id="@+id/backButton"
     		android:layout_width="fill_parent" 
     		android:layout_height="wrap_content"	               

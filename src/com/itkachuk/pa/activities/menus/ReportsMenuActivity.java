@@ -1,5 +1,7 @@
 package com.itkachuk.pa.activities.menus;
 
+import java.util.Calendar;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.View.OnClickListener;
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
+import com.itkachuk.pa.activities.reports.BalanceOverTimeReportActivity;
 import com.itkachuk.pa.activities.reports.CommonReportActivity;
 import com.itkachuk.pa.activities.reports.ConsolidatedReportActivity;
 import com.itkachuk.pa.activities.reports.HistoryReportActivity;
@@ -32,6 +35,8 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
         commonReportButton.setOnClickListener(this);
         View consolidatedReportButton = findViewById(R.id.consolidated_report_button);
         consolidatedReportButton.setOnClickListener(this);
+        View balanceOverTimeReportButton = findViewById(R.id.balance_over_time_report_button);
+        balanceOverTimeReportButton.setOnClickListener(this);
         
         findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -92,6 +97,13 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	      		recordsToShowFilter = getResources().getString(R.string.expenses_text);
 	      		ConsolidatedReportActivity.callMe(ReportsMenuActivity.this, ReportsMenuActivity.class.getName(), recordsToShowFilter, 
 	      				accountsFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
+	      	break;
+	      	
+	      	case R.id.balance_over_time_report_button:
+	      		Log.d(TAG, "clicked on \"BalanceOverTime Report\"");
+	      		
+	      		BalanceOverTimeReportActivity.callMe(ReportsMenuActivity.this, accountsFilter, 
+	      				Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
 	      	break;
 		}	
 	}

@@ -48,6 +48,8 @@
 	<!-- Consolidated Report Activity -->
 	<string name="change_view_button_label">Change View</string>
 	
+	<!-- BalanceOverTime Report Activity -->
+	<string name="balance_over_time_report_label">BalanceOverTime</string>
 	
 	<!-- Reports Filtering Activity -->
 	<string name="what_to_show_text">To Show</string>

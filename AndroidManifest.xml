@@ -74,6 +74,13 @@
         <activity android:name=".activities.reports.ConsolidatedReportActivity"
                   android:screenOrientation="portrait">
         </activity>
+        
+        <activity android:name=".activities.reports.BalanceOverTimeReportActivity"
+                  android:screenOrientation="portrait"
+                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        <activity android:name="org.achartengine.GraphicalActivity"
+            	  android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         		
     </application>   
 </manifest>
