@@ -102,8 +102,7 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	      	case R.id.balance_over_time_report_button:
 	      		Log.d(TAG, "clicked on \"BalanceOverTime Report\"");
 	      		
-	      		BalanceOverTimeReportActivity.callMe(ReportsMenuActivity.this, accountsFilter, 
-	      				Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
+	      		BalanceOverTimeReportActivity.callMe(ReportsMenuActivity.this, accountsFilter);
 	      	break;
 		}	
 	}

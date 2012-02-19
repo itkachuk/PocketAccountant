@@ -175,6 +175,27 @@ public class DateUtils {
 		return 0;
 	}
 	
+	
+	/**
+	 * Function returns the TimeRange instance for specified month and year.
+	 * @param year
+	 * @param month
+	 * @return timeRange
+	 */
+	public static final TimeRange getTimeRangeForMonth(int year, int month) {
+		TimeRange timeRange = new TimeRange(DEFAULT_START_DATE, DEFAULT_END_DATE);
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.set(Calendar.YEAR, year);
+		calendar.set(Calendar.MONTH, month);
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		timeRange.setStartTime(calendar.getTimeInMillis());
+		calendar.add(Calendar.MONTH, 1);
+		timeRange.setEndTime(calendar.getTimeInMillis());
+		return timeRange;
+	}
+	
+	
 	// Tests
 //	public static void main(String[] args) {
 //		TimeRange timeRange;
