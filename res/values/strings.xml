@@ -49,7 +49,7 @@
 	<string name="change_view_button_label">Change View</string>
 	
 	<!-- BalanceOverTime Report Activity -->
-	<string name="balance_over_time_report_label">BalanceOverTime</string>
+	<string name="monthly_balance_report_label">Monthly Balance</string>
 	
 	<!-- Reports Filtering Activity -->
 	<string name="what_to_show_text">To Show</string>

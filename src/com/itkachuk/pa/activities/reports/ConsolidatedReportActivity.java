@@ -67,7 +67,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private ImageButton mChangeViewButton;
 	
 	private int reportViewsCounter = 0; // 0 - amounts, 1 - percentages, 2 - bars.
-	private static final int REPORT_VIEWS_QTY = 3;
+	private static final int REPORT_VIEWS_QTY = 2;
 	
 	// Filters, passed via extras
 	private boolean mRecordsToShowFilter;
@@ -90,7 +90,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.consolidated_report);
-		mBarChartLayout = (LinearLayout) findViewById(R.id.consolidatedBarChart);
+	//	mBarChartLayout = (LinearLayout) findViewById(R.id.consolidatedBarChart);
 		mFilterButton = (ImageButton) findViewById(R.id.filterButton);
 		// Hide status bar, but keep title bar
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
