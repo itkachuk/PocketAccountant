@@ -108,7 +108,8 @@
 	<string name="account_delete_dialog">Selected account will be removed. Continue?</string>
 	<string name="category_delete_dialog">Selected category will be removed. Continue?</string>
 	<!-- Progress Dialogs -->
-	<string name="data_loading_text">Data loading ..</string>    
+	<string name="data_loading_text">Data loading ..</string>
+	<string name="data_calculation_text">Data calculation ..</string>      
 	
 	<!-- Error messages -->
 	<string name="not_selected_category_message">Please, select a category</string>

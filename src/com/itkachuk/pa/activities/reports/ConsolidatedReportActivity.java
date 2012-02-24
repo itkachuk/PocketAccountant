@@ -43,6 +43,7 @@ import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
+import com.itkachuk.pa.utils.ActivityUtils;
 import com.itkachuk.pa.utils.CalcUtils;
 import com.itkachuk.pa.utils.ChartUtils;
 import com.itkachuk.pa.utils.DateUtils;
@@ -76,8 +77,8 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	private long mEndDateFilter;
 	
 	// Chart components
-	private LinearLayout mBarChartLayout;
-	private GraphicalView mChartView;
+//	private LinearLayout mBarChartLayout;
+//	private GraphicalView mChartView;
 	private XYMultipleSeriesDataset mDataset;// = new XYMultipleSeriesDataset();
 	private XYMultipleSeriesRenderer mRenderer;// = new XYMultipleSeriesRenderer();
 	
@@ -96,9 +97,9 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		parseFilters();
-		updateTitleBar();
+		ActivityUtils.updateReportTitleBar(this, getHelper(), getAccountsFilter());
 		
-		initChartRenderer();
+		//initChartRenderer();
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -145,31 +146,13 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		});
 	}
 	
+	/*
 	private void initChartRenderer() {
-		// TODO Auto-generated method stub
 		mRenderer = ChartUtils.buildBarRenderer(new int[] { Color.CYAN });
 		mRenderer.setOrientation(Orientation.VERTICAL);
-		
-		
-	}
+				
+	}*/
 
-	private void updateTitleBar() {
-		String accountsFilter = getAccountsFilter();
-		String currency;
-		//If [main] account - get currency from Preferences
-		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
-			currency = PreferencesUtils.getMainAccountCurrency(this);
-		} else { // if not [main] - get currency from DB
-			try{
-	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
-	 		   	Account account = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter).get(0);
-	 		   	currency = account.getCurrency();
-	 	   	} catch (SQLException e) {
-	 	   		throw new RuntimeException(e);
-	 	   	}
-		}
-		setTitle("Account: " + accountsFilter + ", " + currency);
-	}
 	
 	@Override
 	protected void onResume() {
@@ -203,17 +186,17 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 				mRecordsToShowFilter, timeRange);
 		roundAmountsOfCategoriesList(list);
 		
-		if (reportViewsCounter == 2) { // Bars displaying mode
-			String sumOfRecords = CalcUtils.getSumOfRecords(dao, mAccountsFilter, mRecordsToShowFilter, timeRange);
-			prepareRendererAndDataSet(list, sumOfRecords);
-			if (mChartView == null) {
-				mChartView = ChartFactory.getLineChartView(this, mDataset, mRenderer);
-				mBarChartLayout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));    				     
-			} else {
-				mChartView.repaint();
-			}
-			mListView.setEnabled(false);
-			mBarChartLayout.setEnabled(true);
+		if (reportViewsCounter == 2) { // TODO Bars displaying mode - not working now! To be completed later
+//			String sumOfRecords = CalcUtils.getSumOfRecords(dao, mAccountsFilter, mRecordsToShowFilter, timeRange);
+//			prepareRendererAndDataSet(list, sumOfRecords);
+//			if (mChartView == null) {
+//				mChartView = ChartFactory.getLineChartView(this, mDataset, mRenderer);
+//				mBarChartLayout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));    				     
+//			} else {
+//				mChartView.repaint();
+//			}
+//			mListView.setEnabled(false);
+//			mBarChartLayout.setEnabled(true);
 		} else {
 			if (reportViewsCounter == 1) { // Percentages displaying mode
 		
@@ -223,13 +206,13 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		
 			ArrayAdapter<String[]> arrayAdapter = new AmountsPerCategoryAdapter(this, R.layout.category_amount_row, list);
 			mListView.setAdapter(arrayAdapter);
-			mListView.setEnabled(true);
-			mBarChartLayout.setEnabled(false);
+//			mListView.setEnabled(true);
+//			mBarChartLayout.setEnabled(false);
 		}
 	}
 	
-	private void prepareRendererAndDataSet(List<String[]> list, String totalAmount) {
-		// TODO Auto-generated method stub
+	/* Not working, to be completed later */
+/*	private void prepareRendererAndDataSet(List<String[]> list, String totalAmount) {
 		float totalSum = Float.valueOf(totalAmount);
 		
 		ChartUtils.setChartSettings(mRenderer, "Incomes/Expenses per category", "Amount", "Categories", 
@@ -254,7 +237,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		mRenderer.getSeriesRendererAt(0).setDisplayChartValues(true);
 		
 		mDataset = ChartUtils.buildBarDataset(titles, arrayListOfValues);
-	}
+	}*/
 
 	private void addPercentValuesToCategoriesList(List<String[]> list, String totalAmount) {
 		float categoryPercent;

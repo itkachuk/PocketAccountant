@@ -9,22 +9,21 @@ import org.achartengine.ChartFactory;
 import org.achartengine.chart.BarChart.Type;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.itkachuk.pa.R;
-import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
@@ -32,15 +31,13 @@ import com.itkachuk.pa.utils.CalcUtils;
 import com.itkachuk.pa.utils.ChartUtils;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
-import com.itkachuk.pa.utils.SpinnerUtils;
+import com.itkachuk.pa.utils.ActivityUtils;
 import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 
 public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private static final String TAG = "PocketAccountant";
-
-	private static final String EXTRAS_ACCOUNTS_FILTER = null;
 
 	private Calendar calendar;
 	
@@ -51,7 +48,6 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 	private Button mShowReportButton;
 	
 	private Context context;
-	private Intent mBarChartIntent;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,10 +71,9 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
                
         try {
         	Dao<Account, String> accountDao = getHelper().getAccountDao();
-			SpinnerUtils.refreshAccountSpinnerEntries(this, accountDao, mAccountsFilterSpinner);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			ActivityUtils.refreshAccountSpinnerEntries(this, accountDao, mAccountsFilterSpinner);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
         updateYearText();      
         
@@ -104,14 +99,7 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
         
         mShowReportButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
-				// TODO - put to async task
-				try {
-					mBarChartIntent = getBarChartIntent(context);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				startActivity(mBarChartIntent);
+				new RunBarChartReportJob(context).execute();
 			}
         });
 	}
@@ -120,16 +108,6 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 		Intent intent = new Intent(c, MonthlyBalanceReportActivity.class);
 		c.startActivity(intent);
 	}
-	
-	public static void callMe(Context c, String accountsFilter) {
-		Intent intent = new Intent(c, MonthlyBalanceReportActivity.class);
-		intent.putExtra(EXTRAS_ACCOUNTS_FILTER, accountsFilter);
-		c.startActivity(intent);
-	}
-	
-//	private String getAccountsFilter() {		
-//		return getIntent().getStringExtra(EXTRAS_ACCOUNTS_FILTER);
-//	}
 	
 	private void updateYearText() {
 		mYearTimeFilter.setText(Integer.toString(calendar.get(Calendar.YEAR)));
@@ -171,8 +149,6 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 		renderer.setYLabelsAlign(Align.LEFT);
 		renderer.setPanEnabled(true, true);
 		renderer.setMargins(new int[]{30, 25, 10, 10});
-		//renderer.setBackgroundColor(context.getResources().getColor(R.color.background));
-		//renderer.setApplyBackgroundColor(true);
 		renderer.setZoomButtonsVisible(false);
 		renderer.setZoomEnabled(true);
 		renderer.setZoomRate(1.0f);
@@ -195,11 +171,6 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		calendar.set(Calendar.YEAR, year);
-//		calendar.set(Calendar.MONTH, 0);
-//		calendar.set(Calendar.DAY_OF_MONTH, 1);
-//		calendar.clear(Calendar.HOUR_OF_DAY);
-//		calendar.clear(Calendar.MINUTE);
-//		calendar.clear(Calendar.SECOND);
 		TimeRange timeRange = new TimeRange(DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
 		
 		
@@ -234,5 +205,47 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 	
 	private double toDoubleAndRound(String value) {
 		return Math.round(Double.valueOf(value));
+	}
+	
+	private class RunBarChartReportJob extends AsyncTask<Void,Void,Intent> {
+		private ProgressDialog progressDialog;
+				
+		public RunBarChartReportJob(Context context) {
+			super();
+			progressDialog = new ProgressDialog(context);
+			progressDialog.setTitle("");
+			progressDialog.setMessage(context.getString(R.string.data_calculation_text));
+			progressDialog.setIndeterminate(true);
+			progressDialog.setCancelable(false);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			//Log.d(TAG, "RunBarChartReportJob: called onPreExecute");	
+			if (progressDialog != null && !progressDialog.isShowing()) {
+				progressDialog.show();
+			}
+		};
+		
+		@Override
+		protected Intent doInBackground(Void... arg0) {
+			//Log.d(TAG, "RunBarChartReportJob: called doInBackground");				
+			Intent barChartIntent = null;
+			
+			try {
+				barChartIntent = getBarChartIntent(context);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			return barChartIntent;
+		}
+		
+		@Override
+        protected void onPostExecute(Intent barChartIntent) {
+			//Log.d(TAG, "RunBarChartReportJob: called onPostExecute");	                					
+    		if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
+    		startActivity(barChartIntent);
+        }
 	}
 }

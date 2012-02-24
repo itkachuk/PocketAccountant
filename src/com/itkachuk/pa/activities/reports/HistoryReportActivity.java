@@ -55,7 +55,6 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	private ListView listView;
 	private AlertDialog.Builder builder;
-	//private ProgressDialog progressDialog;
 	private ImageButton firstPageButton;
 	private ImageButton previousPageButton;
 	private ImageButton nextPageButton;
@@ -96,17 +95,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		parseFilters();
-		buildAccountStringForTitle();
-		
-		/*try {
-			initializeSQLQueryParameters();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		updatePagingButtonsState();
-		updateTitleBar();*/
-		
-		
+		buildAccountStringForTitle();	
 				
 		// Check calling activity, enable filter button, only if we came from reports menu activity
 		if (getCallingActivityName().equals(ReportsMenuActivity.class.getName())) {
@@ -139,7 +128,6 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 				final IncomeOrExpenseRecord record = (IncomeOrExpenseRecord) listView.getAdapter().getItem(i);
 				
-				//AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
 				builder.setMessage(getResources().getString(R.string.history_report_delete_record_dialog))
 				       .setCancelable(false)
 				       .setPositiveButton(getResources().getString(R.string.yes_button_label), new DialogInterface.OnClickListener() {
@@ -202,8 +190,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		nextPageButton.setOnClickListener(pagingButtonsListener);
 		lastPageButton.setOnClickListener(pagingButtonsListener);
 		
-		InitialSQLQueryJob initialSQLQueryJob = new InitialSQLQueryJob(this);
-		initialSQLQueryJob.execute();
+		new InitialSQLQueryJob(this).execute();
 	}
 
 	@Override
@@ -371,7 +358,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 		@Override
 		protected void onPreExecute() {
-			Log.d(TAG, "InitialSQLQueryJob: called onPreExecute");	
+			//Log.d(TAG, "InitialSQLQueryJob: called onPreExecute");	
 			if (progressDialog != null && !progressDialog.isShowing()) {
 				progressDialog.show();
 			}
@@ -379,7 +366,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		
 		@Override
 		protected String doInBackground(Void... arg0) {
-			Log.d(TAG, "InitialSQLQueryJob: called doInBackground");				
+			//Log.d(TAG, "InitialSQLQueryJob: called doInBackground");				
 			
 			try {
 				initializeSQLQueryParameters();				
@@ -392,7 +379,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		
 		@Override
         protected void onPostExecute(String result) {
-			Log.d(TAG, "InitialSQLQueryJob: called onPostExecute");	
+			//Log.d(TAG, "InitialSQLQueryJob: called onPostExecute");	
                  
     		updatePagingButtonsState();
     		updateTitleBar();
