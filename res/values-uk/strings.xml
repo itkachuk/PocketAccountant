@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Common -->
+    <string name="app_name">Кишеньковий Бухгалтер</string>
+    <string name="back_button_label">Назад</string>
+    <string name="yes_button_label">Так</string>
+    <string name="no_button_label">Ні</string>
+    <string name="ok_button_label">Ок</string>
+    <string name="cancel_button_label">Відміна</string>
+    <string name="save_button_label">Зберегти</string>   
+       
+	<!-- Startup Activity -->
+	<string name="main_title">Кишеньковий Бухгалтер</string> 
+	<string name="new_expense_label">Витрата</string> 
+	<string name="new_income_label">Прибуток</string>
+	<string name="reports_label">Звіти</string>  
+	<string name="service_label">Сервіс</string> 
+	<string name="exit_label">Вихід</string>
+	
+	<!-- Record Editor Activity -->
+	<string name="account_text">Рахунок</string>
+	<string name="amount_text">Сума</string>
+	<string name="date_text">Дата</string>
+	<string name="category_text">Категорія</string>
+	<string name="description_text">Коментар</string>
+	<!-- DateTimePicker widget buttons -->
+	<string name="reset_button_label">Скинути</string>
+	<string name="settime_button_label">Час</string>
+	<string name="setdate_button_label">Дата</string>
+	
+	<!-- Reports menu Activity -->
+	<string name="reports_menu_header_text">Звіти</string>
+	<string name="history_report_label">Історія</string> 
+	<string name="common_report_label">Загальнмй</string> 
+	<string name="consolidated_report_label">Зведений</string>
+	<string name="monthly_balance_report_label">Щомісячний баланс</string>
+	
+	<!-- Common Report Activity -->
+	<string name="inc_exp_per_month_text">Прибутки/Витрати за місяць</string>
+	<string name="income_text">Прибуток</string>
+	<string name="expense_text">Витрата</string>
+	<string name="balance_text">Баланс</string>
+	<string name="current_text">Поточний</string>
+	<string name="past_text">Минулий</string>
+	<string name="month_text">Місяць</string>
+	<string name="quarter_text">Квартал</string>
+	<string name="year_text">Рік</string>	
+	
+	<!-- Reports Filtering Activity -->
+	<string name="what_to_show_text">Показати записи</string>
+	<string name="time_interval_text">Період часу</string>
+	<string name="start_date_text">Початкова дата</string>
+	<string name="end_date_text">Кінцева дата</string>
+	<string name="show_report_button_label">Показати звіт</string>
+	<string name="apply_filter_button_label">Застосувати фільтр</string>
+	<!-- Filtering Spinner items -->
+	<string name="all_text">Всі</string>
+	<string name="incomes_text">Прибутки</string>
+	<string name="expenses_text">Витрати</string>
+	<!-- Time-filtering Spinner items -->
+	<string-array name="time_ranges_list">
+        <item>Весь час</item>
+        <item>Користувацький</item>  
+        <item>День</item>      
+        <item>Неділя</item>
+        <item>Місяць</item>
+        <item>Квартал</item>
+        <item>Рік</item>
+        <item>Минулий день</item>
+        <item>Минулий неділя</item>
+        <item>Минулий місяць</item>
+        <item>Минулий квартал</item>
+        <item>Минулий рік</item>
+    </string-array>
+	
+	<!-- Service menu Activity -->
+	<string name="service_menu_header_text">Сервіс</string>
+	<string name="accounts_label">Рахунок</string> 
+	<string name="categories_label">Категорії</string> 
+	<string name="program_settings_label">Налаштування програми</string>
+	
+	<!-- Program Settings Activity -->
+	<string name="default_account_text">Рахунок за замовчанням</string>
+	<string name="main_account_currency_text">Валюта основного рахунку</string>
+	<string name="rows_per_page_text">Записів на сторінці в звіті \"Історія\"</string>
+	
+	<!-- Accounts Management Activities (Accounts List and Account Editor) -->
+	<string name="add_account_button_label">Додати рахунок</string>
+	<string name="account_name_text">Назва рахунку</string>
+	<string name="currency_text">Валюта</string>
+	
+	<!-- Categories Management Activities (Categories List and Category Editor) -->
+	<string name="add_category_button_label">Додати категорію</string>
+	<string name="category_name_text">Назва категорії</string>
+	<string name="category_group_text">Група категорії</string>
+	
+	<!-- Sectioned List Items -->
+	<string name="predefined_text">Попередньо встановлені</string>
+	<string name="custom_text">Користувальницькі</string>
+	
+	<!-- Dialogs -->
+	<string name="history_report_delete_record_dialog">Обраний запис буде видалено. Продовжити?</string>
+	<string name="account_delete_dialog">Обраний рахунок буде видалено. Продовжити?</string>
+	<string name="category_delete_dialog">Обрану категорію буде видалено. Продовжити?</string>
+	<!-- Progress Dialogs -->
+	<string name="data_loading_text">Загрузка даних ..</string>
+	<string name="data_calculation_text">Калькуляція даних ..</string>      
+	
+	<!-- Error messages -->
+	<string name="not_selected_category_message">Будь ласка, виберіть категорію</string>
+	<string name="wrong_amount_number_message">Будь ласка, вкажіть коректну суму</string>
+	<string name="empty_account_message">Будь ласка, введіть коректну назву рахунку</string>
+	<string name="empty_category_message">Будь ласка, введіть коректну назву категорії</string>
+	<string name="wrong_time_filter_message">Початкова дата не може бути рівною або бути більше ніж кінцева. Такий фільтр нічого не відобразить.</string>		
+	<string name="wrong_rows_per_page_number_message">Кількість записів на сторінці не може бути менше 5 або більше 50.</string>		
+	
+	<string name="no_data_message">Немає даних для відображення</string>
+	
+	<!-- Main Account -->
+	<string name="main_account_name">[основний]</string>
+	<string name="main_account_description">Основний рахунок програми. Не може бути видалений користувачем.</string>
+	
+	<!-- Predefined Application Content -->
+	<!-- Categories -->
+	<string-array name="expense_categories">
+		<item>Будинок</item>
+        <item>Автомобіль</item>
+        <item>Рахунки</item>
+        <item>Покупки-їжа</item>
+        <item>Покупки-одежа</item>
+        <item>Покупки-техніка</item>
+		<item>Покупки-госптовари</item>
+        <item>Покупки-інше</item>
+        <item>Послуги</item>
+        <item>Зв\'язок</item>
+        <item>Медицина</item>
+        <item>Кредит</item>
+        <item>Дозвілля</item>
+        <item>Тварини</item>
+        <item>Подорожі</item>
+        <item>Подарунки</item>       
+        <item>Транспорт</item>
+        <item>Інше</item>
+    </string-array>
+    <string-array name="income_categories">
+        <item>Зарплата</item>
+        <item>Подарунки</item>
+        <item>Інше</item>
+    </string-array>
+    <!-- Category groups -->
+    <string-array name="category_groups_array">
+	    <item>Витрати</item>
+        <item>Прибутки</item>
+    </string-array>
+    
+
+</resources>

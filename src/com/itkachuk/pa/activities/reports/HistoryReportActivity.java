@@ -259,15 +259,20 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 
 	private void buildAccountStringForTitle() {
 		String accountsFilter = getAccountsFilter();
-		String currency;
+		String currency = null;
 		//If [main] account - get currency from Preferences
 		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
 			currency = PreferencesUtils.getMainAccountCurrency(this);
 		} else { // if not [main] - get currency from DB
 			try{
 	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
-	 		   	Account account = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter).get(0);
-	 		   	currency = account.getCurrency();
+	 		   	List<Account> accountsList = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter);
+	 		   	if (accountsList != null && accountsList.size() > 0) {
+	 		   		Account account = accountsList.get(0);
+	 		   		currency = account.getCurrency();	 		   		
+	 		   	} else {
+	 		   		throw new RuntimeException("Account \"" + accountsFilter + "\" was not found in DB!");
+	 		   	}
 	 	   	} catch (SQLException e) {
 	 	   		throw new RuntimeException(e);
 	 	   	}

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Common -->
+    <string name="app_name">Карманный Бухгалтер</string>
+    <string name="back_button_label">Назад</string>
+    <string name="yes_button_label">Да</string>
+    <string name="no_button_label">Нет</string>
+    <string name="ok_button_label">Ок</string>
+    <string name="cancel_button_label">Отмена</string>
+    <string name="save_button_label">Сохранить</string>   
+       
+	<!-- Startup Activity -->
+	<string name="main_title">Карманный Бухгалтер</string> 
+	<string name="new_expense_label">Расход</string> 
+	<string name="new_income_label">Доход</string>
+	<string name="reports_label">Отчёты</string>  
+	<string name="service_label">Сервис</string> 
+	<string name="exit_label">Выход</string>
+	
+	<!-- Record Editor Activity -->
+	<string name="account_text">Счёт</string>
+	<string name="amount_text">Сумма</string>
+	<string name="date_text">Дата</string>
+	<string name="category_text">Категория</string>
+	<string name="description_text">Комментарий</string>
+	<!-- DateTimePicker widget buttons -->
+	<string name="reset_button_label">Сброс</string>
+	<string name="settime_button_label">Время</string>
+	<string name="setdate_button_label">Дата</string>
+	
+	<!-- Reports menu Activity -->
+	<string name="reports_menu_header_text">Отчёты</string>
+	<string name="history_report_label">История</string> 
+	<string name="common_report_label">Общий</string> 
+	<string name="consolidated_report_label">Сводный</string>
+	<string name="monthly_balance_report_label">Ежемесячный баланс</string>
+	
+	<!-- Common Report Activity -->
+	<string name="inc_exp_per_month_text">Доходы/Расходы за месяц</string>
+	<string name="income_text">Доход</string>
+	<string name="expense_text">Расход</string>
+	<string name="balance_text">Баланс</string>
+	<string name="current_text">Текущий</string>
+	<string name="past_text">Прошлый</string>
+	<string name="month_text">Месяц</string>
+	<string name="quarter_text">Квартал</string>
+	<string name="year_text">Год</string>	
+	
+	<!-- Reports Filtering Activity -->
+	<string name="what_to_show_text">Показать записи</string>
+	<string name="time_interval_text">Период времени</string>
+	<string name="start_date_text">Начальная дата</string>
+	<string name="end_date_text">Конечная дата</string>
+	<string name="show_report_button_label">Показать отчёт</string>
+	<string name="apply_filter_button_label">Применить фильтр</string>
+	<!-- Filtering Spinner items -->
+	<string name="all_text">Все</string>
+	<string name="incomes_text">Доходы</string>
+	<string name="expenses_text">Расходы</string>
+	<!-- Time-filtering Spinner items -->
+	<string-array name="time_ranges_list">
+        <item>Всё время</item>
+        <item>Пользовательский</item>  
+        <item>День</item>      
+        <item>Неделя</item>
+        <item>Месяц</item>
+        <item>Квартал</item>
+        <item>Год</item>
+        <item>Прошедший день</item>
+        <item>Прошедшая неделя</item>
+        <item>Прошедший месяц</item>
+        <item>Прошедший квартал</item>
+        <item>Прошедший год</item>
+    </string-array>
+	
+	<!-- Service menu Activity -->
+	<string name="service_menu_header_text">Сервис</string>
+	<string name="accounts_label">Счета</string> 
+	<string name="categories_label">Категории</string> 
+	<string name="program_settings_label">Настройки программы</string>
+	
+	<!-- Program Settings Activity -->
+	<string name="default_account_text">Счёт по умолчанию</string>
+	<string name="main_account_currency_text">Валюта основного счёта</string>
+	<string name="rows_per_page_text">Записей на странице в отчёте \"История\"</string>
+	
+	<!-- Accounts Management Activities (Accounts List and Account Editor) -->
+	<string name="add_account_button_label">Добавить счёт</string>
+	<string name="account_name_text">Имя счёта</string>
+	<string name="currency_text">Валюта</string>
+	
+	<!-- Categories Management Activities (Categories List and Category Editor) -->
+	<string name="add_category_button_label">Добавить категорию</string>
+	<string name="category_name_text">Название категории</string>
+	<string name="category_group_text">Группа категории</string>
+	
+	<!-- Sectioned List Items -->
+	<string name="predefined_text">Предустановленные</string>
+	<string name="custom_text">Пользовательские</string>
+	
+	<!-- Dialogs -->
+	<string name="history_report_delete_record_dialog">Выбранная запись будет удалена. Продолжить?</string>
+	<string name="account_delete_dialog">Выбранный счёт будет удален. Продолжить?</string>
+	<string name="category_delete_dialog">Выбранная категория будет удалена. Продолжить?</string>
+	<!-- Progress Dialogs -->
+	<string name="data_loading_text">Загрузка данных ..</string>
+	<string name="data_calculation_text">Калькуляция данных ..</string>      
+	
+	<!-- Error messages -->
+	<string name="not_selected_category_message">Пожалуйста, выберите категорию</string>
+	<string name="wrong_amount_number_message">Пожалуйста, укажите корректную сумму</string>
+	<string name="empty_account_message">Пожалуйста, введите корректное имя счёта</string>
+	<string name="empty_category_message">Пожалуйста, введите корректное название категории</string>
+	<string name="wrong_time_filter_message">Начальная дата не может быть равной или быть больше конечной даты. Такой фильтр ничего не покажет.</string>		
+	<string name="wrong_rows_per_page_number_message">Количество строк на странице не может быть меньше 5 или быть больше 50.</string>		
+	
+	<string name="no_data_message">Нет данных для отображения</string>
+	
+	<!-- Main Account -->
+	<string name="main_account_name">[основной]</string>
+	<string name="main_account_description">Основной счёт программы. Не может быть удалён пользователем.</string>
+	
+	<!-- Predefined Application Content -->
+	<!-- Categories -->
+	<string-array name="expense_categories">
+		<item>Дом</item>
+        <item>Автомобиль</item>
+        <item>Счета</item>
+        <item>Покупки-еда</item>
+        <item>Покупки-одежда</item>
+        <item>Покупки-техника</item>
+		<item>Покупки-хозтовары</item>
+        <item>Покупки-прочее</item>
+        <item>Услуги</item>
+        <item>Связь</item>
+        <item>Медицина</item>
+        <item>Кредит</item>
+        <item>Досуг</item>
+        <item>Животные</item>
+        <item>Путешествия</item>
+        <item>Подарки</item>       
+        <item>Транспорт</item>
+        <item>Прочее</item>
+    </string-array>
+    <string-array name="income_categories">
+        <item>Зарплата</item>
+        <item>Подарки</item>
+        <item>Прочее</item>
+    </string-array>
+    <!-- Category groups -->
+    <string-array name="category_groups_array">
+	    <item>Расходы</item>
+        <item>Доходы</item>
+    </string-array>
+    
+
+</resources>
