@@ -35,6 +35,9 @@
 	<string name="consolidated_report_label">Зведений</string>
 	<string name="monthly_balance_report_label">Щомісячний баланс</string>
 	
+	<!-- History Report Activity -->
+	<string name="page_text">Стор.</string>
+	
 	<!-- Common Report Activity -->
 	<string name="inc_exp_per_month_text">Прибутки/Витрати за місяць</string>
 	<string name="income_text">Прибуток</string>
@@ -44,7 +47,10 @@
 	<string name="past_text">Минулий</string>
 	<string name="month_text">Місяць</string>
 	<string name="quarter_text">Квартал</string>
-	<string name="year_text">Рік</string>	
+	<string name="year_text">Рік</string>
+	
+	<!-- Monthly Balance Report Activity -->
+	<string name="balance_for_year_text">Баланс за рік:</string>	
 	
 	<!-- Reports Filtering Activity -->
 	<string name="what_to_show_text">Показати записи</string>

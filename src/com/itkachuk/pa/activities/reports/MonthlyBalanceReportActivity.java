@@ -114,16 +114,21 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 	}
 	
 	private Intent getBarChartIntent(Context context) throws SQLException {
-				
-		String[] titles = new String[] { "Incomes", "Expenses", "Balance" };
+		// Set bars labels: "Incomes", "Expenses", "Balance"		
+		String[] titles = new String[] { 
+				getResources().getString(R.string.incomes_text), 
+				getResources().getString(R.string.expenses_text), 
+				getResources().getString(R.string.balance_text) };
 		
-		String accountFilter = null;
+		String accountFilter = null, accountCurrency = null;
 		if (mAccountsFilterSpinner.getSelectedItem() != null) {
 			Account account = (Account) mAccountsFilterSpinner.getSelectedItem();
 			if (account != null) {
 				accountFilter = account.getName();
+				accountCurrency = account.getCurrency();
 			} else {
 				accountFilter = PreferencesUtils.getDefaultAccountName(context);
+				accountCurrency = PreferencesUtils.getMainAccountCurrency(context);
 			}
 		}
 		
@@ -134,10 +139,16 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 		int[] colors = new int[] { 
 				context.getResources().getColor(R.color.income_amount_color),
 				context.getResources().getColor(R.color.expense_amount_color),
-				context.getResources().getColor(R.color.light_yellow_color)};
-		
+				context.getResources().getColor(R.color.light_yellow_color)};	
 		XYMultipleSeriesRenderer renderer = ChartUtils.buildBarRenderer(colors);
-		ChartUtils.setChartSettings(renderer, "Balance for " + calendar.get(Calendar.YEAR) + " year", "Month", "Amount", 
+		
+		String balanceForYearText = getResources().getString(R.string.balance_for_year_text);
+		String amountText = getResources().getString(R.string.amount_text);
+		if (accountCurrency != null) {
+			amountText = amountText + ", " + accountCurrency;
+		}		
+		ChartUtils.setChartSettings(renderer, balanceForYearText + " " + calendar.get(Calendar.YEAR), 
+				getResources().getString(R.string.month_text), amountText, 
 				0.5, 12.5, minValue, maxValue, Color.GRAY, Color.LTGRAY); 
 		renderer.getSeriesRendererAt(0).setDisplayChartValues(true);
 		renderer.getSeriesRendererAt(1).setDisplayChartValues(true);
@@ -148,7 +159,7 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 		renderer.setXLabelsAlign(Align.LEFT);
 		renderer.setYLabelsAlign(Align.LEFT);
 		renderer.setPanEnabled(true, true);
-		renderer.setMargins(new int[]{30, 25, 10, 10});
+		renderer.setMargins(new int[]{30, 25, 20, 10});
 		renderer.setZoomButtonsVisible(false);
 		renderer.setZoomEnabled(true);
 		renderer.setZoomRate(1.0f);

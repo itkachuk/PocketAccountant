@@ -35,6 +35,9 @@
 	<string name="consolidated_report_label">Consolidated</string>
 	<string name="monthly_balance_report_label">Monthly Balance</string>
 	
+	<!-- History Report Activity -->
+	<string name="page_text">Page</string>
+	
 	<!-- Common Report Activity -->
 	<string name="inc_exp_per_month_text">Incomes/Expenses per Month</string>
 	<string name="income_text">Income</string>
@@ -45,6 +48,9 @@
 	<string name="month_text">Month</string>
 	<string name="quarter_text">Quarter</string>
 	<string name="year_text">Year</string>
+	
+	<!-- Monthly Balance Report Activity -->
+	<string name="balance_for_year_text">Balance for year:</string>
 	
 	<!-- Reports Filtering Activity -->
 	<string name="what_to_show_text">To Show</string>

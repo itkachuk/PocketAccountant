@@ -18,6 +18,7 @@ import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
+import com.itkachuk.pa.utils.ActivityUtils;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.utils.TimeRange;
@@ -111,11 +112,9 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
         
         try {
 	        refreshRecordsSpinnerEntries();
-	        refreshAccountsSpinnerEntries();
+	        ActivityUtils.refreshAccountSpinnerEntries(this, getHelper().getAccountDao(), mAccountsFilterSpinner);
 	        refreshCategoriesSpinnerEntries();
-	        refreshTimeSpinnerEntries();
-	        // Select default account
-	        selectSpinnerAccount(PreferencesUtils.getDefaultAccountName(this));   		
+	        refreshTimeSpinnerEntries();  		
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
@@ -409,7 +408,6 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	private void setUIObjectsState() {
-		// TODO Auto-generated method stub
 		String reportName = getReportName();
 		if (reportName.equals("History")) {
 			mRecordsFilterSpinner.setEnabled(true);
@@ -450,19 +448,6 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, filterItemsList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mRecordsFilterSpinner.setAdapter(adapter);
-	}
-	
-	private void refreshAccountsSpinnerEntries() throws SQLException {
-		Dao<Account, String> accountDao = getHelper().getAccountDao();
-		List<Account> accounts = new ArrayList<Account>();
-		String mainAccountName = getResources().getString(R.string.main_account_name);		
-		accounts.add(new Account(mainAccountName, null, null, false)); // first add main account to spinner
-		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
-		ArrayAdapter<Account> adapter =
-				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);
-
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountsFilterSpinner.setAdapter(adapter);				
 	}
 	
 	private void refreshCategoriesSpinnerEntries() throws SQLException {
@@ -513,16 +498,4 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		return getIntent().getStringExtra(EXTRAS_REPORT_NAME);
 	}
 	
-	// TODO - move common Spinner methods to Utils class
-	private void selectSpinnerAccount(String accountName) {
-		SpinnerAdapter adapter = mAccountsFilterSpinner.getAdapter();
-		int count = adapter.getCount();
-		for (int i = 0; i < count; i++) {
-			Account account = (Account) adapter.getItem(i);
-			if (account != null && account.getName() != null && account.getName().equals(accountName)) {
-				mAccountsFilterSpinner.setSelection(i);
-				break;
-			}
-		}
-	}
 }

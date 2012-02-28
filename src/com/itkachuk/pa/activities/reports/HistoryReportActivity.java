@@ -33,6 +33,7 @@ import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
+import com.itkachuk.pa.utils.ActivityUtils;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
@@ -258,33 +259,16 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	}
 
 	private void buildAccountStringForTitle() {
-		String accountsFilter = getAccountsFilter();
-		String currency = null;
-		//If [main] account - get currency from Preferences
-		if (accountsFilter.equals(getResources().getString(R.string.main_account_name))) { 
-			currency = PreferencesUtils.getMainAccountCurrency(this);
-		} else { // if not [main] - get currency from DB
-			try{
-	 		   	Dao<Account, String> accountDao = getHelper().getAccountDao();
-	 		   	List<Account> accountsList = accountDao.queryForEq(Account.NAME_FIELD_NAME, accountsFilter);
-	 		   	if (accountsList != null && accountsList.size() > 0) {
-	 		   		Account account = accountsList.get(0);
-	 		   		currency = account.getCurrency();	 		   		
-	 		   	} else {
-	 		   		throw new RuntimeException("Account \"" + accountsFilter + "\" was not found in DB!");
-	 		   	}
-	 	   	} catch (SQLException e) {
-	 	   		throw new RuntimeException(e);
-	 	   	}
-		}
-		accountStringForTitle = "Account: " + accountsFilter + ", " + currency;
+		ActivityUtils.updateReportTitleBar(this, getHelper(), getAccountsFilter());
+		accountStringForTitle = (String) getTitle();
 	}
 	
 	private void updateTitleBar() {
 		int pageNumber;
 		if (totalPagesCount == 0) pageNumber = 0;
 		else pageNumber = (pageIndex + 1);
-		setTitle(accountStringForTitle + "\t\tPage: " + pageNumber + "/" + totalPagesCount);
+		String pageText = getResources().getString(R.string.page_text);
+		setTitle(accountStringForTitle + "\t\t" + pageText + " " + pageNumber + "/" + totalPagesCount);
 	}
 	
 	private void updatePagingButtonsState() {

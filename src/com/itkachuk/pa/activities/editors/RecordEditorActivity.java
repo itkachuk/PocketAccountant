@@ -35,6 +35,7 @@ import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
+import com.itkachuk.pa.utils.ActivityUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.widgets.DateTimePicker;
 
@@ -78,7 +79,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         setupDateTimeDialog();
        
         try {
-        	refreshAccountSpinnerEntries();
+        	ActivityUtils.refreshAccountSpinnerEntries(this, getHelper().getAccountDao(), mAccountSpinner);
 			refreshCategorySpinnerEntries();
 			
 	        if (getRecordId() > -1) { // Edit existed record mode
@@ -87,10 +88,8 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	        	if (mExistedRecordToEdit != null) {
 	        		loadFromObj(mExistedRecordToEdit);
 	        	}	        	
-	        } else { // New record mode
-	        	// Select default account	        	
-	    		selectSpinnerAccount(PreferencesUtils.getDefaultAccountName(this));
-	        }
+	        }  // else - New record mode
+	        	
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
@@ -171,19 +170,8 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		return getIntent().getBooleanExtra(EXTRAS_IS_EXPENSE, true);
 	}
 	
-	private void refreshAccountSpinnerEntries() throws SQLException {
-		Dao<Account, String> accountDao = getHelper().getAccountDao();
-		List<Account> accounts = new ArrayList<Account>();
-		String mainAccountName = getResources().getString(R.string.main_account_name);		
-		accounts.add(new Account(mainAccountName, null, null, false)); // first add main account to spinner
-		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
-		ArrayAdapter<Account> adapter =
-				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);
 
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mAccountSpinner.setAdapter(adapter);
-	}
-	
+	// TODO - move to ActivityUtils
 	private void refreshCategorySpinnerEntries() throws SQLException {
 		Dao<Category, String> categoryDao = getHelper().getCategoryDao();
 		List<Category> categories = new ArrayList<Category>();
@@ -282,7 +270,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	}
 	
 	private void loadFromObj(IncomeOrExpenseRecord record) throws SQLException {
-		selectSpinnerAccount(record.getAccount()); 
+		ActivityUtils.selectSpinnerAccount(mAccountSpinner, record.getAccount()); 
 		mAmountEditText.setText(Double.toString(record.getAmount()));
 		// Update Date components
 		mDateTimePicker.setDateTimeMillis(record.getTimestamp());
@@ -293,18 +281,6 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		
 		selectSpinnerCategory(record.getCategory()); 
 		mDescriptionEditText.setText(record.getDescription());
-	}
-	
-	private void selectSpinnerAccount(String accountName) {
-		SpinnerAdapter adapter = mAccountSpinner.getAdapter();
-		int count = adapter.getCount();
-		for (int i = 0; i < count; i++) {
-			Account account = (Account) adapter.getItem(i);
-			if (account != null && account.getName() != null && account.getName().equals(accountName)) {
-				mAccountSpinner.setSelection(i);
-				break;
-			}
-		}
 	}
 	
 	private void selectSpinnerCategory(String categoryName) {

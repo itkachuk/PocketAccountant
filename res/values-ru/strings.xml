@@ -35,6 +35,9 @@
 	<string name="consolidated_report_label">Сводный</string>
 	<string name="monthly_balance_report_label">Ежемесячный баланс</string>
 	
+	<!-- History Report Activity -->
+	<string name="page_text">Стр.</string>
+	
 	<!-- Common Report Activity -->
 	<string name="inc_exp_per_month_text">Доходы/Расходы за месяц</string>
 	<string name="income_text">Доход</string>
@@ -44,7 +47,10 @@
 	<string name="past_text">Прошлый</string>
 	<string name="month_text">Месяц</string>
 	<string name="quarter_text">Квартал</string>
-	<string name="year_text">Год</string>	
+	<string name="year_text">Год</string>
+	
+	<!-- Monthly Balance Report Activity -->
+	<string name="balance_for_year_text">Баланс за год:</string>	
 	
 	<!-- Reports Filtering Activity -->
 	<string name="what_to_show_text">Показать записи</string>
