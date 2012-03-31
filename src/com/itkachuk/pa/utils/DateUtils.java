@@ -195,39 +195,4 @@ public class DateUtils {
 		return timeRange;
 	}
 	
-	
-	// Tests
-//	public static void main(String[] args) {
-//		TimeRange timeRange;
-//		
-//		timeRange = getTimeRange(DateUtils.DAY, true);
-//		System.out.println("Past Day test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.DAY, false);
-//		System.out.println("Current Day test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.WEEK, true);
-//		System.out.println("Past Week test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.WEEK, false);
-//		System.out.println("Current Week test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.MONTH, true);
-//		System.out.println("Past Month test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.MONTH, false);
-//		System.out.println("Current Month test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.QUARTER, true);
-//		System.out.println("Past Quarter test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.QUARTER, false);
-//		System.out.println("Current Quarter test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.YEAR, true);
-//		System.out.println("Past Year test: \n" + timeRange.toString());
-//		
-//		timeRange = getTimeRange(DateUtils.YEAR, false);
-//		System.out.println("Current Year test: \n" + timeRange.toString());
-//	}
 }

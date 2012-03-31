@@ -28,11 +28,11 @@ public class IncomeOrExpenseRecord {
 	@DatabaseField(columnName = TIMESTAMP_FIELD_NAME)
 	private long timestamp; // UTC timestamp in milliseconds
 	
-	@DatabaseField(columnName = ACCOUNT_FIELD_NAME) // 'null' value will correspond to "main" account (non-removable)
-	private String account;
+	@DatabaseField(foreign = true, canBeNull = false, columnName = ACCOUNT_FIELD_NAME)
+	private Account account;
 	
-	@DatabaseField(canBeNull = false, columnName = CATEGORY_FIELD_NAME)
-	private String category;
+	@DatabaseField(foreign = true, canBeNull = false, columnName = CATEGORY_FIELD_NAME)
+	private Category category;
 	
 	@DatabaseField(columnName = DESCRIPTION_FIELD_NAME)
 	private String description; // can play a role of subcategory
@@ -53,7 +53,7 @@ public class IncomeOrExpenseRecord {
 		// needed by ormlite
 	}
 
-	public IncomeOrExpenseRecord(Date date, String account, String category, String description, 
+	public IncomeOrExpenseRecord(Date date, Account account, Category category, String description, 
 			double amount, boolean isExpense, boolean isRegular, boolean isPlanned) {
 		super();
 		this.timestamp = System.currentTimeMillis();
@@ -91,19 +91,19 @@ public class IncomeOrExpenseRecord {
 		this.timestamp = millis;
 	}
 
-	public String getAccount() {
+	public Account getAccount() {
 		return account;
 	}
 
-	public void setAccount(String account) {
+	public void setAccount(Account account) {
 		this.account = account;
 	}
 
-	public String getCategory() {
+	public Category getCategory() {
 		return category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 

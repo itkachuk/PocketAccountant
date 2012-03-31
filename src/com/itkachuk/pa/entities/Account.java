@@ -11,7 +11,10 @@ public class Account implements SectionedListItem {
 	public static final String DESCRIPTION_FIELD_NAME = "description";
 	public static final String IS_REMOVABLE_FIELD_NAME = "isRemovable";	
 	
-	@DatabaseField(id = true, unique = true, columnName = NAME_FIELD_NAME)
+	@DatabaseField(generatedId = true)
+	private int id;
+	
+	@DatabaseField(unique = true, columnName = NAME_FIELD_NAME)
 	private String name;
 	
 	@DatabaseField(columnName = CURRENCY_FIELD_NAME)
@@ -33,6 +36,10 @@ public class Account implements SectionedListItem {
 		this.currency = currency;
 		this.description = description;
 		this.isRemovable = isRemovable;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public String getName() {

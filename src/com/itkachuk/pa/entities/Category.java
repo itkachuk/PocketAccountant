@@ -10,7 +10,10 @@ public class Category implements SectionedListItem {
 	public static final String IS_EXPENSE_FIELD_NAME = "isExpense";
 	public static final String IS_REMOVABLE_FIELD_NAME = "isRemovable";	
 	
-	@DatabaseField(id = true, uniqueCombo = true, columnName = NAME_FIELD_NAME)
+	@DatabaseField(generatedId = true)
+	private int id;
+	
+	@DatabaseField(uniqueCombo = true, columnName = NAME_FIELD_NAME)
 	private String name;
 	
 	@DatabaseField(uniqueCombo = true, columnName = IS_EXPENSE_FIELD_NAME)
@@ -30,6 +33,10 @@ public class Category implements SectionedListItem {
 		this.isExpense = isExpense;
 	}
 
+	public int getId() {
+		return id;
+	}
+	
 	public String getName() {
 		return name;
 	}
