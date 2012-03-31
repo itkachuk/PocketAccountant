@@ -15,22 +15,22 @@ public class Description {
 	@DatabaseField(uniqueCombo = true, columnName = DESCRIPTION_FIELD_NAME)
 	private String description; // it can be subcategory name, or any note for expense/income record
 
-	@DatabaseField(canBeNull = false, uniqueCombo = true, columnName = PARENT_CATEGORY_FIELD_NAME)
-	private String parentCategory;
+	@DatabaseField(uniqueCombo = true, foreign = true, canBeNull = false, columnName = PARENT_CATEGORY_FIELD_NAME)
+	private Category category;
 	
-	@DatabaseField(uniqueCombo = true, columnName = IS_EXPENSE_FIELD_NAME)
-	private boolean isExpense; // Expense - true, Income - false
+//	@DatabaseField(uniqueCombo = true, columnName = IS_EXPENSE_FIELD_NAME)
+//	private boolean isExpense; // Expense - true, Income - false
 
 	Description() {
 		// needed by ormlite
 	}
 
-	public Description(int id, String description, String parentCategory,
+	public Description(int id, String description, Category category,
 			boolean isExpense) {
 		super();
 		this.description = description;
-		this.parentCategory = parentCategory;
-		this.isExpense = isExpense;
+		this.category = category;
+//		this.isExpense = isExpense;
 	}
 
 	public void setId(int id) {
@@ -49,21 +49,21 @@ public class Description {
 		this.description = description;
 	}
 
-	public String getParentCategory() {
-		return parentCategory;
+	public Category getCategory() {
+		return category;
 	}
 
-	public void setParentCategory(String parentCategory) {
-		this.parentCategory = parentCategory;
+	public void setCategory(Category category) {
+		this.category = category;
 	}
 	
-	public boolean isExpense() {
-		return isExpense;
-	}
-
-	public void setExpense(boolean isExpense) {
-		this.isExpense = isExpense;
-	}
+//	public boolean isExpense() {
+//		return isExpense;
+//	}
+//
+//	public void setExpense(boolean isExpense) {
+//		this.isExpense = isExpense;
+//	}
 
 	@Override
 	public String toString() {
