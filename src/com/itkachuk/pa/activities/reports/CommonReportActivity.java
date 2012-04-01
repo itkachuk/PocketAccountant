@@ -44,7 +44,7 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private ImageButton filterButton;
 	
 	// Filters, passed via extras
-	private String mAccountsFilter;
+	private int mAccountsFilter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,10 +56,7 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		
 		ActivityUtils.updateReportTitleBar(this, getHelper(), getAccountsFilter());
 		
-		mAccountsFilter = getAccountsFilter();
-		if (mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
-			mAccountsFilter = null; 
-		}
+		mAccountsFilter = getAccountsFilter(); // '-1' corresponds to "All", e.g. - no filtering
 
 		findViewById(R.id.backButton).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View view) {
@@ -106,8 +103,8 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		return getIntent().getStringExtra(EXTRAS_CALLER);
 	}
 	
-	private String getAccountsFilter() {		
-		return getIntent().getStringExtra(EXTRAS_ACCOUNTS_FILTER);
+	private int getAccountsFilter() {		
+		return getIntent().getIntExtra(EXTRAS_ACCOUNTS_FILTER, -1);
 	}
 
 

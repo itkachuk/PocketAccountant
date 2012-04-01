@@ -21,7 +21,7 @@ import com.j256.ormlite.dao.Dao;
 public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private static final String TAG = "PocketAccountant";
 
-	private static final String EXTRAS_CATEGORY_NAME = "categoryName";
+	private static final String EXTRAS_CATEGORY_ID = "categoryId";
 	
 	private EditText mCategoryNameEditText;
 	private Spinner mCategoryGroupSpinner;
@@ -39,9 +39,9 @@ public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         mSaveButton = (Button) findViewById(R.id.saveButton);      
 
         try {
-	        if (getCategoryName() != null) { // Edit existed category mode
-	        	Dao<Category, String> categoryDao = getHelper().getCategoryDao();
-	        	mExistedCategoryToEdit = categoryDao.queryForId(getCategoryName());
+	        if (getCategoryId() != -1) { // Edit existed category mode
+	        	Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
+	        	mExistedCategoryToEdit = categoryDao.queryForId(getCategoryId());
 	        	if (mExistedCategoryToEdit != null) {
 	        		loadFromObj(mExistedCategoryToEdit);
 	        	}	        	
@@ -60,9 +60,8 @@ public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			public void onClick(View view) {
 				try {
 					Category category = saveToObj();
-					Dao<Category, String> categoryDao = getHelper().getCategoryDao();
-					if (getCategoryName() != null) { // Edit existed category mode
-						categoryDao.updateId(new Category(getCategoryName(), true, true), category.getName());
+					Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
+					if (getCategoryId() != -1) { // Edit existed category mode
 						categoryDao.update(category); 
 					} else {
 						categoryDao.createIfNotExists(category); // Create new category
@@ -98,16 +97,15 @@ public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		c.startActivity(intent);
 	}
     
-	public static void callMe(Context c, String categoryName) {
+	public static void callMe(Context c, int categoryId) {
 		Intent intent = new Intent(c, CategoryEditorActivity.class);
-		intent.putExtra(EXTRAS_CATEGORY_NAME, categoryName);		
+		intent.putExtra(EXTRAS_CATEGORY_ID, categoryId);		
 		c.startActivity(intent);
 	}
 	
-	private String getCategoryName() {
-		return getIntent().getStringExtra(EXTRAS_CATEGORY_NAME);
+	private int getCategoryId() {
+		return getIntent().getIntExtra(EXTRAS_CATEGORY_ID, -1);
 	}
-	
 	
 	private void selectSpinnerCategoryGroup(boolean isExpense) {
 		if (isExpense) {
@@ -120,7 +118,7 @@ public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private Category saveToObj() {
 		Category category;
 		
-		if (getCategoryName() != null) { // Edit existed category mode
+		if (getCategoryId() != -1) { // Edit existed category mode
 			category = mExistedCategoryToEdit;
 		} else { // Create new category mode
 			category = new Category();
@@ -139,10 +137,7 @@ public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			category.setExpense(true);
 		} else {
 			category.setExpense(false);
-		}		
-		
-		// Set removable flag
-		category.setRemovable(true);
+		}				
 		
 		return category;
 	}
@@ -150,7 +145,9 @@ public class CategoryEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private void loadFromObj(Category category) {
 		mCategoryNameEditText.setText(category.getName());
 		selectSpinnerCategoryGroup(category.isExpense());		
-		// TODO - foreign keys are not in use now. This means, 
+		// Now we are trying to use the data model with foreign keys
+		
+		// Old comment: foreign keys are not in use now. This means, 
 		// that if category is updated, the records which include it's old name, won't be updated.
 		// We might want to return back the foreign key mechanism in DB model.
 	}

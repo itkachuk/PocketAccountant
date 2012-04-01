@@ -23,19 +23,15 @@ public class Account implements SectionedListItem {
 	@DatabaseField(columnName = DESCRIPTION_FIELD_NAME)
 	private String description;
 	
-	@DatabaseField(columnName = IS_REMOVABLE_FIELD_NAME)
-	private boolean isRemovable; // Predefined main account can't be removed by user
-	
 	public Account() {
 		// needed by ormlite
 	}
 
-	public Account(String name, String currency, String description, boolean isRemovable) {
+	public Account(String name, String currency, String description) {
 		super();
 		this.name = name;
 		this.currency = currency;
 		this.description = description;
-		this.isRemovable = isRemovable;
 	}
 
 	public int getId() {
@@ -66,23 +62,18 @@ public class Account implements SectionedListItem {
 		this.description = description;
 	}
 
-	public boolean isRemovable() {
-		return isRemovable;
-	}
-
-	public void setRemovable(boolean isRemovable) {
-		this.isRemovable = isRemovable;
-	}
-
 	@Override
 	public String toString() {
 		return name == null ? "" : name;
+	}
+	
+	public boolean equals(Account account) {
+		return (id == account.getId());
 	}
 
 	@Override
 	public boolean isSection() {
 		return false;
 	}
-	
-	
+		
 }

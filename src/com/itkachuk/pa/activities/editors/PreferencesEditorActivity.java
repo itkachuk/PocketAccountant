@@ -1,37 +1,28 @@
 package com.itkachuk.pa.activities.editors;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.itkachuk.pa.R;
-import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
+import com.itkachuk.pa.utils.ActivityUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.j256.ormlite.dao.Dao;
 
 public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private static final String TAG = "PocketAccountant";
 		
 	private Spinner mDefaultAccountSpinner;
-	private Spinner mMainAccountCurrencySpinner;
+	private Spinner mLanguageSpinner;
 	private EditText mRowsPerPageEditText;
 	private Button mSaveButton;
 
@@ -41,15 +32,14 @@ public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelpe
         setContentView(R.layout.preferences_editor);
         
         mDefaultAccountSpinner = (Spinner) findViewById(R.id.defaultAccountSpinner);
-        mMainAccountCurrencySpinner = (Spinner) findViewById(R.id.mainAccountCurrencySpinner);
+        mLanguageSpinner = (Spinner) findViewById(R.id.languageSpinner);
         mRowsPerPageEditText = (EditText) findViewById(R.id.rowsPerPageEditText);
         mSaveButton = (Button) findViewById(R.id.saveButton);      
 
-        
-        refreshCurrencySpinnerEntries();
+        // TODO - populate Language Spinner
         
         try {
-        	refreshAccountSpinnerEntries();
+        	ActivityUtils.refreshAccountSpinnerEntries(this, getHelper().getAccountDao(), mDefaultAccountSpinner);
         	restorePreferences();
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
@@ -76,8 +66,8 @@ public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelpe
     }
 
 	private void restorePreferences() {		
-		selectSpinnerAccount(PreferencesUtils.getDefaultAccountName(this));
-		selectSpinnerCurrency(PreferencesUtils.getMainAccountCurrency(this));
+		ActivityUtils.selectSpinnerAccount(mDefaultAccountSpinner, PreferencesUtils.getDefaultAccountId(this));
+	//	selectSpinnerCurrency(PreferencesUtils.getMainAccountCurrency(this)); // TODO
 		mRowsPerPageEditText.setText(new Integer(PreferencesUtils.getRowsPerPage(this)).toString());
 	}
 
@@ -85,9 +75,10 @@ public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelpe
 		int rowsPerPage = Integer.valueOf(mRowsPerPageEditText.getText().toString());
 		if (rowsPerPage < 5 || rowsPerPage > 50)
 			throw new IllegalArgumentException(getResources().getString(R.string.wrong_rows_per_page_number_message));
-						
-		PreferencesUtils.setDefaultAccountName(this, mDefaultAccountSpinner.getSelectedItem().toString());				
-		PreferencesUtils.setMainAccountCurrency(this, mMainAccountCurrencySpinner.getSelectedItem().toString());
+		
+		Account account = (Account)(mDefaultAccountSpinner.getSelectedItem());
+		PreferencesUtils.setDefaultAccountId(this, account.getId());				
+	//	PreferencesUtils.setMainAccountCurrency(this, mMainAccountCurrencySpinner.getSelectedItem().toString());
 		PreferencesUtils.setRowsPerPage(this, Integer.valueOf(mRowsPerPageEditText.getText().toString()));
 	}
 	
@@ -110,50 +101,5 @@ public class PreferencesEditorActivity extends OrmLiteBaseActivity<DatabaseHelpe
 	public static void callMe(Context c) {
 		Intent intent = new Intent(c, PreferencesEditorActivity.class);
 		c.startActivity(intent);
-	}
-	
-	private void refreshAccountSpinnerEntries() throws SQLException {
-		Dao<Account, String> accountDao = getHelper().getAccountDao();
-		List<Account> accounts = new ArrayList<Account>();
-		String mainAccountName = getResources().getString(R.string.main_account_name);		
-		accounts.add(new Account(mainAccountName, null, null, false)); // first add main account to spinner
-		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
-		ArrayAdapter<Account> adapter =
-				new ArrayAdapter<Account>(this, android.R.layout.simple_spinner_item, accounts);
-
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mDefaultAccountSpinner.setAdapter(adapter);
-	}
-	
-	private void selectSpinnerAccount(String accountName) {
-		SpinnerAdapter adapter = mDefaultAccountSpinner.getAdapter();
-		int count = adapter.getCount();
-		for (int i = 0; i < count; i++) {
-			Account account = (Account) adapter.getItem(i);
-			if (account != null && account.getName() != null && account.getName().equals(accountName)) {
-				mDefaultAccountSpinner.setSelection(i);
-				break;
-			}
-		}
-	}
-	
-	private void refreshCurrencySpinnerEntries() {
-		String[] currenciesList = getResources().getStringArray(R.array.currencies_list);
-		ArrayAdapter<String> adapter =
-				new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, currenciesList);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mMainAccountCurrencySpinner.setAdapter(adapter);
-	}
-	
-	private void selectSpinnerCurrency(String currencyCode) {
-		SpinnerAdapter adapter = mMainAccountCurrencySpinner.getAdapter();
-		int count = adapter.getCount();
-		for (int i = 0; i < count; i++) {
-			String currency = (String) adapter.getItem(i);
-			if (currency != null && currency.equals(currencyCode)) {
-				mMainAccountCurrencySpinner.setSelection(i);
-				break;
-			}
-		}
 	}		
 }

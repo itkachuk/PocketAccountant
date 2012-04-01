@@ -453,22 +453,14 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	private void refreshCategoriesSpinnerEntries() throws SQLException {
 		// TODO - separation for Income/Expense
 		
-		Dao<Category, String> categoryDao = getHelper().getCategoryDao();
+		Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
 		List<Category> categories = new ArrayList<Category>();
-		categories.add(new Category(getResources().getString(R.string.all_text), true, false)); // first entry should be "All" item
+		categories.add(new Category(getResources().getString(R.string.all_text), true)); // first entry should be "All" item
 		
-			String[] arrayExpense = getResources().getStringArray(R.array.expense_categories);
-			for(String categoryName : arrayExpense) {
-				categories.add(new Category(categoryName, true, false)); // Add predefined categories
-			}
-			categories.addAll(categoryDao.queryBuilder().where() // Add custom categories from DB
+			categories.addAll(categoryDao.queryBuilder().where() // Add categories from DB
 					.eq(Category.IS_EXPENSE_FIELD_NAME, true)
 					.query());
 	
-			String[] arrayIncome = getResources().getStringArray(R.array.income_categories);
-			for(String categoryName : arrayIncome) {
-				categories.add(new Category(categoryName, false, false));
-			}
 			categories.addAll(categoryDao.queryBuilder().where()
 					.eq(Category.IS_EXPENSE_FIELD_NAME, false)
 					.query());

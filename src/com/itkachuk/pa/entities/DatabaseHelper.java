@@ -21,9 +21,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private static final String DATABASE_NAME = "pa.db";
 	private static final int DATABASE_VERSION = 2;
 
-	private Dao<Account, String> accountDao;
+	private Dao<Account, Integer> accountDao;
 	private Dao<IncomeOrExpenseRecord, Integer> recordDao;
-	private Dao<Category, String> categoryDao;
+	private Dao<Category, Integer> categoryDao;
 	private Dao<Description, String> descriptionDao;
 
 	public DatabaseHelper(Context context) {
@@ -49,7 +49,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// TODO
 	}
 
-	public Dao<Account, String> getAccountDao() throws SQLException {
+	public Dao<Account, Integer> getAccountDao() throws SQLException {
 		if (accountDao == null) {
 			accountDao = getDao(Account.class);
 		}
@@ -63,13 +63,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return recordDao;
 	}
 
-	public Dao<Category, String> getCategoryDao() throws SQLException {
+	public Dao<Category, Integer> getCategoryDao() throws SQLException {
 		if (categoryDao == null) {
 			categoryDao = getDao(Category.class);
 		}
 		return categoryDao;
 	}
 	
+	// TODO - Integer ??
 	public Dao<Description, String> getDescriptionDao() throws SQLException {
 		if (descriptionDao == null) {
 			descriptionDao = getDao(Description.class);

@@ -6,8 +6,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable
 public class Description {
 	public static final String DESCRIPTION_FIELD_NAME = "description";
-	public static final String PARENT_CATEGORY_FIELD_NAME = "parentCategory";
-	public static final String IS_EXPENSE_FIELD_NAME = "isExpense";
+	public static final String CATEGORY_FIELD_NAME = "category";
+//	public static final String IS_EXPENSE_FIELD_NAME = "isExpense";
 	
 	@DatabaseField(generatedId = true)
 	private int id;
@@ -15,7 +15,7 @@ public class Description {
 	@DatabaseField(uniqueCombo = true, columnName = DESCRIPTION_FIELD_NAME)
 	private String description; // it can be subcategory name, or any note for expense/income record
 
-	@DatabaseField(uniqueCombo = true, foreign = true, canBeNull = false, columnName = PARENT_CATEGORY_FIELD_NAME)
+	@DatabaseField(uniqueCombo = true, foreign = true, canBeNull = false, columnName = CATEGORY_FIELD_NAME)
 	private Category category;
 	
 //	@DatabaseField(uniqueCombo = true, columnName = IS_EXPENSE_FIELD_NAME)
@@ -25,8 +25,7 @@ public class Description {
 		// needed by ormlite
 	}
 
-	public Description(int id, String description, Category category,
-			boolean isExpense) {
+	public Description(int id, String description, Category category) {
 		super();
 		this.description = description;
 		this.category = category;

@@ -2,7 +2,6 @@ package com.itkachuk.pa.activities.menus;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;

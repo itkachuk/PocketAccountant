@@ -64,12 +64,13 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
     
 	@Override
 	public void onClick(View v) {
-		String recordsToShowFilter, accountsFilter, categoriesFilter;
+		String recordsToShowFilter; 
+		int accountsFilter, categoriesFilter;
 		// Get default account name from preferences
-		accountsFilter = PreferencesUtils.getDefaultAccountName(this);
+		accountsFilter = PreferencesUtils.getDefaultAccountId(this);
 		// Use default "All" for other filters		
 		recordsToShowFilter = getResources().getString(R.string.all_text);
-		categoriesFilter = getResources().getString(R.string.all_text);
+		categoriesFilter = -1; // '-1' corresponds to "All" filter, e.g. - no filtering
 		
 		switch (v.getId()) {
 	      	case R.id.history_report_button:

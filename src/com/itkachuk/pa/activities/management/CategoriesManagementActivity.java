@@ -54,24 +54,22 @@ public class CategoriesManagementActivity extends OrmLiteBaseActivity<DatabaseHe
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Category category = (Category) listView.getAdapter().getItem(i);
-				if (category.isRemovable()) {
-					CategoryEditorActivity.callMe(CategoriesManagementActivity.this, category.getName());
-				}
+				CategoryEditorActivity.callMe(CategoriesManagementActivity.this, category.getId());
 			}
 		});
 
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 				final Category category = (Category) listView.getAdapter().getItem(i);
-				if (!category.isRemovable()) return true;
 
 				builder.setMessage(getResources().getString(R.string.category_delete_dialog))
 				       .setCancelable(false)
 				       .setPositiveButton(getResources().getString(R.string.yes_button_label), new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				        	   try{
-				        		   Dao<Category, String> categoryDao = getHelper().getCategoryDao();
-				        		   categoryDao.deleteById(category.getName());
+				        		   Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
+				        		   categoryDao.deleteById(category.getId());
+				        		   // TODO - implement all relevant records removing !!!
 				        		   fillList();
 				        	   } catch (SQLException e) {
 				        		   throw new RuntimeException(e);
@@ -101,6 +99,27 @@ public class CategoriesManagementActivity extends OrmLiteBaseActivity<DatabaseHe
 	}
 	
 	private void fillList() throws SQLException {
+		Log.d(TAG, "Show list of categories");
+		Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();		
+		ArrayList<SectionedListItem> list = new ArrayList<SectionedListItem>();
+		
+		// Add section
+		list.add(new SectionItem(getResources().getString(R.string.categories_label)));	
+		// Load all categories from DB		
+		list.addAll(categoryDao.queryBuilder().where() // Add expense categories from DB
+				.eq(Category.IS_EXPENSE_FIELD_NAME, true) // TODO - implement ordering by name
+				.query());
+		list.addAll(categoryDao.queryBuilder().where() // Add income categories from DB
+				.eq(Category.IS_EXPENSE_FIELD_NAME, false) // TODO - implement ordering by name
+				.query());
+		
+		ListItemAdapter listItemAdapter = new ListItemAdapter(this, list);
+		listView.setAdapter(listItemAdapter);
+	}
+	
+	
+	// Old variant of accounts list
+/*	private void fillList() throws SQLException {
 		Log.d(TAG, "Show list of categories");
 		Dao<Category, String> categoryDao = getHelper().getCategoryDao();		
 		ArrayList<SectionedListItem> list = new ArrayList<SectionedListItem>();
@@ -133,5 +152,5 @@ public class CategoriesManagementActivity extends OrmLiteBaseActivity<DatabaseHe
 		
 		ListItemAdapter listItemAdapter = new ListItemAdapter(this, list);
 		listView.setAdapter(listItemAdapter);
-	}
+	}*/
 }

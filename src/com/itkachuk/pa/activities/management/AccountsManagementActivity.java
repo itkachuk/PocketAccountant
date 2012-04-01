@@ -2,36 +2,22 @@ package com.itkachuk.pa.activities.management;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Locale;
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.activities.editors.AccountEditorActivity;
-import com.itkachuk.pa.activities.editors.PreferencesEditorActivity;
 import com.itkachuk.pa.entities.Account;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.sectionedList.ListItemAdapter;
 import com.itkachuk.pa.sectionedList.SectionItem;
 import com.itkachuk.pa.sectionedList.SectionedListItem;
-import com.itkachuk.pa.utils.PreferencesUtils;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
-import com.j256.ormlite.android.apptools.OrmLiteBaseListActivity;
 import com.j256.ormlite.dao.Dao;
 
 public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelper> {
@@ -65,24 +51,22 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Account account = (Account) listView.getAdapter().getItem(i);
-				if (account.isRemovable()) {
-					AccountEditorActivity.callMe(AccountsManagementActivity.this, account.getName());
-				}
+				AccountEditorActivity.callMe(AccountsManagementActivity.this, account.getId());
 			}
 		});
 
 		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
 				final Account account = (Account) listView.getAdapter().getItem(i);
-				if (!account.isRemovable()) return true;
 
 				builder.setMessage(getResources().getString(R.string.account_delete_dialog))
 				       .setCancelable(false)
 				       .setPositiveButton(getResources().getString(R.string.yes_button_label), new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				        	   try{
-				        		   Dao<Account, String> accountDao = getHelper().getAccountDao();
-				        		   accountDao.deleteById(account.getName());
+				        		   Dao<Account, Integer> accountDao = getHelper().getAccountDao();
+				        		   accountDao.deleteById(account.getId());
+				        		   // TODO - implement all relevant records removing !!!
 				        		   fillList();
 				        	   } catch (SQLException e) {
 				        		   throw new RuntimeException(e);
@@ -115,6 +99,20 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		Log.d(TAG, "Show list of accounts");
 		ArrayList<SectionedListItem> list = new ArrayList<SectionedListItem>();
 		// Add section
+		list.add(new SectionItem(getResources().getString(R.string.accounts_label)));
+		// Load all accounts from DB
+		Dao<Account, Integer> accountDao = getHelper().getAccountDao();
+		list.addAll(accountDao.queryForAll());
+		ListItemAdapter listItemAdapter = new ListItemAdapter(this, list);
+		listView.setAdapter(listItemAdapter);
+	}
+	
+	// Old variant of accounts list
+	/*
+	private void fillList() throws SQLException {
+		Log.d(TAG, "Show list of accounts");
+		ArrayList<SectionedListItem> list = new ArrayList<SectionedListItem>();
+		// Add section
 		list.add(new SectionItem(getResources().getString(R.string.predefined_text) + " " +
 				getResources().getString(R.string.accounts_label)));
 		// Load predefined Main account first
@@ -131,7 +129,7 @@ public class AccountsManagementActivity extends OrmLiteBaseActivity<DatabaseHelp
 		list.addAll(accountDao.queryForAll());
 		ListItemAdapter listItemAdapter = new ListItemAdapter(this, list);
 		listView.setAdapter(listItemAdapter);
-	}
+	}*/
 
 	// Not used any more
 	/* 

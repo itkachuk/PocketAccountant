@@ -2,30 +2,23 @@ package com.itkachuk.pa.activities.editors;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.itkachuk.pa.R;
@@ -36,7 +29,6 @@ import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 import com.j256.ormlite.dao.Dao;
 import com.itkachuk.pa.utils.ActivityUtils;
-import com.itkachuk.pa.utils.PreferencesUtils;
 import com.itkachuk.pa.widgets.DateTimePicker;
 
 
@@ -80,7 +72,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
        
         try {
         	ActivityUtils.refreshAccountSpinnerEntries(this, getHelper().getAccountDao(), mAccountSpinner);
-			refreshCategorySpinnerEntries();
+        	ActivityUtils.refreshCategorySpinnerEntries(this, getHelper().getCategoryDao(), mCategorySpinner, isExpense());
 			
 	        if (getRecordId() > -1) { // Edit existed record mode
 	        	Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
@@ -125,8 +117,6 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		// add a click listener to the Date button
         mDateButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //showDialog(DATE_DIALOG_ID);
-
         		// Display the dialog
         		mDateTimeDialog.show();
             }
@@ -170,36 +160,6 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		return getIntent().getBooleanExtra(EXTRAS_IS_EXPENSE, true);
 	}
 	
-
-	// TODO - move to ActivityUtils
-	private void refreshCategorySpinnerEntries() throws SQLException {
-		Dao<Category, String> categoryDao = getHelper().getCategoryDao();
-		List<Category> categories = new ArrayList<Category>();
-		categories.add(new Category()); // first entry should be empty
-		if (isExpense()) {
-			String[] array = getResources().getStringArray(R.array.expense_categories);
-			for(String categoryName : array) {
-				categories.add(new Category(categoryName, true, false)); // Add predefined categories
-			}
-			categories.addAll(categoryDao.queryBuilder().where() // Add custom categories from DB
-					.eq(Category.IS_EXPENSE_FIELD_NAME, true)
-					.query());
-		} else {
-			String[] array = getResources().getStringArray(R.array.income_categories);
-			for(String categoryName : array) {
-				categories.add(new Category(categoryName, false, false));
-			}
-			categories.addAll(categoryDao.queryBuilder().where()
-					.eq(Category.IS_EXPENSE_FIELD_NAME, false)
-					.query());
-		}
-		ArrayAdapter<Category> adapter =
-				new ArrayAdapter<Category>(this, android.R.layout.simple_spinner_item, categories);
-
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mCategorySpinner.setAdapter(adapter);
-	}
-	
 	private void updateDateButtonLabel() {
 		DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
 		mDateButton.setText(dateFormatter.format(mDateTimePicker.getDateTimeMillis()));
@@ -219,7 +179,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		if (mAccountSpinner.getSelectedItem() != null) {
 			Account account = (Account) mAccountSpinner.getSelectedItem();
 			if (account != null) {
-				record.setAccount(account.getName());
+				record.setAccount(account);
 			}
 		}
 		
@@ -240,11 +200,10 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			record.getDate().setTime(millis);
 		}
 		
-		
 		if (mCategorySpinner.getSelectedItem() != null) {
 			Category category = (Category) mCategorySpinner.getSelectedItem();
 			if (category != null && !category.toString().equals("")) {
-				record.setCategory(category.getName());
+				record.setCategory(category);
 			} else {
 				throw new IllegalArgumentException(getResources().getString(R.string.not_selected_category_message));
 			}
@@ -257,11 +216,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		
 		// Set flags, only when create new record. We can't edit them later
 		if (recordId == -1) { // Create new record mode
-			if (isExpense()) {
-				record.setExpense(true);
-			} else {
-				record.setExpense(false);
-			}
+			record.setExpense(isExpense());
 			record.setRegular(false); // from UI wizard - always false
 			record.setPlanned(false); // functionality for Expenses Planning isn't implemented yet. Set to false.
 		}
@@ -279,20 +234,8 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		//Log.d(TAG, "loadFromObj: date " + mDateTimePicker.get(Calendar.YEAR) + "-" + mDateTimePicker.get(Calendar.MONTH) + "-" + mDateTimePicker.get(Calendar.DAY_OF_MONTH));
 		//Log.d(TAG, "loadFromObj: time " + mDateTimePicker.get(Calendar.HOUR_OF_DAY) + ":" + mDateTimePicker.get(Calendar.MINUTE));
 		
-		selectSpinnerCategory(record.getCategory()); 
+		ActivityUtils.selectSpinnerCategory(mCategorySpinner, record.getCategory()); 
 		mDescriptionEditText.setText(record.getDescription());
-	}
-	
-	private void selectSpinnerCategory(String categoryName) {
-		SpinnerAdapter adapter = mCategorySpinner.getAdapter();
-		int count = adapter.getCount();
-		for (int i = 0; i < count; i++) {
-			Category category = (Category) adapter.getItem(i);
-			if (category != null && category.getName() != null && category.getName().equals(categoryName)) {
-				mCategorySpinner.setSelection(i);
-				break;
-			}
-		}
 	}	
 	
 	private void setupDateTimeDialog() {

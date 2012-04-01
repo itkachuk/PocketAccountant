@@ -19,17 +19,13 @@ public class Category implements SectionedListItem {
 	@DatabaseField(uniqueCombo = true, columnName = IS_EXPENSE_FIELD_NAME)
 	private boolean isExpense; // Expense - true, Income - false
 	
-	@DatabaseField(columnName = IS_REMOVABLE_FIELD_NAME)
-	private boolean isRemovable; // Predefined categories can't be removed by user
-	
 	public Category() {
 		// needed by ormlite
 	}
 
-	public Category(String name, boolean isExpense, boolean isRemovable) {
+	public Category(String name, boolean isExpense) {
 		super();
 		this.name = name;
-		this.isRemovable = isRemovable;
 		this.isExpense = isExpense;
 	}
 
@@ -45,14 +41,6 @@ public class Category implements SectionedListItem {
 		this.name = name;
 	}
 
-	public boolean isRemovable() {
-		return isRemovable;
-	}
-
-	public void setRemovable(boolean isRemovable) {
-		this.isRemovable = isRemovable;
-	}
-
 	public boolean isExpense() {
 		return isExpense;
 	}
@@ -66,6 +54,10 @@ public class Category implements SectionedListItem {
 		return name == null ? "" : name;
 	}
 
+	public boolean equals(Category category) {
+		return (id == category.getId());
+	}
+	
 	@Override
 	public boolean isSection() {
 		return false;

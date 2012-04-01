@@ -87,7 +87,7 @@
 	
 	<!-- Program Settings Activity -->
 	<string name="default_account_text">Рахунок за замовчанням</string>
-	<string name="main_account_currency_text">Валюта основного рахунку</string>
+	<string name="language_text">Мова</string>
 	<string name="rows_per_page_text">Записів на сторінці в звіті \"Історія\"</string>
 	
 	<!-- Accounts Management Activities (Accounts List and Account Editor) -->

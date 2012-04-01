@@ -87,7 +87,7 @@
 	
 	<!-- Program Settings Activity -->
 	<string name="default_account_text">Счёт по умолчанию</string>
-	<string name="main_account_currency_text">Валюта основного счёта</string>
+	<string name="language_text">Язык</string>
 	<string name="rows_per_page_text">Записей на странице в отчёте \"История\"</string>
 	
 	<!-- Accounts Management Activities (Accounts List and Account Editor) -->

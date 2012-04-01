@@ -52,14 +52,6 @@ public class ListItemAdapter extends ArrayAdapter<SectionedListItem> {
 					fillText(v, R.id.accountDescription, account.getDescription());	
 				} else if (i instanceof Category) {
 					Category category = (Category) i;
-					// TODO - implement own row layout for category
-//					v = vi.inflate(R.layout.account_row, null);
-//					fillText(v, R.id.accountName, category.getName());
-//					if (category.isExpense()) {
-//						fillText(v, R.id.accountDescription, context.getResources().getString(R.string.expenses_text));
-//					} else {
-//						fillText(v, R.id.accountDescription, context.getResources().getString(R.string.incomes_text));
-//					}
 					v = vi.inflate(R.layout.category_row, null);
 					fillText(v, R.id.categoryName, category.getName());
 					if (category.isExpense()) {

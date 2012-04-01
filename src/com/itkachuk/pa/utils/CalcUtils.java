@@ -25,13 +25,13 @@ public class CalcUtils {
 	}
 
 	public static String getSumOfRecords(Dao<IncomeOrExpenseRecord, Integer> recordDao, 
-			String accountFilter, boolean isExpense, TimeRange timeRange) throws SQLException {
+			int accountFilter, boolean isExpense, TimeRange timeRange) throws SQLException {
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append("select sum(amount) from IncomeOrExpenseRecord where isExpense = ");
 		if (isExpense) queryBuilder.append("1");
 		else queryBuilder.append("0");
-		if (accountFilter != null) 
-			queryBuilder.append(" and account = '" + accountFilter + "'");
+		if (accountFilter != -1) 
+			queryBuilder.append(" and account = '" + accountFilter + "'"); // change account to id ???
 		queryBuilder.append(" and isPlanned = 0");
 		if (timeRange != null && ((timeRange.getStartTime() > DateUtils.DEFAULT_START_DATE) || (timeRange.getEndTime() < DateUtils.DEFAULT_END_DATE))) 
 			queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());
@@ -45,13 +45,13 @@ public class CalcUtils {
 	}
 	
 	public static List<String[]> getAmountsPerCategoryList(Dao<IncomeOrExpenseRecord, Integer> recordDao, 
-			String accountFilter, boolean isExpense, TimeRange timeRange) throws SQLException {
+			int accountFilter, boolean isExpense, TimeRange timeRange) throws SQLException {
 		StringBuilder queryBuilder = new StringBuilder();
 		queryBuilder.append("select category, sum(amount) as amounts, category from IncomeOrExpenseRecord where isExpense = ");
 		if (isExpense) queryBuilder.append("1");
 		else queryBuilder.append("0");
-		if (accountFilter != null) 
-			queryBuilder.append(" and account = '" + accountFilter + "'");
+		if (accountFilter != -1) 
+			queryBuilder.append(" and account = '" + accountFilter + "'"); // change account to id ???
 		queryBuilder.append(" and isPlanned = 0");
 		if (timeRange != null && ((timeRange.getStartTime() > DateUtils.DEFAULT_START_DATE) || (timeRange.getEndTime() < DateUtils.DEFAULT_END_DATE))) 
 			queryBuilder.append(" and timestamp >= " + timeRange.getStartTime() + " and timestamp < " + timeRange.getEndTime());

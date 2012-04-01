@@ -87,7 +87,7 @@
 	
 	<!-- Program Settings Activity -->
 	<string name="default_account_text">Default Account</string>
-	<string name="main_account_currency_text">Currency of Main Account</string>
+	<string name="language_text">Language</string>
 	<string name="rows_per_page_text">Rows per Page in \"History\" report</string>
 	
 	<!-- Accounts Management Activities (Accounts List and Account Editor) -->

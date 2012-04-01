@@ -1,8 +1,6 @@
 package com.itkachuk.pa.activities.editors;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +23,7 @@ import com.j256.ormlite.dao.Dao;
 public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private static final String TAG = "PocketAccountant";
 
-	private static final String EXTRAS_ACCOUNT_NAME = "accountName";
+	private static final String EXTRAS_ACCOUNT_ID = "accountId";
 	
 	private EditText mAccountNameEditText;
 	private Spinner mAccountCurrencySpinner;
@@ -46,9 +44,9 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 
         refreshCurrencySpinnerEntries();
         try {
-	        if (getAccountName() != null) { // Edit existed account mode
-	        	Dao<Account, String> accountDao = getHelper().getAccountDao();
-	        	mExistedAccountToEdit = accountDao.queryForId(getAccountName());
+	        if (getAccountId() != -1) { // Edit existed account mode
+	        	Dao<Account, Integer> accountDao = getHelper().getAccountDao();
+	        	mExistedAccountToEdit = accountDao.queryForId(getAccountId());
 	        	if (mExistedAccountToEdit != null) {
 	        		loadFromObj(mExistedAccountToEdit);
 	        	}	        	
@@ -67,8 +65,8 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			public void onClick(View view) {
 				try {
 					Account account = saveToObj();
-					Dao<Account, String> accountDao = getHelper().getAccountDao();
-					if (getAccountName() != null) { // Edit existed account mode
+					Dao<Account, Integer> accountDao = getHelper().getAccountDao();
+					if (getAccountId() != -1) { // Edit existed account mode
 						accountDao.update(account);
 					} else {
 						accountDao.createIfNotExists(account); // Create new account
@@ -104,14 +102,14 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		c.startActivity(intent);
 	}
     
-	public static void callMe(Context c, String accountName) {
+	public static void callMe(Context c, int accountId) {
 		Intent intent = new Intent(c, AccountEditorActivity.class);
-		intent.putExtra(EXTRAS_ACCOUNT_NAME, accountName);		
+		intent.putExtra(EXTRAS_ACCOUNT_ID, accountId);		
 		c.startActivity(intent);
 	}
 	
-	private String getAccountName() {
-		return getIntent().getStringExtra(EXTRAS_ACCOUNT_NAME);
+	private int getAccountId() {
+		return getIntent().getIntExtra(EXTRAS_ACCOUNT_ID, -1);
 	}
 	
 	private void refreshCurrencySpinnerEntries() {
@@ -137,7 +135,7 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	private Account saveToObj() {
 		Account account;
 		
-		if (getAccountName() != null) { // Edit existed account mode
+		if (getAccountId() != -1) { // Edit existed account mode
 			account = mExistedAccountToEdit;
 		} else { // Create new account mode
 			account = new Account();
@@ -160,9 +158,6 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 			account.setDescription(mAccountDescriptionEditText.getText().toString());
 		} catch(Exception e){}
 		
-		// Set removable flag
-		account.setRemovable(true);
-		
 		return account;
 	}
 	
@@ -170,10 +165,5 @@ public class AccountEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 		mAccountNameEditText.setText(account.getName());
 		selectSpinnerCurrency(account.getCurrency());
 		mAccountDescriptionEditText.setText(account.getDescription());
-		// Disable Account Name edit text and Currency spinner, when we are editing existing account
-		// TODO - we can add additional logic here, to determine, if this account already has records in DB.
-		// If yes - only in that case we should disable editing.
-		mAccountNameEditText.setEnabled(false);
-		mAccountCurrencySpinner.setEnabled(false);
 	}
 }

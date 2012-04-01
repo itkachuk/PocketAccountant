@@ -15,40 +15,6 @@ public class DateUtils {
 	public static final int QUARTER = 3;
 	public static final int YEAR = 4;
 
-
-	/**
-	 * 
-	 * @param periodType Month(0), Quarter(1) or Year(2)
-	 * @param isPast If true, returns timestamp for previous month/quarter/year
-	 * @param isForEnd If true - returns timestamp for the end of period, false - for start of the period
-	 * @return
-	 */
-	public static final long getTimestamp(int periodType, boolean isPast, boolean isForEnd) {
-		Calendar calendar = Calendar.getInstance();
-		switch (periodType) {
-		case DateUtils.MONTH: {
-			if (isPast) calendar.add(Calendar.MONTH, -1); // roll one month back for past period
-			if (isForEnd) {
-				//Log.d(TAG, "getActualMaximum for day_of_month=" + calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-				calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59);
-				return calendar.getTimeInMillis();
-				
-			} else {
-				calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 1, 0, 0, 0);
-				return calendar.getTimeInMillis();
-			}
-		}
-		case DateUtils.QUARTER: {
-			return 0;
-
-		}
-		case DateUtils.YEAR: {
-			return 0;
-		}
-		default: return 0;
-		}
-	}
-	
 	
 	/**
 	 * Function calculates start/end timestamps for various past or current time intervals

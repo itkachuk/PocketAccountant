@@ -16,24 +16,16 @@ public class PreferencesUtils {
 	// Shared Preferences keys
 	public static final String PREFS_NAME = "paPreferences";
 	public static final String PREFS_IS_INITIALIZED = "isInitialized";
-	public static final String PREFS_DEFAULT_ACCOUNT = "defaultAccount";
-	public static final String PREFS_MAIN_ACCOUNT_CURRENCY = "mainAccountCurrency";
+	public static final String PREFS_DEFAULT_ACCOUNT_ID = "defaultAccountId";
 	public static final String PREFS_ROWS_PER_PAGE = "rowsPerPage";
 	
 	public static SharedPreferences getSharedPreferences(Context context) {
 		return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 	}
 	
-	public static String getDefaultAccountName(Context context) {
+	public static int getDefaultAccountId(Context context) {
 		SharedPreferences programSettings = getSharedPreferences(context);
-		return programSettings.getString(PREFS_DEFAULT_ACCOUNT, 
-				context.getResources().getString(R.string.main_account_name));
-	}
-	
-	public static String getMainAccountCurrency(Context context) {
-		SharedPreferences programSettings = getSharedPreferences(context);
-		return programSettings.getString(PREFS_MAIN_ACCOUNT_CURRENCY, 
-				Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+		return programSettings.getInt(PREFS_DEFAULT_ACCOUNT_ID, -1);
 	}
 	
 	public static int getRowsPerPage(Context context) {
@@ -42,19 +34,11 @@ public class PreferencesUtils {
 				HistoryReportActivity.DEFAULT_ROWS_PER_PAGE_NUMBER);
 	}
 	
-	public static void setDefaultAccountName(Context context, String accountName) {
+	public static void setDefaultAccountId(Context context, int accountId) {
 		SharedPreferences programSettings = getSharedPreferences(context);
 		SharedPreferences.Editor editor = programSettings.edit();
 			
-		editor.putString(PREFS_DEFAULT_ACCOUNT, accountName);						
-		editor.commit();
-	}
-	
-	public static void setMainAccountCurrency(Context context, String currencyCode) {
-		SharedPreferences programSettings = getSharedPreferences(context);
-		SharedPreferences.Editor editor = programSettings.edit();
-							
-		editor.putString(PREFS_MAIN_ACCOUNT_CURRENCY, currencyCode);
+		editor.putInt(PREFS_DEFAULT_ACCOUNT_ID, accountId);						
 		editor.commit();
 	}
 	
@@ -66,18 +50,19 @@ public class PreferencesUtils {
 		editor.commit();
 	}
 
+	// TODO - rework!
 	public static void initializePreferences(Context context) {
 		SharedPreferences programSettings = getSharedPreferences(context);
         if (!programSettings.contains(PREFS_IS_INITIALIZED)) {
         	SharedPreferences.Editor editor = programSettings.edit();
         	// Set default preferences
-        	editor.putString(
+      /*  	editor.putString(
         			PREFS_DEFAULT_ACCOUNT, 
         			context.getResources().getString(R.string.main_account_name));
         	
         	editor.putString(
         			PREFS_MAIN_ACCOUNT_CURRENCY, 
-        			Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+        			Currency.getInstance(Locale.getDefault()).getCurrencyCode());*/
         	Log.d(TAG, "Current locale: " + Locale.getDefault());
         	Log.d(TAG, "Current currency (saved to preferences): " + Currency.getInstance(Locale.getDefault()).getCurrencyCode());
         	

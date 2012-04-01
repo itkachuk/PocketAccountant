@@ -72,7 +72,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	
 	// Filters, passed via extras
 	private boolean mRecordsToShowFilter;
-	private String mAccountsFilter;
+	private int mAccountsFilter;
 	private long mStartDateFilter;
 	private long mEndDateFilter;
 	
@@ -265,8 +265,8 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		return getIntent().getStringExtra(EXTRAS_RECORDS_TO_SHOW_FILTER);
 	}
 	
-	private String getAccountsFilter() {		
-		return getIntent().getStringExtra(EXTRAS_ACCOUNTS_FILTER);
+	private int getAccountsFilter() {		
+		return getIntent().getIntExtra(EXTRAS_ACCOUNTS_FILTER);
 	}
 	
 	private long getStartDateFilter() {		
