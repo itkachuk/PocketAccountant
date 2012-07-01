@@ -70,7 +70,7 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 		//getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
                
         try {
-        	Dao<Account, String> accountDao = getHelper().getAccountDao();
+        	Dao<Account, Integer> accountDao = getHelper().getAccountDao();
 			ActivityUtils.refreshAccountSpinnerEntries(this, accountDao, mAccountsFilterSpinner);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -120,15 +120,13 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 				getResources().getString(R.string.expenses_text), 
 				getResources().getString(R.string.balance_text) };
 		
-		String accountFilter = null, accountCurrency = null;
+		int accountFilter = -1;
+		String  accountCurrency = null;
 		if (mAccountsFilterSpinner.getSelectedItem() != null) {
 			Account account = (Account) mAccountsFilterSpinner.getSelectedItem();
 			if (account != null) {
-				accountFilter = account.getName();
+				accountFilter = account.getId();
 				accountCurrency = account.getCurrency();
-			} else {
-				accountFilter = PreferencesUtils.getDefaultAccountName(context);
-				accountCurrency = PreferencesUtils.getMainAccountCurrency(context);
 			}
 		}
 		
@@ -168,7 +166,7 @@ public class MonthlyBalanceReportActivity extends OrmLiteBaseActivity<DatabaseHe
 				Type.DEFAULT);
 	}
 	
-	private List<double[]> calculateChartValues(String accountFilter, int year) throws SQLException {
+	private List<double[]> calculateChartValues(int accountFilter, int year) throws SQLException {
 		Dao<IncomeOrExpenseRecord, Integer> recordDao = getHelper().getRecordDao();
 		List<double[]> values = new ArrayList<double[]>();
 		double[] incomes = new double[12]; 

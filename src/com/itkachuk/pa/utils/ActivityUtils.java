@@ -30,7 +30,7 @@ public class ActivityUtils {
 			Spinner accountSpinner) throws SQLException {	
 		
 		List<Account> accounts = new ArrayList<Account>();
-		accounts.addAll(accountDao.queryForAll()); // then add all user's accounts from DB
+		accounts.addAll(accountDao.queryForAll()); // add all user's accounts from DB
 		ArrayAdapter<Account> adapter =
 				new ArrayAdapter<Account>(context, android.R.layout.simple_spinner_item, accounts);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

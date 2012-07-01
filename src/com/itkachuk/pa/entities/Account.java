@@ -6,12 +6,14 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class Account implements SectionedListItem {
+	
+	public static final String ACCOUNT_ID_FIELD_NAME = "id";
 	public static final String NAME_FIELD_NAME = "name";
 	public static final String CURRENCY_FIELD_NAME = "currency";
 	public static final String DESCRIPTION_FIELD_NAME = "description";
 	public static final String IS_REMOVABLE_FIELD_NAME = "isRemovable";	
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(generatedId = true, columnName = ACCOUNT_ID_FIELD_NAME)
 	private int id;
 	
 	@DatabaseField(unique = true, columnName = NAME_FIELD_NAME)
@@ -27,8 +29,9 @@ public class Account implements SectionedListItem {
 		// needed by ormlite
 	}
 
-	public Account(String name, String currency, String description) {
+	public Account(int id, String name, String currency, String description) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.currency = currency;
 		this.description = description;

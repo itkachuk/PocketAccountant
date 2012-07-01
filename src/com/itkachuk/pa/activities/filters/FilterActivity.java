@@ -301,10 +301,11 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 				String reportName = getReportName();
 				
 				if (reportName != null) {
+					int accountsFilter, categoriesFilter;
 					String recordsToShowFilter = mRecordsFilterSpinner.getSelectedItem().toString();
-					String accountsFilter = mAccountsFilterSpinner.getSelectedItem().toString();
-					String categoriesFilter = mCategoriesFilterSpinner.getSelectedItem().toString();
-					
+					accountsFilter = ((Account) mAccountsFilterSpinner.getSelectedItem()).getId();
+					categoriesFilter = ((Category) mCategoriesFilterSpinner.getSelectedItem()).getId();
+										
 					if (reportName.equals("History")) {										
 						if (mTimeFilterSpinner.getSelectedItemId() > 0) { // If time filter was set - not "All Time" item selected
 							if (mStartDate.compareTo(mEndDate) >= 0) { // Error, if dates are equal or start > end
@@ -455,7 +456,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		
 		Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
 		List<Category> categories = new ArrayList<Category>();
-		categories.add(new Category(getResources().getString(R.string.all_text), true)); // first entry should be "All" item
+		categories.add(new Category(-1, getResources().getString(R.string.all_text), true)); // first entry should be "All" item (has index -1 for filters)
 		
 			categories.addAll(categoryDao.queryBuilder().where() // Add categories from DB
 					.eq(Category.IS_EXPENSE_FIELD_NAME, true)

@@ -6,11 +6,12 @@ import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable
 public class Category implements SectionedListItem {
+	public static final String CATEGORY_ID_FIELD_NAME = "id";
 	public static final String NAME_FIELD_NAME = "name";
 	public static final String IS_EXPENSE_FIELD_NAME = "isExpense";
 	public static final String IS_REMOVABLE_FIELD_NAME = "isRemovable";	
 	
-	@DatabaseField(generatedId = true)
+	@DatabaseField(generatedId = true, columnName = CATEGORY_ID_FIELD_NAME)
 	private int id;
 	
 	@DatabaseField(uniqueCombo = true, columnName = NAME_FIELD_NAME)
@@ -23,8 +24,9 @@ public class Category implements SectionedListItem {
 		// needed by ormlite
 	}
 
-	public Category(String name, boolean isExpense) {
+	public Category(int id, String name, boolean isExpense) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.isExpense = isExpense;
 	}

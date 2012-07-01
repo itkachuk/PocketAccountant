@@ -141,7 +141,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				String[] categoryAmountRow = (String[]) mListView.getAdapter().getItem(i);
 				HistoryReportActivity.callMe(ConsolidatedReportActivity.this, "", getRecordsToShowFilter(), 
-						mAccountsFilter, categoryAmountRow[0], mStartDateFilter, mEndDateFilter);
+						mAccountsFilter, Integer.parseInt(categoryAmountRow[0]), mStartDateFilter, mEndDateFilter);
 			}
 		});
 	}
@@ -164,7 +164,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		}
 	}
 	
-	public static void callMe(Context c, String caller, String recordsToShowFilter, String accountsFilter,
+	public static void callMe(Context c, String caller, String recordsToShowFilter, int accountsFilter,
 			long startDateFilter, long endDateFilter) {
 		Intent intent = new Intent(c, ConsolidatedReportActivity.class);
 		intent.putExtra(EXTRAS_CALLER, caller);
@@ -266,7 +266,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 	}
 	
 	private int getAccountsFilter() {		
-		return getIntent().getIntExtra(EXTRAS_ACCOUNTS_FILTER);
+		return getIntent().getIntExtra(EXTRAS_ACCOUNTS_FILTER, -1);
 	}
 	
 	private long getStartDateFilter() {		
@@ -281,9 +281,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		if (getRecordsToShowFilter().equals(getResources().getString(R.string.expenses_text)))
 			mRecordsToShowFilter = true;
 		else mRecordsToShowFilter = false;
-		mAccountsFilter = getAccountsFilter();
-		if (mAccountsFilter.equals(getResources().getString(R.string.all_text))) 
-			mAccountsFilter = null;
+		mAccountsFilter = getAccountsFilter();		
 		mStartDateFilter = getStartDateFilter();
 		mEndDateFilter = getEndDateFilter();
 	}

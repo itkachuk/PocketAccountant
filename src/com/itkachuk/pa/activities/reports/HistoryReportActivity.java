@@ -73,8 +73,8 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	
 	// Filters, passed via extras
 	private String mRecordsToShowFilter;
-	private String mAccountsFilter;
-	private String mCategoriesFilter;
+	private int mAccountsFilter;
+	private int mCategoriesFilter;
 	private long mStartDateFilter;
 	private long mEndDateFilter;
 
@@ -224,13 +224,13 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			whereClauseStarted = true;
 		}
 		
-		if (mAccountsFilter != null && !mAccountsFilter.equals(getResources().getString(R.string.all_text))) {
+		if (mAccountsFilter != -1) {
 			if (whereClauseStarted) where.and();
 			where.eq(IncomeOrExpenseRecord.ACCOUNT_FIELD_NAME, mAccountsFilter);
 			whereClauseStarted = true;
 		}
 		
-		if (mCategoriesFilter != null && !mCategoriesFilter.equals(getResources().getString(R.string.all_text))) {
+		if (mCategoriesFilter != -1) {
 			if (whereClauseStarted) where.and();
 			where.eq(IncomeOrExpenseRecord.CATEGORY_FIELD_NAME, mCategoriesFilter);
 			whereClauseStarted = true;
@@ -287,8 +287,8 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		}
 	}	
 	
-	public static void callMe(Context c, String caller, String recordsToShowFilter, String accountsFilter,
-			String categoriesFilter, long startDateFilter, long endDateFilter) {
+	public static void callMe(Context c, String caller, String recordsToShowFilter, int accountsFilter,
+			int categoriesFilter, long startDateFilter, long endDateFilter) {
 		Intent intent = new Intent(c, HistoryReportActivity.class);
 		intent.putExtra(EXTRAS_CALLER, caller);
 		intent.putExtra(EXTRAS_RECORDS_TO_SHOW_FILTER, recordsToShowFilter);
@@ -308,12 +308,12 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		return getIntent().getStringExtra(EXTRAS_RECORDS_TO_SHOW_FILTER);
 	}
 	
-	private String getAccountsFilter() {		
-		return getIntent().getStringExtra(EXTRAS_ACCOUNTS_FILTER);
+	private int getAccountsFilter() {		
+		return getIntent().getIntExtra(EXTRAS_ACCOUNTS_FILTER, -1);
 	}
 	
-	private String getCategoriesFilter() {		
-		return getIntent().getStringExtra(EXTRAS_CATEGORIES_FILTER);
+	private int getCategoriesFilter() {		
+		return getIntent().getIntExtra(EXTRAS_CATEGORIES_FILTER, -1);
 	}
 	
 	private long getStartDateFilter() {		
@@ -400,7 +400,7 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
 			fillText(v, R.id.recordDate, dateFormatter.format(millis));
 		
-			fillText(v, R.id.recordCategory, record.getCategory());
+			fillText(v, R.id.recordCategory, record.getCategory().getName());
 
 			fillText(v, R.id.recordDescription, record.getDescription());
 						

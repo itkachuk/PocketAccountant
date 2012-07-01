@@ -92,7 +92,7 @@ public class CommonReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		new FillTablesJob(this).execute();
 	}
 	
-	public static void callMe(Context c, String caller, String accountsFilter) {
+	public static void callMe(Context c, String caller, int accountsFilter) {
 		Intent intent = new Intent(c, CommonReportActivity.class);
 		intent.putExtra(EXTRAS_CALLER, caller);
 		intent.putExtra(EXTRAS_ACCOUNTS_FILTER, accountsFilter);
