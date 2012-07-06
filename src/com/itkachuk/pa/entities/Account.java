@@ -36,6 +36,13 @@ public class Account implements SectionedListItem {
 		this.currency = currency;
 		this.description = description;
 	}
+	
+	public Account(String name, String currency, String description) {
+		super();
+		this.name = name;
+		this.currency = currency;
+		this.description = description;
+	}
 
 	public int getId() {
 		return id;

@@ -49,22 +49,23 @@ public class PreferencesUtils {
 		editor.putInt(PREFS_ROWS_PER_PAGE, rowsPerPageNumber);
 		editor.commit();
 	}
+	
+	public static boolean isInitialized(Context context) {
+		SharedPreferences programSettings = getSharedPreferences(context);
+        if (programSettings.contains(PREFS_IS_INITIALIZED)) return true;
+        else return false;
+	}
 
 	// TODO - rework!
 	public static void initializePreferences(Context context) {
 		SharedPreferences programSettings = getSharedPreferences(context);
         if (!programSettings.contains(PREFS_IS_INITIALIZED)) {
         	SharedPreferences.Editor editor = programSettings.edit();
+        	      	
         	// Set default preferences
-      /*  	editor.putString(
-        			PREFS_DEFAULT_ACCOUNT, 
-        			context.getResources().getString(R.string.main_account_name));
-        	
-        	editor.putString(
-        			PREFS_MAIN_ACCOUNT_CURRENCY, 
-        			Currency.getInstance(Locale.getDefault()).getCurrencyCode());*/
-        	Log.d(TAG, "Current locale: " + Locale.getDefault());
-        	Log.d(TAG, "Current currency (saved to preferences): " + Currency.getInstance(Locale.getDefault()).getCurrencyCode());
+       /* 	editor.putInt(
+        			PREFS_DEFAULT_ACCOUNT_ID, 
+        			accountId); */     	
         	
         	editor.putInt(
         			PREFS_ROWS_PER_PAGE, 

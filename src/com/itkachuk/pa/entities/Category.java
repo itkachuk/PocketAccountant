@@ -30,6 +30,12 @@ public class Category implements SectionedListItem {
 		this.name = name;
 		this.isExpense = isExpense;
 	}
+	
+	public Category(String name, boolean isExpense) {
+		super();
+		this.name = name;
+		this.isExpense = isExpense;
+	}
 
 	public int getId() {
 		return id;

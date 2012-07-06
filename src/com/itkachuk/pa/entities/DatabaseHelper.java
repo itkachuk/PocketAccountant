@@ -24,7 +24,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	private Dao<Account, Integer> accountDao;
 	private Dao<IncomeOrExpenseRecord, Integer> recordDao;
 	private Dao<Category, Integer> categoryDao;
-	private Dao<Description, String> descriptionDao;
+	private Dao<Description, Integer> descriptionDao;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -70,8 +70,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return categoryDao;
 	}
 	
-	// TODO - Integer ??
-	public Dao<Description, String> getDescriptionDao() throws SQLException {
+	// TODO - Integer or String ??
+	public Dao<Description, Integer> getDescriptionDao() throws SQLException {
 		if (descriptionDao == null) {
 			descriptionDao = getDao(Description.class);
 		}
