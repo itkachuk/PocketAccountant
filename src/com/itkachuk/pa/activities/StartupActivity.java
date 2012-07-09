@@ -47,6 +47,7 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
         if (!PreferencesUtils.isInitialized(this)) {
         	PreferencesUtils.initializePreferences(this);
         	poulateDatabaseByDefault();
+        	Log.d(TAG, "Database was populated with default values.");
         	Toast.makeText(getApplicationContext(), "Database was populated with default values.", Toast.LENGTH_LONG).show();
         }
     }
@@ -140,7 +141,7 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 			
 			// Create main account
 			accountDao.createIfNotExists(new Account(mainAccountName, mainAccountCurrency, mainAccountDescription));
-			Account mainAccount = (Account) accountDao.queryForEq(Account.NAME_FIELD_NAME, mainAccountName);
+			Account mainAccount = (Account) accountDao.queryForEq(Account.NAME_FIELD_NAME, mainAccountName).get(0);
 			// Store main account as default
 			PreferencesUtils.setDefaultAccountId(this, mainAccount.getId());
 

@@ -47,7 +47,7 @@ public class CalcUtils {
 	public static List<String[]> getAmountsPerCategoryList(Dao<IncomeOrExpenseRecord, Integer> recordDao, 
 			int accountFilter, boolean isExpense, TimeRange timeRange) throws SQLException {
 		StringBuilder queryBuilder = new StringBuilder();
-		queryBuilder.append("select category, sum(amount) as amounts, category from IncomeOrExpenseRecord where isExpense = ");
+		queryBuilder.append("select category, sum(amount) as amounts, category, category from IncomeOrExpenseRecord where isExpense = ");
 		if (isExpense) queryBuilder.append("1");
 		else queryBuilder.append("0");
 		if (accountFilter != -1) 

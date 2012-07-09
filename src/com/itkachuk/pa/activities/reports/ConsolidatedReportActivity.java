@@ -41,6 +41,7 @@ import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
+import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.ActivityUtils;
@@ -184,6 +185,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 		
 		List<String[]> list = CalcUtils.getAmountsPerCategoryList(dao, mAccountsFilter, 
 				mRecordsToShowFilter, timeRange);
+		retreiveCategoryNamesByIds(list);
 		roundAmountsOfCategoriesList(list);
 		
 		if (reportViewsCounter == 2) { // TODO Bars displaying mode - not working now! To be completed later
@@ -256,6 +258,19 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			row[1] = Long.toString(Math.round(categoryAmount)); // trim rational part
 		}
 	}
+	
+	private void retreiveCategoryNamesByIds(List<String[]> list) {
+		Category category;
+		try {
+			Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
+			for (String[] row : list) {
+				category = categoryDao.queryForId(Integer.parseInt(row[0]));
+				row[3] = category.getName();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}					
+	}
 
 	private String getCallingActivityName() {		
 		return getIntent().getStringExtra(EXTRAS_CALLER);
@@ -301,7 +316,7 @@ public class ConsolidatedReportActivity extends OrmLiteBaseActivity<DatabaseHelp
 			}
 			String[] row = getItem(position);
 		
-			fillText(v, R.id.categoryName, row[0]);
+			fillText(v, R.id.categoryName, row[3]);
 
 			if (reportViewsCounter == 0) { // Amounts displaying mode
 				fillText(v, R.id.categoryAmount, row[1]);

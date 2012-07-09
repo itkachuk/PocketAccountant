@@ -31,6 +31,7 @@ import com.itkachuk.pa.activities.editors.RecordEditorActivity;
 import com.itkachuk.pa.activities.filters.FilterActivity;
 import com.itkachuk.pa.activities.menus.ReportsMenuActivity;
 import com.itkachuk.pa.entities.Account;
+import com.itkachuk.pa.entities.Category;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.entities.IncomeOrExpenseRecord;
 import com.itkachuk.pa.utils.ActivityUtils;
@@ -399,7 +400,15 @@ public class HistoryReportActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			Long millis = record.getTimestamp();
 			DateFormat dateFormatter = SimpleDateFormat.getDateTimeInstance();
 			fillText(v, R.id.recordDate, dateFormatter.format(millis));
-		
+			
+			try {
+				Dao<Category, Integer> categoryDao = getHelper().getCategoryDao();
+				categoryDao.refresh(record.getCategory()); // Refresh foreign object
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			fillText(v, R.id.recordCategory, record.getCategory().getName());
 
 			fillText(v, R.id.recordDescription, record.getDescription());
