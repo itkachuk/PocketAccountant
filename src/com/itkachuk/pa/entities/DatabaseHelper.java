@@ -1,9 +1,11 @@
 package com.itkachuk.pa.entities;
 
+import java.io.File;
 import java.sql.SQLException;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -18,18 +20,30 @@ import com.j256.ormlite.table.TableUtils;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
+    public static final String SDCARD_DIR = "/sdcard";
+    public static final String APP_ROOT_DIR = "PocketAccountant";
+    public static final String SDCARD_MEMORY_DIR = SDCARD_DIR + File.separator + APP_ROOT_DIR;
+	
 	private static final String DATABASE_NAME = "pa.db";
 	private static final int DATABASE_VERSION = 2;
 
 	private Dao<Account, Integer> accountDao;
 	private Dao<IncomeOrExpenseRecord, Integer> recordDao;
 	private Dao<Category, Integer> categoryDao;
-	private Dao<Description, Integer> descriptionDao;
+	private Dao<Description, String> descriptionDao;
 
-	public DatabaseHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+	public DatabaseHelper(Context context) {		
+		super(context, getDbNameFullPath(), null, DATABASE_VERSION);
 	}
 
+	private static String getDbNameFullPath(){
+		File cardDir = Environment.getExternalStorageDirectory();		
+	    if (cardDir.exists() && cardDir.canRead() && cardDir.canWrite()) {
+	    	return SDCARD_MEMORY_DIR + File.separator + DATABASE_NAME;
+	    } else {
+	    	return DATABASE_NAME; // use phone internal memory, if sdcard isn't available
+	    }
+	}
 
 	@Override
 	public void onCreate(SQLiteDatabase sqliteDatabase, ConnectionSource connectionSource) {
@@ -70,8 +84,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		return categoryDao;
 	}
 	
-	// TODO - Integer or String ??
-	public Dao<Description, Integer> getDescriptionDao() throws SQLException {
+	// TODO - Integer ??
+	public Dao<Description, String> getDescriptionDao() throws SQLException {
 		if (descriptionDao == null) {
 			descriptionDao = getDao(Description.class);
 		}
