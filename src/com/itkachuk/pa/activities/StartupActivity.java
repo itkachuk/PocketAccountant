@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> implements OnClickListener {
@@ -46,7 +45,7 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
         
         if (!PreferencesUtils.isInitialized(this)) {
         	PreferencesUtils.initializePreferences(this);
-        	poulateDatabaseByDefault();
+        	populateDatabaseByDefault();
         	Log.d(TAG, "Database was populated with default values.");
         	Toast.makeText(getApplicationContext(), "Database was populated with default values.", Toast.LENGTH_LONG).show();
         }
@@ -124,7 +123,7 @@ public class StartupActivity extends OrmLiteBaseActivity<DatabaseHelper> impleme
 		
 	}
 	
-	private void poulateDatabaseByDefault() {
+	private void populateDatabaseByDefault() {
 
 		String mainAccountName = getResources().getString(R.string.main_account_name);
 		String mainAccountDescription = getResources().getString(R.string.main_account_description);

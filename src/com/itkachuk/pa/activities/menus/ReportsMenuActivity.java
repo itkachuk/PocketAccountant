@@ -13,6 +13,7 @@ import com.itkachuk.pa.activities.reports.HistoryReportActivity;
 import com.itkachuk.pa.entities.DatabaseHelper;
 import com.itkachuk.pa.utils.DateUtils;
 import com.itkachuk.pa.utils.PreferencesUtils;
+import com.itkachuk.pa.utils.TimeRange;
 import com.j256.ormlite.android.apptools.OrmLiteBaseActivity;
 
 public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> implements OnClickListener {
@@ -76,8 +77,10 @@ public class ReportsMenuActivity extends OrmLiteBaseActivity<DatabaseHelper> imp
 	      	case R.id.history_report_button:
 		    	Log.d(TAG, "clicked on \"History Report\"");
 		    	//FilterActivity.callMe(ReportsMenuActivity.this, "History");
+                // This report will be run only for past 30/31 days by default; other time ranges can be applied through filters activity.
+                TimeRange pastMonthTimeRange = DateUtils.getPastTimeRange(DateUtils.MONTH);
 		    	HistoryReportActivity.callMe(ReportsMenuActivity.this, ReportsMenuActivity.class.getName(), recordsToShowFilter, 
-		    			accountsFilter, categoriesFilter, DateUtils.DEFAULT_START_DATE, DateUtils.DEFAULT_END_DATE);
+		    			accountsFilter, categoriesFilter, pastMonthTimeRange.getStartTime(), pastMonthTimeRange.getEndTime());
 		        // TODO - show no data was found
 		    break;
 	         

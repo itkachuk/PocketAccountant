@@ -114,7 +114,8 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 	        refreshRecordsSpinnerEntries();
 	        ActivityUtils.refreshAccountSpinnerEntries(this, getHelper().getAccountDao(), mAccountsFilterSpinner);
 	        refreshCategoriesSpinnerEntries();
-	        refreshTimeSpinnerEntries();  		
+	        refreshTimeSpinnerEntries();
+            setDefaultTimeRanges();
 		} catch (SQLException e) {
 			Log.e(TAG, "SQL Error in onCreate method. " + e.getMessage());
 		}
@@ -182,31 +183,31 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 					break;
 				}
 				case 7: { // "Past Day" time filter
-					timeRange = DateUtils.getTimeRange(DateUtils.DAY, true);
+					timeRange = DateUtils.getPastTimeRange(DateUtils.DAY);
 					updateCalendarsAndButtons(timeRange);
 					disableRollButtons();
 					break;
 				}
 				case 8: { // "Past Week" time filter
-					timeRange = DateUtils.getTimeRange(DateUtils.WEEK, true);
+					timeRange = DateUtils.getPastTimeRange(DateUtils.WEEK);
 					updateCalendarsAndButtons(timeRange);
 					disableRollButtons();
 					break;
 				}
 				case 9: { // "Past Month" time filter
-					timeRange = DateUtils.getTimeRange(DateUtils.MONTH, true);
+					timeRange = DateUtils.getPastTimeRange(DateUtils.MONTH);
 					updateCalendarsAndButtons(timeRange);
 					disableRollButtons();
 					break;
 				}
 				case 10: { // "Past Quarter" time filter
-					timeRange = DateUtils.getTimeRange(DateUtils.QUARTER, true);
+					timeRange = DateUtils.getPastTimeRange(DateUtils.QUARTER);
 					updateCalendarsAndButtons(timeRange);
 					disableRollButtons();
 					break;
 				}
 				case 11: { // "Past Year" time filter
-					timeRange = DateUtils.getTimeRange(DateUtils.YEAR, true);
+					timeRange = DateUtils.getPastTimeRange(DateUtils.YEAR);
 					updateCalendarsAndButtons(timeRange);
 					disableRollButtons();
 					break;
@@ -344,7 +345,7 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 			}
 		});       
     }
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 	    switch (id) {
@@ -432,6 +433,24 @@ public class FilterActivity extends OrmLiteBaseActivity<DatabaseHelper> {
 		mEndDateButton.setEnabled(false);
 	}
 
+    /**
+     * Update the time filter selection according to the report name
+     * History Report - will show only records for past 30/31 days
+     * Other reports - for now, will show all the data
+     */
+    private void setDefaultTimeRanges() {
+        String reportName = getReportName();
+        TimeRange timeRange;
+        if (reportName.equals("History")) {
+            timeRange = DateUtils.getPastTimeRange(DateUtils.MONTH);
+            mTimeFilterSpinner.setSelection(9); // programmatically select "Past Month" spinner item
+            updateCalendarsAndButtons(timeRange);
+            disableRollButtons();
+        }
+        //if (reportName.equals("Consolidated")) {
+            // ?
+        //}
+    }
 
 	private void refreshRecordsSpinnerEntries() {
 		String[] filterItemsList;		

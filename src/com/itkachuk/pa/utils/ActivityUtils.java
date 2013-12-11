@@ -145,7 +145,7 @@ public class ActivityUtils {
 	 * 
 	 * @param activity
 	 * @param databaseHelper
-	 * @param accountName
+	 * @param accountId
 	 */
 	public static void updateReportTitleBar(Activity activity, DatabaseHelper databaseHelper, int accountId) {
 		String accountName = null, currency;

@@ -140,7 +140,54 @@ public class DateUtils {
 		} while(count < 4);
 		return 0;
 	}
-	
+
+    /**
+     * This method was created specifically for generating past time periods. It differs from the getTimeRange() method above with isPast argument set to true
+     * because it is generating time ranges based on current moment of time minus specified period to the past.
+     * Example: for past month, current date is 13/10/2013; method will return startTime as 13/09/2013, endTime as 13/10/2013
+     * @param periodType
+     * @return TimeRange
+     */
+    public static final TimeRange getPastTimeRange(int periodType) {
+        Calendar calendar = Calendar.getInstance();
+
+        TimeRange timeRange = new TimeRange(DEFAULT_START_DATE, DEFAULT_END_DATE);
+
+        // End Time
+        timeRange.setEndTime(calendar.getTimeInMillis()); // end time is the current time and it is common for any time period
+
+        // Calculating Start Time
+        switch (periodType) {
+
+            case DateUtils.DAY: {
+                calendar.add(Calendar.DAY_OF_MONTH, -1); // roll one day back to get start timestamp
+                break;
+            }
+            case DateUtils.WEEK: {
+                calendar.add(Calendar.WEEK_OF_MONTH, -1); // roll one week back to get start timestamp
+                break;
+            }
+            case DateUtils.MONTH: {
+                calendar.add(Calendar.MONTH, -1); // roll one month back to get start timestamp
+                break;
+            }
+            case DateUtils.QUARTER: {
+                calendar.add(Calendar.MONTH, -3); // roll one quarter back to get start timestamp
+                break;
+            }
+            case DateUtils.YEAR: {
+                calendar.add(Calendar.YEAR, -1); // roll one year back to get start timestamp
+                break;
+            }
+            default: {
+                // by default, return past month
+                calendar.add(Calendar.MONTH, -1); // roll one month back to get start timestamp
+            }
+        }
+        // Set Start Time
+        timeRange.setStartTime(calendar.getTimeInMillis());
+        return timeRange;
+    }
 	
 	/**
 	 * Function returns the TimeRange instance for specified month and year.
@@ -160,5 +207,4 @@ public class DateUtils {
 		timeRange.setEndTime(calendar.getTimeInMillis());
 		return timeRange;
 	}
-	
 }
