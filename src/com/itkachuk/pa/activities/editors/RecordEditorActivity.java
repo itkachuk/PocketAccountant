@@ -3,23 +3,20 @@ package com.itkachuk.pa.activities.editors;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.itkachuk.pa.R;
 import com.itkachuk.pa.entities.Account;
@@ -42,6 +39,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 	
 	private Spinner mAccountSpinner;
 	private EditText mAmountEditText;
+    private ImageButton mCalculatorButton; // experiment
 	private Button mDateButton;
 	private Spinner mCategorySpinner;
 	private AutoCompleteTextView mDescriptionEditText;
@@ -61,6 +59,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         
         mAccountSpinner = (Spinner) findViewById(R.id.account_spinner);
         mAmountEditText = (EditText) findViewById(R.id.amount_edit_text);
+        mCalculatorButton = (ImageButton) findViewById(R.id.calcButton);
         mDateButton = (Button) findViewById(R.id.edit_date_button);
         mCategorySpinner = (Spinner) findViewById(R.id.category_spinner);
         mDescriptionEditText = (AutoCompleteTextView) findViewById(R.id.description_edit_text);
@@ -92,6 +91,39 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 				finish(); // Close activity on Back button pressing
 			}
 		});
+
+        // Identify, if we have a native android Calculator app available
+        // taken from http://stackoverflow.com/questions/13662506/how-to-call-android-calculator-on-my-app-for-all-phones
+        // ********************** Remove this code,when decide to add custom calculator - start *****************************
+        ArrayList<HashMap<String,Object>> items =new ArrayList<HashMap<String,Object>>();
+        final PackageManager pm = getPackageManager();
+        List<PackageInfo> packs = pm.getInstalledPackages(0);
+        for (PackageInfo pi : packs) {
+            if( pi.packageName.toString().toLowerCase().contains("calcul")){
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("appName", pi.applicationInfo.loadLabel(pm));
+                map.put("packageName", pi.packageName);
+                items.add(map);
+            }
+        }
+
+        final Intent calculatorIntent;
+        if(items.size() >= 1){
+            String packageName = (String) items.get(0).get("packageName");
+            calculatorIntent = pm.getLaunchIntentForPackage(packageName);
+            if (calculatorIntent != null) {
+                // add a click listener to the Calculator button
+                mCalculatorButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        startActivity(calculatorIntent);
+                    }
+                });
+            }
+        }
+        else {
+            mCalculatorButton.setEnabled(false); // disable button, if calc application is not available
+        }
+        // ********************** Remove this code,when decide to add custom calculator - end *****************************
 		
 		// add a click listener to the Save button
 		mSaveButton.setOnClickListener(new View.OnClickListener() {
