@@ -94,7 +94,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
 
         // Identify, if we have a native android Calculator app available
         // taken from http://stackoverflow.com/questions/13662506/how-to-call-android-calculator-on-my-app-for-all-phones
-        // ********************** Remove this code,when decide to add custom calculator - start *****************************
+        // ********************** Remove this code,when decide to add custom calculator - start *******************************
         ArrayList<HashMap<String,Object>> items =new ArrayList<HashMap<String,Object>>();
         final PackageManager pm = getPackageManager();
         List<PackageInfo> packs = pm.getInstalledPackages(0);
@@ -123,7 +123,7 @@ public class RecordEditorActivity extends OrmLiteBaseActivity<DatabaseHelper>{
         else {
             mCalculatorButton.setEnabled(false); // disable button, if calc application is not available
         }
-        // ********************** Remove this code,when decide to add custom calculator - end *****************************
+        // ********************** Remove this code,when decide to add custom calculator - end *******************************
 		
 		// add a click listener to the Save button
 		mSaveButton.setOnClickListener(new View.OnClickListener() {
